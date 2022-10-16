@@ -38,4 +38,18 @@ class EmotionRepositoryImpl implements EmotionRepository {
       return Result.error(Exception('Insert diary failed : ${e.toString()}'));
     }
   }
+
+  @override
+  Future<Result<Map<int, Diary>>> getWeekDiaries({int week = 0}) async {
+    try {
+      final map = await _dao.getWeekDiaries(week: week);
+      final Map<int, Diary> result = {};
+      map.forEach((key, diaryEntity) {
+        result.putIfAbsent(key, () => diaryEntity.toDiary());
+      });
+      return Result.success(result);
+    } catch (e) {
+      return Result.error(Exception('Get week diary failed : ${e.toString()}'));
+    }
+  }
 }

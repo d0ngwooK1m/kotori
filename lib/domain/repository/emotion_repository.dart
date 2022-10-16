@@ -7,4 +7,6 @@ abstract class EmotionRepository {
   Future<Result<String>> insertDiary(Diary diary);
 
   Future<Result<String>> editDiary(Diary diary);
+
+  Future<Result<Map<int, Diary>>> getWeekDiaries({int week = 0});
 }

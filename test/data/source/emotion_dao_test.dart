@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
 import 'package:kotori/data/source/diary_entity.dart';
-import 'package:kotori/data/source/emotion_dao.dart';
+import 'package:kotori/data/source/emotion_dao_impl.dart';
 import 'package:kotori/util/time.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -13,7 +13,7 @@ void main() {
       ..registerAdapter(DiaryEntityAdapter());
     final box = await Hive.openBox<DiaryEntity>('testDiaries.db');
     await box.clear();
-    final dao = EmotionDao(box);
+    final dao = EmotionDaoImpl(box);
     final now = Time.now;
 
     await dao.insertDiary(

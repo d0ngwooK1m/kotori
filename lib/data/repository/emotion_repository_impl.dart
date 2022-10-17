@@ -13,7 +13,7 @@ class EmotionRepositoryImpl implements EmotionRepository {
   Future<Result<String>> editDiary(Diary diary) async {
     try {
       await _dao.editDiary(diary.toDiaryEntity());
-      return Result.success('Edit diary successfully!');
+      return const Result.success('Edit diary successfully!');
     } catch (e) {
       return Result.error(Exception('Edit diary failed : ${e.toString()}'));
     }
@@ -33,7 +33,7 @@ class EmotionRepositoryImpl implements EmotionRepository {
   Future<Result<String>> insertDiary(Diary diary) async {
     try {
       await _dao.insertDiary(diary.toDiaryEntity());
-      return Result.success('Insert Diary Successfully');
+      return const Result.success('Insert diary successfully');
     } catch (e) {
       return Result.error(Exception('Insert diary failed : ${e.toString()}'));
     }

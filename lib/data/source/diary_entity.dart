@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:kotori/util/time.dart';
 
 part 'diary_entity.g.dart';
 
@@ -22,4 +23,15 @@ class DiaryEntity extends HiveObject {
     required this.desc,
     required this.date,
   });
+}
+
+extension ToFakeDiaryEntity on DiaryEntity {
+  DiaryEntity toFakeDiaryEntity({int day = 0}) {
+    return DiaryEntity(
+      emotion: emotion,
+      picture: picture,
+      desc: desc,
+      date: date.add(Duration(days: day)),
+    );
+  }
 }

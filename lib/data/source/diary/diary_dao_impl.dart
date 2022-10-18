@@ -1,14 +1,13 @@
 import 'package:hive/hive.dart';
-import 'package:kotori/data/source/diary_entity.dart';
-import 'package:kotori/data/source/emotion_dao.dart';
+import 'package:kotori/data/source/diary/diary_entity.dart';
+import 'package:kotori/data/source/diary/diary_dao.dart';
 import 'package:kotori/util/time.dart';
 
-class EmotionDaoImpl implements EmotionDao {
-  @override
+class DiaryDaoImpl implements DiaryDao {
   final Box<DiaryEntity> box;
   final now = Time.now;
 
-  EmotionDaoImpl(this.box);
+  DiaryDaoImpl(this.box);
 
   // 일기 읽어오기
   @override

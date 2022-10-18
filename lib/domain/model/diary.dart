@@ -1,5 +1,4 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:kotori/util/emotion.dart';
 
 part 'diary.freezed.dart';
 

@@ -1,4 +1,4 @@
-import 'package:kotori/data/source/diary_entity.dart';
+import 'package:kotori/data/source/diary/diary_entity.dart';
 import 'package:kotori/domain/model/diary.dart';
 
 extension ToDiary on DiaryEntity {

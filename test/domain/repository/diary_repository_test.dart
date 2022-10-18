@@ -1,20 +1,20 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kotori/data/repository/emotion_repository_impl.dart';
-import 'package:kotori/data/source/diary_entity.dart';
-import 'package:kotori/data/source/emotion_dao.dart';
+import 'package:kotori/data/repository/diary_repository_impl.dart';
+import 'package:kotori/data/source/diary/diary_entity.dart';
+import 'package:kotori/data/source/diary/diary_dao.dart';
 import 'package:kotori/domain/model/diary.dart';
 import 'package:kotori/util/result.dart';
 import 'package:kotori/util/time.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
-import 'emotion_repository_test.mocks.dart';
+import 'diary_repository_test.mocks.dart';
 
-@GenerateNiceMocks([MockSpec<EmotionDao>()])
+@GenerateNiceMocks([MockSpec<DiaryDao>()])
 void main() {
-  test('emotion_repository test', () async {
-    final dao = MockEmotionDao();
-    final repository = EmotionRepositoryImpl(dao);
+  test('diary_repository test', () async {
+    final dao = MockDiaryDao();
+    final repository = DiaryRepositoryImpl(dao);
     final now = Time.now;
     final entity = DiaryEntity(
       emotion: 0,

@@ -1,19 +1,19 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
-import 'package:kotori/data/source/diary_entity.dart';
-import 'package:kotori/data/source/emotion_dao_impl.dart';
+import 'package:kotori/data/source/diary/diary_entity.dart';
+import 'package:kotori/data/source/diary/diary_dao_impl.dart';
 import 'package:kotori/util/time.dart';
 import 'package:path_provider/path_provider.dart';
 
 void main() {
-  test('emotion_dao test', () async {
+  test('diary_dao test', () async {
     final dir = await getApplicationDocumentsDirectory();
     Hive
       ..init(dir.path)
       ..registerAdapter(DiaryEntityAdapter());
     final box = await Hive.openBox<DiaryEntity>('testDiaries.db');
     await box.clear();
-    final dao = EmotionDaoImpl(box);
+    final dao = DiaryDaoImpl(box);
     final now = Time.now;
 
     await dao.insertDiary(

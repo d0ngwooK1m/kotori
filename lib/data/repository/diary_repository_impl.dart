@@ -1,13 +1,13 @@
 import 'package:kotori/data/mapper/diary_mapper.dart';
-import 'package:kotori/data/source/emotion_dao.dart';
+import 'package:kotori/data/source/diary/diary_dao.dart';
 import 'package:kotori/domain/model/diary.dart';
-import 'package:kotori/domain/repository/emotion_repository.dart';
+import 'package:kotori/domain/repository/diary_repository.dart';
 import 'package:kotori/util/result.dart';
 
-class EmotionRepositoryImpl implements EmotionRepository {
-  final EmotionDao _dao;
+class DiaryRepositoryImpl implements DiaryRepository {
+  final DiaryDao _dao;
 
-  EmotionRepositoryImpl(this._dao);
+  DiaryRepositoryImpl(this._dao);
 
   @override
   Future<Result<String>> editDiary(Diary diary) async {

@@ -1,6 +1,4 @@
 import 'package:hive/hive.dart';
-import 'package:kotori/util/time.dart';
-
 part 'diary_entity.g.dart';
 
 @HiveType(typeId: 0)

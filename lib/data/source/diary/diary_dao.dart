@@ -1,11 +1,6 @@
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:kotori/data/source/diary_entity.dart';
+import 'package:kotori/data/source/diary/diary_entity.dart';
 
-abstract class EmotionDao {
-  final Box<DiaryEntity> box;
-
-  EmotionDao({required this.box});
-
+abstract class DiaryDao {
   Future<DiaryEntity> getDiary();
 
   Future<void> insertDiary(DiaryEntity diary);

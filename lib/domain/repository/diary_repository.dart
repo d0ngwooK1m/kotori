@@ -1,7 +1,7 @@
 import 'package:kotori/domain/model/diary.dart';
 import 'package:kotori/util/result.dart';
 
-abstract class EmotionRepository {
+abstract class DiaryRepository {
   Future<Result<Diary>> getDiary();
 
   Future<Result<String>> insertDiary(Diary diary);

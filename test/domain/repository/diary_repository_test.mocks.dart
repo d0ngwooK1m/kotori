@@ -3,11 +3,10 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i5;
+import 'dart:async' as _i4;
 
-import 'package:hive_flutter/hive_flutter.dart' as _i2;
-import 'package:kotori/data/source/diary/diary_dao.dart' as _i4;
-import 'package:kotori/data/source/diary/diary_entity.dart' as _i3;
+import 'package:kotori/data/source/diary/diary_dao.dart' as _i3;
+import 'package:kotori/data/source/diary/diary_entity.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
 
 // ignore_for_file: type=lint
@@ -21,18 +20,8 @@ import 'package:mockito/mockito.dart' as _i1;
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
-class _FakeBox_0<E> extends _i1.SmartFake implements _i2.Box<E> {
-  _FakeBox_0(
-    Object parent,
-    Invocation parentInvocation,
-  ) : super(
-          parent,
-          parentInvocation,
-        );
-}
-
-class _FakeDiaryEntity_1 extends _i1.SmartFake implements _i3.DiaryEntity {
-  _FakeDiaryEntity_1(
+class _FakeDiaryEntity_0 extends _i1.SmartFake implements _i2.DiaryEntity {
+  _FakeDiaryEntity_0(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -44,26 +33,14 @@ class _FakeDiaryEntity_1 extends _i1.SmartFake implements _i3.DiaryEntity {
 /// A class which mocks [DiaryDao].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockDiaryDao extends _i1.Mock implements _i4.DiaryDao {
+class MockDiaryDao extends _i1.Mock implements _i3.DiaryDao {
   @override
-  _i2.Box<_i3.DiaryEntity> get box => (super.noSuchMethod(
-        Invocation.getter(#box),
-        returnValue: _FakeBox_0<_i3.DiaryEntity>(
-          this,
-          Invocation.getter(#box),
-        ),
-        returnValueForMissingStub: _FakeBox_0<_i3.DiaryEntity>(
-          this,
-          Invocation.getter(#box),
-        ),
-      ) as _i2.Box<_i3.DiaryEntity>);
-  @override
-  _i5.Future<_i3.DiaryEntity> getDiary() => (super.noSuchMethod(
+  _i4.Future<_i2.DiaryEntity> getDiary() => (super.noSuchMethod(
         Invocation.method(
           #getDiary,
           [],
         ),
-        returnValue: _i5.Future<_i3.DiaryEntity>.value(_FakeDiaryEntity_1(
+        returnValue: _i4.Future<_i2.DiaryEntity>.value(_FakeDiaryEntity_0(
           this,
           Invocation.method(
             #getDiary,
@@ -71,44 +48,44 @@ class MockDiaryDao extends _i1.Mock implements _i4.DiaryDao {
           ),
         )),
         returnValueForMissingStub:
-            _i5.Future<_i3.DiaryEntity>.value(_FakeDiaryEntity_1(
+            _i4.Future<_i2.DiaryEntity>.value(_FakeDiaryEntity_0(
           this,
           Invocation.method(
             #getDiary,
             [],
           ),
         )),
-      ) as _i5.Future<_i3.DiaryEntity>);
+      ) as _i4.Future<_i2.DiaryEntity>);
   @override
-  _i5.Future<void> insertDiary(_i3.DiaryEntity? diary) => (super.noSuchMethod(
+  _i4.Future<void> insertDiary(_i2.DiaryEntity? diary) => (super.noSuchMethod(
         Invocation.method(
           #insertDiary,
           [diary],
         ),
-        returnValue: _i5.Future<void>.value(),
-        returnValueForMissingStub: _i5.Future<void>.value(),
-      ) as _i5.Future<void>);
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
   @override
-  _i5.Future<void> editDiary(_i3.DiaryEntity? editedDiary) =>
+  _i4.Future<void> editDiary(_i2.DiaryEntity? editedDiary) =>
       (super.noSuchMethod(
         Invocation.method(
           #editDiary,
           [editedDiary],
         ),
-        returnValue: _i5.Future<void>.value(),
-        returnValueForMissingStub: _i5.Future<void>.value(),
-      ) as _i5.Future<void>);
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
   @override
-  _i5.Future<Map<int, _i3.DiaryEntity>> getWeekDiaries({int? week = 0}) =>
+  _i4.Future<Map<int, _i2.DiaryEntity>> getWeekDiaries({int? week = 0}) =>
       (super.noSuchMethod(
         Invocation.method(
           #getWeekDiaries,
           [],
           {#week: week},
         ),
-        returnValue: _i5.Future<Map<int, _i3.DiaryEntity>>.value(
-            <int, _i3.DiaryEntity>{}),
-        returnValueForMissingStub: _i5.Future<Map<int, _i3.DiaryEntity>>.value(
-            <int, _i3.DiaryEntity>{}),
-      ) as _i5.Future<Map<int, _i3.DiaryEntity>>);
+        returnValue: _i4.Future<Map<int, _i2.DiaryEntity>>.value(
+            <int, _i2.DiaryEntity>{}),
+        returnValueForMissingStub: _i4.Future<Map<int, _i2.DiaryEntity>>.value(
+            <int, _i2.DiaryEntity>{}),
+      ) as _i4.Future<Map<int, _i2.DiaryEntity>>);
 }

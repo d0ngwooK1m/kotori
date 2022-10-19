@@ -23,3 +23,14 @@ class ItemEntity extends HiveObject {
     required this.date,
   });
 }
+
+extension ToFakeItemEntity on ItemEntity {
+  ItemEntity toFakeItemEntity({int day = 0}) {
+    return ItemEntity(
+      name: name,
+      desc: desc,
+      picture: picture,
+      date: date.add(Duration(days: day)),
+    );
+  }
+}

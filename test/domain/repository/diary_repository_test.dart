@@ -24,7 +24,6 @@ void main() {
     );
 
     when(dao.getDiary()).thenAnswer((_) async => entity.toFakeDiaryEntity());
-
     final getDiaryResult = await repository.getDiary();
     expect(getDiaryResult, isA<Result<Diary>>());
     verify(dao.getDiary());

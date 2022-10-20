@@ -41,11 +41,12 @@ class ItemRepositoryImpl implements ItemRepository {
   }
 
   @override
-  Future<Result<String>> updateAllItems(List<Item> items) async {
+  Future<Result<List<Item>>> updateAllItems(List<Item> items) async {
     try {
       final entities = items.map((item) => item.toItemEntity()).toList();
-      await _dao.updateAllItems(entities);
-      return const Result.success('Update all items successfully');
+      final result = await _dao.updateAllItems(entities);
+      final updatedItems = result.map((entity) => entity.toItem()).toList();
+      return Result.success(updatedItems);
     } catch (e) {
       return Result.error(Exception('Update all items failed : ${e.toString()}'));
     }

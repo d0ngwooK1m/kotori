@@ -35,10 +35,11 @@ class ItemDaoImpl implements ItemDao {
   }
 
   @override
-  Future<void> updateAllItems(List<ItemEntity> items) async {
+  Future<List<ItemEntity>> updateAllItems(List<ItemEntity> items) async {
     await box.clear();
     for (var item in items) {
       await box.add(item);
     }
+    return box.values.toList();
   }
 }

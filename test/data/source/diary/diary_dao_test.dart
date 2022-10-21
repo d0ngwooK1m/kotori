@@ -11,49 +11,49 @@ void main() {
     Hive
       ..init(dir.path)
       ..registerAdapter(DiaryEntityAdapter());
-    final box = await Hive.openBox<DiaryEntity>('testDiaries.db');
+    final box = await Hive.openBox<DiaryEntity>('test_diaries.db');
     await box.clear();
     final dao = DiaryDaoImpl(box);
-    final now = Time.now;
+    final weekend = Time.getWeekend(Time.now, 0);
 
     await dao.insertDiary(
-      DiaryEntity(
+      diary: DiaryEntity(
         emotion: 3,
         picture: '',
         desc: '',
-        date: now,
+        date: Time.now,
       ),
     );
 
     expect(dao.box.values.length, 1);
 
-    final diary = await dao.getDiary();
+    final diary = await dao.getDiary(now: Time.now);
 
     expect(diary.emotion, 3);
 
-    await dao.editDiary(DiaryEntity(
+    await dao.editDiary(now: Time.now, editedDiary: DiaryEntity(
       emotion: 5,
       picture: '',
       desc: '',
-      date: now,
+      date: Time.now,
     ));
 
     expect(dao.box.values.first.emotion, 5);
 
-    final editedDiary = await dao.getDiary();
+    final editedDiary = await dao.getDiary(now: Time.now);
 
     expect(editedDiary.emotion, 5);
 
-    final diaries = await dao.getWeekDiaries();
+    final diaries = await dao.getWeekDiaries(now: Time.now, week: 0);
 
     expect(diaries.values.map((diary) => diary.date).toList(), [
-      now.subtract(const Duration(days: 6)),
-      now.subtract(const Duration(days: 5)),
-      now.subtract(const Duration(days: 4)),
-      now.subtract(const Duration(days: 3)),
-      now.subtract(const Duration(days: 2)),
-      now.subtract(const Duration(days: 1)),
-      now.subtract(const Duration(days: 0)),
+      weekend.subtract(const Duration(days: 6)),
+      weekend.subtract(const Duration(days: 5)),
+      weekend.subtract(const Duration(days: 4)),
+      weekend.subtract(const Duration(days: 3)),
+      weekend.subtract(const Duration(days: 2)),
+      weekend.subtract(const Duration(days: 1)),
+      weekend.subtract(const Duration(days: 0)),
     ]);
   });
 }

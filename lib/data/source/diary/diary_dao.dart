@@ -1,11 +1,11 @@
 import 'package:kotori/data/source/diary/diary_entity.dart';
 
 abstract class DiaryDao {
-  Future<DiaryEntity> getDiary();
+  Future<DiaryEntity> getDiary({required DateTime now});
 
-  Future<void> insertDiary(DiaryEntity diary);
+  Future<void> insertDiary({required DiaryEntity diary});
 
-  Future<void> editDiary(DiaryEntity editedDiary);
+  Future<void> editDiary({required DateTime now, required DiaryEntity editedDiary});
 
-  Future<Map<int, DiaryEntity>> getWeekDiaries({int week = 0});
+  Future<Map<int, DiaryEntity>> getWeekDiaries({required DateTime now, int week = 0});
 }

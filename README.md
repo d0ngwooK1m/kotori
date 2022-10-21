@@ -10,3 +10,5 @@ Clean Architecture + MVVM
 - freezed
 - hive
 - intl
+- path_provider
+- build_runner

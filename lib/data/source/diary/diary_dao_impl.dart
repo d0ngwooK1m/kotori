@@ -5,13 +5,12 @@ import 'package:kotori/util/time.dart';
 
 class DiaryDaoImpl implements DiaryDao {
   final Box<DiaryEntity> box;
-  final now = Time.now;
 
   DiaryDaoImpl(this.box);
 
   // 일기 읽어오기
   @override
-  Future<DiaryEntity> getDiary() async {
+  Future<DiaryEntity> getDiary({required DateTime now}) async {
     final diary = box.values.last;
 
     return now.isAtSameMomentAs(diary.date)
@@ -26,14 +25,14 @@ class DiaryDaoImpl implements DiaryDao {
 
   // 일기 추가
   @override
-  Future<void> insertDiary(DiaryEntity diary) async {
+  Future<void> insertDiary({required DiaryEntity diary}) async {
     await box.add(diary);
   }
 
   // 일기 수정
   @override
-  Future<void> editDiary(DiaryEntity editedDiary) async {
-    final diary = await getDiary();
+  Future<void> editDiary({required DateTime now, required DiaryEntity editedDiary}) async {
+    final diary = await getDiary(now: now);
     diary.emotion = editedDiary.emotion;
     diary.picture = editedDiary.picture;
     diary.desc = editedDiary.desc;
@@ -42,20 +41,13 @@ class DiaryDaoImpl implements DiaryDao {
 
   // 일주일치 일기 불러오기
   @override
-  Future<Map<int, DiaryEntity>> getWeekDiaries({int week = 0}) async {
+  Future<Map<int, DiaryEntity>> getWeekDiaries({required DateTime now, int week = 0}) async {
     // 오늘 날짜, 앱 최초 설치한 날짜 필요
     // 첫 그래프 값은 오늘 날짜가 있는 주의 월요일 - 일요일 DiaryEntity 값
     // 앞으로 뒤로 버튼 존재
     // 누르면 한주씩 앞 뒤로 이동, 오늘 날짜가 있는 주 이후, 최초 설치 날짜가 있는 주 이전으로는 이동 불가 => 이건 좀 더 고려해볼 것
     final Map<int, DiaryEntity> map = {};
-    var weekend = now;
-    for (var i = 0; i < 6; i++) {
-      final candidate = now.add(Duration(days: i));
-      if (candidate.weekday == DateTime.sunday) {
-        weekend = candidate.subtract(Duration(days: 7 * week));
-      }
-    }
-
+    final weekend = Time.getWeekend(now, week);
     for (var element in box.values) {
       final inDays = weekend.difference(element.date).inDays.toInt();
       if (inDays < 7) {
@@ -79,4 +71,6 @@ class DiaryDaoImpl implements DiaryDao {
 
     return result;
   }
+
+
 }

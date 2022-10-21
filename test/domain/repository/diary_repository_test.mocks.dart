@@ -35,16 +35,19 @@ class _FakeDiaryEntity_0 extends _i1.SmartFake implements _i2.DiaryEntity {
 /// See the documentation for Mockito's code generation for more information.
 class MockDiaryDao extends _i1.Mock implements _i3.DiaryDao {
   @override
-  _i4.Future<_i2.DiaryEntity> getDiary() => (super.noSuchMethod(
+  _i4.Future<_i2.DiaryEntity> getDiary({required DateTime? now}) =>
+      (super.noSuchMethod(
         Invocation.method(
           #getDiary,
           [],
+          {#now: now},
         ),
         returnValue: _i4.Future<_i2.DiaryEntity>.value(_FakeDiaryEntity_0(
           this,
           Invocation.method(
             #getDiary,
             [],
+            {#now: now},
           ),
         )),
         returnValueForMissingStub:
@@ -53,35 +56,51 @@ class MockDiaryDao extends _i1.Mock implements _i3.DiaryDao {
           Invocation.method(
             #getDiary,
             [],
+            {#now: now},
           ),
         )),
       ) as _i4.Future<_i2.DiaryEntity>);
   @override
-  _i4.Future<void> insertDiary(_i2.DiaryEntity? diary) => (super.noSuchMethod(
+  _i4.Future<void> insertDiary({required _i2.DiaryEntity? diary}) =>
+      (super.noSuchMethod(
         Invocation.method(
           #insertDiary,
-          [diary],
+          [],
+          {#diary: diary},
         ),
         returnValue: _i4.Future<void>.value(),
         returnValueForMissingStub: _i4.Future<void>.value(),
       ) as _i4.Future<void>);
   @override
-  _i4.Future<void> editDiary(_i2.DiaryEntity? editedDiary) =>
+  _i4.Future<void> editDiary({
+    required DateTime? now,
+    required _i2.DiaryEntity? editedDiary,
+  }) =>
       (super.noSuchMethod(
         Invocation.method(
           #editDiary,
-          [editedDiary],
+          [],
+          {
+            #now: now,
+            #editedDiary: editedDiary,
+          },
         ),
         returnValue: _i4.Future<void>.value(),
         returnValueForMissingStub: _i4.Future<void>.value(),
       ) as _i4.Future<void>);
   @override
-  _i4.Future<Map<int, _i2.DiaryEntity>> getWeekDiaries({int? week = 0}) =>
+  _i4.Future<Map<int, _i2.DiaryEntity>> getWeekDiaries({
+    required DateTime? now,
+    int? week = 0,
+  }) =>
       (super.noSuchMethod(
         Invocation.method(
           #getWeekDiaries,
           [],
-          {#week: week},
+          {
+            #now: now,
+            #week: week,
+          },
         ),
         returnValue: _i4.Future<Map<int, _i2.DiaryEntity>>.value(
             <int, _i2.DiaryEntity>{}),

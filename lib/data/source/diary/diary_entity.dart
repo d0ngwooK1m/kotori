@@ -29,7 +29,7 @@ extension ToFakeDiaryEntity on DiaryEntity {
       emotion: emotion,
       picture: picture,
       desc: desc,
-      date: date.add(Duration(days: day)),
+      date: date.subtract(Duration(days: day)),
     );
   }
 }

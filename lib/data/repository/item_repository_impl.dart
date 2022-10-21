@@ -10,9 +10,9 @@ class ItemRepositoryImpl implements ItemRepository {
   ItemRepositoryImpl(this._dao);
 
   @override
-  Future<Result<String>> deleteItem(Item item) async {
+  Future<Result<String>> deleteItem({required Item item}) async {
     try {
-      await _dao.deleteItem(item.toItemEntity());
+      await _dao.deleteItem(item: item.toItemEntity());
       return const Result.success('Delete item successfully');
     } catch (e) {
       return Result.error(Exception('Delete item failed : ${e.toString()}'));
@@ -41,10 +41,10 @@ class ItemRepositoryImpl implements ItemRepository {
   }
 
   @override
-  Future<Result<List<Item>>> updateAllItems(List<Item> items) async {
+  Future<Result<List<Item>>> updateAllItems({required List<Item> items}) async {
     try {
       final entities = items.map((item) => item.toItemEntity()).toList();
-      final result = await _dao.updateAllItems(entities);
+      final result = await _dao.updateAllItems(items: entities);
       final updatedItems = result.map((entity) => entity.toItem()).toList();
       return Result.success(updatedItems);
     } catch (e) {

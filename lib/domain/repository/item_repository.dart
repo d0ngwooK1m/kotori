@@ -6,7 +6,7 @@ abstract class ItemRepository {
 
   Future<Result<List<Item>>> getAllItems();
 
-  Future<Result<List<Item>>> updateAllItems(List<Item> items);
+  Future<Result<List<Item>>> updateAllItems({required List<Item> items});
 
-  Future<Result<String>> deleteItem(Item item);
+  Future<Result<String>> deleteItem({required Item item});
 }

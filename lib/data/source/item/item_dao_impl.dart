@@ -10,7 +10,7 @@ class ItemDaoImpl implements ItemDao {
   ItemDaoImpl(this.box);
 
   @override
-  Future<void> deleteItem(ItemEntity item) async {
+  Future<void> deleteItem({required ItemEntity item}) async {
     for (var value in box.values) {
       if (item.date == value.date) {
         await box.delete(value.key);
@@ -35,11 +35,11 @@ class ItemDaoImpl implements ItemDao {
   }
 
   @override
-  Future<List<ItemEntity>> updateAllItems(List<ItemEntity> items) async {
+  Future<List<ItemEntity>> updateAllItems({required List<ItemEntity> items}) async {
     await box.clear();
     for (var item in items) {
       await box.add(item);
     }
-    return box.values.toList();
+    return getAllItems();
   }
 }

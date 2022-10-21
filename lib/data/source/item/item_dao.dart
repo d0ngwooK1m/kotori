@@ -5,7 +5,7 @@ abstract class ItemDao {
 
   Future<List<ItemEntity>> getAllItems();
 
-  Future<List<ItemEntity>> updateAllItems(List<ItemEntity> items);
+  Future<List<ItemEntity>> updateAllItems({required List<ItemEntity> items});
 
-  Future<void> deleteItem(ItemEntity item);
+  Future<void> deleteItem({required ItemEntity item});
 }

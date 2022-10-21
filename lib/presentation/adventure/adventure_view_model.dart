@@ -48,7 +48,7 @@ class AdventureViewModel extends ChangeNotifier {
     state.copyWith(isLoading: true);
     notifyListeners();
 
-    final result = await repository.updateAllItems(items);
+    final result = await repository.updateAllItems(items: items);
     result.when(
       success: (items) {
         state.copyWith(isLoading: false, items: items);
@@ -64,7 +64,7 @@ class AdventureViewModel extends ChangeNotifier {
     state.copyWith(isLoading: true);
     notifyListeners();
 
-    final result = await repository.deleteItem(item);
+    final result = await repository.deleteItem(item: item);
     result.when(
       success: (success) {
         state.copyWith(isLoading: false, message: success);

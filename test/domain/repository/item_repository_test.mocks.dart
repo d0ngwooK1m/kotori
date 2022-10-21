@@ -68,21 +68,24 @@ class MockItemDao extends _i1.Mock implements _i3.ItemDao {
       ) as _i4.Future<List<_i2.ItemEntity>>);
   @override
   _i4.Future<List<_i2.ItemEntity>> updateAllItems(
-          List<_i2.ItemEntity>? items) =>
+          {required List<_i2.ItemEntity>? items}) =>
       (super.noSuchMethod(
         Invocation.method(
           #updateAllItems,
-          [items],
+          [],
+          {#items: items},
         ),
         returnValue: _i4.Future<List<_i2.ItemEntity>>.value(<_i2.ItemEntity>[]),
         returnValueForMissingStub:
             _i4.Future<List<_i2.ItemEntity>>.value(<_i2.ItemEntity>[]),
       ) as _i4.Future<List<_i2.ItemEntity>>);
   @override
-  _i4.Future<void> deleteItem(_i2.ItemEntity? item) => (super.noSuchMethod(
+  _i4.Future<void> deleteItem({required _i2.ItemEntity? item}) =>
+      (super.noSuchMethod(
         Invocation.method(
           #deleteItem,
-          [item],
+          [],
+          {#item: item},
         ),
         returnValue: _i4.Future<void>.value(),
         returnValueForMissingStub: _i4.Future<void>.value(),

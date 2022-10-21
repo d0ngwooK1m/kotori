@@ -6,27 +6,27 @@ import 'package:kotori/presentation/diary/diary_state.dart';
 class DiaryViewModel extends ChangeNotifier {
   final DiaryRepository repository;
 
-  final _state = DiaryState();
+  var _state = DiaryState();
 
   DiaryState get state => _state;
 
   DiaryViewModel(this.repository);
 
-  void getTodayDiary() async {
-    state.copyWith(isLoading: true);
+  Future<void> getTodayDiary() async {
+    _state = state.copyWith(isLoading: true);
     notifyListeners();
 
     final result = await repository.getDiary();
     result.when(
       success: (diary) {
-        state.copyWith(
+        _state = state.copyWith(
           diary: diary,
           message: null,
           isLoading: false,
         );
       },
       error: (e) {
-        state.copyWith(
+        _state = state.copyWith(
           diary: null,
           message: e.toString(),
           isLoading: false,
@@ -36,33 +36,33 @@ class DiaryViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void insertTodayDiary(Diary diary) async {
-    state.copyWith(isLoading: true);
+  Future<void> insertTodayDiary(Diary diary) async {
+    _state = state.copyWith(isLoading: true);
     notifyListeners();
 
     final result = await repository.insertDiary(diary);
     result.when(
       success: (success) {
-        state.copyWith(isLoading: false, message: success);
+        _state = state.copyWith(diary: diary, isLoading: false, message: success);
       },
       error: (e) {
-        state.copyWith(isLoading: false, message: e.toString());
+        _state = state.copyWith(isLoading: false, message: e.toString());
       },
     );
     notifyListeners();
   }
 
-  void editTodayDiary(Diary diary) async {
-    state.copyWith(isLoading: true);
+  Future<void> editTodayDiary(Diary diary) async {
+    _state = state.copyWith(isLoading: true);
     notifyListeners();
 
     final result = await repository.editDiary(diary);
     result.when(
       success: (success) {
-        state.copyWith(isLoading: false, message: success);
+        _state = state.copyWith(diary: diary, isLoading: false, message: success);
       },
       error: (e) {
-        state.copyWith(isLoading: false, message: e.toString());
+        _state = state.copyWith(isLoading: false, message: e.toString());
       },
     );
     notifyListeners();

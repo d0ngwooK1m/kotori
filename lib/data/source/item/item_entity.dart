@@ -16,11 +16,15 @@ class ItemEntity extends HiveObject {
   @HiveField(3)
   DateTime date;
 
+  @HiveField(4, defaultValue: false)
+  bool isInventory;
+
   ItemEntity({
     required this.name,
     required this.desc,
     required this.picture,
     required this.date,
+    this.isInventory = false,
   });
 }
 

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:kotori/domain/model/item.dart';
 import 'package:kotori/domain/repository/item_repository.dart';
 import 'package:kotori/presentation/adventure/adventure_state.dart';
+import 'package:kotori/util/time.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AdventureViewModel extends ChangeNotifier {
   final ItemRepository repository;
@@ -10,12 +12,11 @@ class AdventureViewModel extends ChangeNotifier {
 
   AdventureState get state => _state;
 
-  AdventureViewModel(this.repository);
+  AdventureViewModel(this.repository) {
+    checkFirstTime();
+  }
 
-  void getNewItem() async {
-    _state = state.copyWith(isLoading: true);
-    notifyListeners();
-
+  Future<void> getNewItem() async {
     final result = await repository.getNewItem();
     result.when(
       success: (item) {
@@ -28,7 +29,7 @@ class AdventureViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void getAllItems() async {
+  Future<void> getAllItems() async {
     _state = state.copyWith(isLoading: true);
     notifyListeners();
 
@@ -44,14 +45,17 @@ class AdventureViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateAllItems(List<Item> items) async {
-    _state = state.copyWith(isLoading: true);
-    notifyListeners();
-
+  Future<void> updateAllItems(List<Item> items, Item? newItem) async {
     final result = await repository.updateAllItems(items: items);
     result.when(
       success: (items) {
-        _state = state.copyWith(isLoading: false, items: items);
+        if (newItem == null) {
+          _state = state.copyWith(
+              isLoading: false, items: items, newItem: null, deleteItem: null);
+        } else {
+          _state = state.copyWith(
+              isLoading: false, items: items, newItem: newItem, deleteItem: null);
+        }
       },
       error: (e) {
         _state = state.copyWith(isLoading: false, message: e.toString());
@@ -60,7 +64,7 @@ class AdventureViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void deleteItem(Item item) async {
+  Future<void> deleteItem(Item item) async {
     _state = state.copyWith(isLoading: true);
     notifyListeners();
 
@@ -74,5 +78,51 @@ class AdventureViewModel extends ChangeNotifier {
       },
     );
     notifyListeners();
+  }
+
+  Future<void> getFirstTimeItems() async {
+    _state = state.copyWith(isLoading: true);
+    notifyListeners();
+    final firstItemList = List<Item>.generate(
+        9,
+            (index) => index < 3
+            ? Item(name: '', desc: '', picture: '', date: Time.now)
+            : Item(
+            name: '',
+            desc: '',
+            picture: '',
+            date: Time.now,
+            isInventory: true));
+    await getNewItem();
+    await updateAllItems(firstItemList, state.newItem);
+    notifyListeners();
+  }
+
+  Future<void> setItems(Item item, int? positionNow, int positionTo) async {
+    List<Item> inventoryItemList = [];
+    for (var element in state.items) {
+      inventoryItemList.add(element);
+    }
+    if (positionNow == null && inventoryItemList[positionTo].isInventory) {
+      inventoryItemList[positionTo] = item;
+      _state = state.copyWith(newItem: null);
+      notifyListeners();
+    } else if (positionNow != null) {
+      final temp = inventoryItemList[positionTo];
+      inventoryItemList[positionTo] = item;
+      inventoryItemList[positionNow] = temp;
+    }
+    await updateAllItems(inventoryItemList, state.newItem);
+  }
+
+  Future<void> checkFirstTime() async {
+    final prefs = await SharedPreferences.getInstance();
+    final bool? firstTime = prefs.getBool('first_time');
+    if (firstTime != null && !firstTime) {
+      await getAllItems();
+    } else {
+      prefs.setBool('first_time', false);
+      await getFirstTimeItems();
+    }
   }
 }

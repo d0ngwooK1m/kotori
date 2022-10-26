@@ -21,7 +21,8 @@ class ItemDaoImpl implements ItemDao {
 
   @override
   Future<List<ItemEntity>> getAllItems() async {
-    return box.values.toList();
+    final items = box.values.toList();
+    return items;
   }
 
   @override

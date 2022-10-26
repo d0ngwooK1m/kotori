@@ -11,6 +11,7 @@ class Item with _$Item {
     required String desc,
     required String picture,
     required DateTime date,
+    @Default(false) bool isInventory,
   }) = _Item;
 
   factory Item.fromJson(Map<String, dynamic> json) => _$ItemFromJson(json);

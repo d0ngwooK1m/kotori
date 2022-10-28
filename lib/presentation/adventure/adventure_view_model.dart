@@ -119,7 +119,8 @@ class AdventureViewModel extends ChangeNotifier {
     inventoryItemList[positionTo] = item;
     inventoryItemList[positionNow] = temp;
 
-    await addItemToItems(items: inventoryItemList);
+    _state = state.copyWith(items: inventoryItemList);
+    notifyListeners();
   }
 
   Future<void> newItemToItems(Item item, int positionTo) async {

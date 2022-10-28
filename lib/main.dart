@@ -4,6 +4,7 @@ import 'package:kotori/data/source/diary/diary_entity.dart';
 import 'package:kotori/data/source/item/item_entity.dart';
 import 'package:kotori/di/provider_setup.dart';
 import 'package:kotori/presentation/adventure/adventure_screen.dart';
+import 'package:kotori/util/modal_route_observer.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -15,7 +16,10 @@ void main() async {
   runApp(
     MultiProvider(
       providers: providers,
-      child: const MyApp(),
+      child: MaterialApp(
+        home: const MyApp(),
+        navigatorObservers: [ModalRouteObserver.observer],
+      ),
     ),
   );
 }

@@ -2,10 +2,63 @@ import 'package:flutter/material.dart';
 import 'package:kotori/domain/model/item.dart';
 import 'package:kotori/presentation/adventure/adventure_state.dart';
 import 'package:kotori/presentation/adventure/adventure_view_model.dart';
+import 'package:kotori/util/modal_route_observer.dart';
 import 'package:provider/provider.dart';
 
-class AdventureScreen extends StatelessWidget {
+class AdventureScreen extends StatefulWidget {
   const AdventureScreen({Key? key}) : super(key: key);
+
+  @override
+  State<AdventureScreen> createState() => _AdventureScreenState();
+}
+
+class _AdventureScreenState extends State<AdventureScreen> with RouteAware, WidgetsBindingObserver {
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState lifecycleState) {
+    super.didChangeAppLifecycleState(lifecycleState);
+    final viewModel = context.read<AdventureViewModel>();
+    final state = viewModel.state;
+    if (lifecycleState == AppLifecycleState.resumed) {
+      viewModel.addItemToItems(items: null);
+    } else if (lifecycleState == AppLifecycleState.inactive) {
+      viewModel.addItemToItems(items: state.items);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    ModalRouteObserver.observer.subscribe(this, ModalRoute.of(context) as ModalRoute<dynamic>);
+  }
+
+  @override
+  void dispose() {
+    ModalRouteObserver.observer.unsubscribe(this);
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didPush() {
+    final viewModel = context.read<AdventureViewModel>();
+    viewModel.addItemToItems(items: null);
+    super.didPush();
+  }
+
+  @override
+  void didPopNext() {
+    final viewModel = context.read<AdventureViewModel>();
+    final state = viewModel.state;
+    viewModel.addItemToItems(items: state.items);
+    super.didPopNext();
+  }
 
   @override
   Widget build(BuildContext context) {

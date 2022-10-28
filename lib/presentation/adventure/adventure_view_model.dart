@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kotori/domain/model/item.dart';
 import 'package:kotori/domain/repository/item_repository.dart';
 import 'package:kotori/presentation/adventure/adventure_state.dart';
+import 'package:kotori/util/result.dart';
 import 'package:kotori/util/time.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -16,8 +17,11 @@ class AdventureViewModel extends ChangeNotifier {
     checkFirstTime();
   }
 
-  Future<void> addItemToItems({List<Item>? items}) async {
-    final result = await repository.addItemToItems(items: items);
+  final inventory = Item(name: '', desc: '', picture: '', date: Time.now, isInventory: true);
+  final newItem = Item(name: '', desc: '', picture: '', date: Time.now);
+
+  Future<void> getItemsWithInventories() async {
+    final result = await repository.getItemsWithInventories();
     result.when(
       success: (data) async {
         _state = state.copyWith(isLoading: false, items: data, message: null);
@@ -29,21 +33,13 @@ class AdventureViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> deleteItemFromItems({required Item item}) async {
-    final result = await repository.deleteItemFromItems(item: item);
-    result.when(
-      success: (data) {
-        _state = state.copyWith(isLoading: false, items: data, message: null);
-      },
-      error: (e) {
-        _state = state.copyWith(isLoading: false, message: e.toString());
-      },
-    );
-    notifyListeners();
+  Future<void> saveItemsWithInventories({required List<Item> items}) async {
+    final result = await repository.saveItemsWithInventories(items: items);
+    setStateResultWithVoid(result);
   }
 
-  Future<void> addNewItem() async {
-    final result = await repository.addNewItem();
+  Future<void> getNewItemOrInventory() async {
+    final result = await repository.getNewItemOrInventory();
     result.when(
       success: (data) {
         _state = state.copyWith(isLoading: false, newItem: data, message: null);
@@ -55,11 +51,17 @@ class AdventureViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> deleteNewItem() async {
-    final result = await repository.deleteNewItem();
+  Future<void> saveNewItemOrInventory({required Item item}) async {
+    final result = await repository.saveNewItemOrInventory(item: item);
+    setStateResultWithVoid(result);
+  }
+
+  Future<void> getToDeleteItemOrInventory() async {
+    final result = await repository.getToDeleteItemOrInventory();
     result.when(
       success: (data) {
-        _state = state.copyWith(isLoading: false, newItem: data, message: null);
+        _state =
+            state.copyWith(isLoading: false, deleteItem: data, message: null);
       },
       error: (e) {
         _state = state.copyWith(isLoading: false, message: e.toString());
@@ -68,30 +70,9 @@ class AdventureViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addToDeleteItem({required Item item}) async {
-    final result = await repository.addToDeleteItem(item: item);
-    result.when(
-      success: (data) {
-        _state = state.copyWith(isLoading: false, deleteItem: data, message: null);
-      },
-      error: (e) {
-        _state = state.copyWith(isLoading: false, message: e.toString());
-      },
-    );
-    notifyListeners();
-  }
-
-  Future<void> deleteToDeleteItem() async {
-    final result = await repository.deleteToDeleteItem();
-    result.when(
-      success: (data) {
-        _state = state.copyWith(isLoading: false, deleteItem: data, message: null);
-      },
-      error: (e) {
-        _state = state.copyWith(isLoading: false, message: e.toString());
-      },
-    );
-    notifyListeners();
+  Future<void> saveToDeleteItemOrInventory({required Item item}) async {
+    final result = await repository.saveToDeleteItemOrInventory(item: item);
+    setStateResultWithVoid(result);
   }
 
   Future<void> getFirstTimeItems() async {
@@ -107,7 +88,8 @@ class AdventureViewModel extends ChangeNotifier {
                 picture: '',
                 date: Time.now,
                 isInventory: true));
-    await addItemToItems(items: firstItemList);
+    _state = state.copyWith(isLoading: false, items: firstItemList);
+    notifyListeners();
   }
 
   Future<void> setItems(Item item, int positionNow, int positionTo) async {
@@ -131,8 +113,8 @@ class AdventureViewModel extends ChangeNotifier {
 
     if (inventoryItemList[positionTo].isInventory) {
       inventoryItemList[positionTo] = item;
-      await deleteNewItem();
-      await addItemToItems(items: inventoryItemList);
+      _state = state.copyWith(items: inventoryItemList, newItem: inventory);
+      notifyListeners();
     }
   }
 
@@ -142,25 +124,17 @@ class AdventureViewModel extends ChangeNotifier {
       inventoryItemList.add(element);
     }
     Item? toDeleteItem;
-    final items = inventoryItemList
-        .map((target) {
-          if (target.date == item.date) {
-            toDeleteItem = target;
-            return Item(
-              name: '',
-              desc: '',
-              picture: '',
-              date: Time.now,
-              isInventory: true,
-            );
-          } else {
-            return target;
-          }
-        })
-        .toList();
+    final items = inventoryItemList.map((target) {
+      if (target.date == item.date) {
+        toDeleteItem = target;
+        return inventory;
+      } else {
+        return target;
+      }
+    }).toList();
     if (toDeleteItem != null) {
-      await addItemToItems(items: items);
-      await addToDeleteItem(item: toDeleteItem!);
+      _state = state.copyWith(deleteItem: toDeleteItem, items: items);
+      notifyListeners();
     }
   }
 
@@ -168,10 +142,22 @@ class AdventureViewModel extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     final bool? firstTime = prefs.getBool('first_time');
     if (firstTime != null && !firstTime) {
-      await addItemToItems(items: null);
+      await getItemsWithInventories();
     } else {
       prefs.setBool('first_time', false);
       await getFirstTimeItems();
     }
+  }
+
+  void setStateResultWithVoid(Result result) {
+    result.when(
+      success: (none) {
+        _state = state.copyWith(isLoading: false, message: null);
+      },
+      error: (e) {
+        _state = state.copyWith(isLoading: false, message: e.toString());
+      },
+    );
+    notifyListeners();
   }
 }

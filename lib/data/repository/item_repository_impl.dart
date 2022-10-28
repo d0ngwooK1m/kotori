@@ -10,37 +10,29 @@ class ItemRepositoryImpl implements ItemRepository {
   ItemRepositoryImpl(this._dao);
 
   @override
-  Future<Result<List<Item>>> addItemToItems({List<Item>? items}) async {
+  Future<Result<List<Item>>> getItemsWithInventories() async {
     try {
-      final List<Item> result;
-      if (items == null) {
-        final data = await _dao.addItemToItems(items: null);
-        result = data.map((e) => e.toItem()).toList();
-      } else {
-        final entities = items.map((item) => item.toItemEntity()).toList();
-        final data = await _dao.addItemToItems(items: entities);
-        result = data.map((e) => e.toItem()).toList();
-      }
-      return Result.success(result);
+      final result = await _dao.getItemsWithInventories();
+      return Result.success(result.map((e) => e.toItem()).toList());
     } catch (e) {
       return Result.error(Exception('Add item to items failed : ${e.toString()}'));
     }
   }
 
   @override
-  Future<Result<List<Item>>> deleteItemFromItems({required Item item}) async {
+  Future<Result<void>> saveItemsWithInventories({required List<Item> items}) async {
     try {
-      final result = await _dao.deleteItemFromItems(item: item.toItemEntity());
-      return Result.success(result.map((e) => e.toItem()).toList());
+      await _dao.saveItemsWithInventories(items: items.map((e) => e.toItemEntity()).toList());
+      return const Result.success(null);
     } catch (e) {
       return Result.error(Exception('Delete item from items : ${e.toString()}'));
     }
   }
 
   @override
-  Future<Result<Item>> addNewItem() async {
+  Future<Result<Item>> getNewItemOrInventory() async {
     try {
-      final result = await _dao.addNewItem();
+      final result = await _dao.getNewItemOrInventory();
       return Result.success(result.toItem());
     } catch (e) {
       return Result.error(Exception('Add new item failed : ${e.toString()}'));
@@ -48,19 +40,19 @@ class ItemRepositoryImpl implements ItemRepository {
   }
 
   @override
-  Future<Result<Item>> deleteNewItem() async {
+  Future<Result<void>> saveNewItemOrInventory({required Item item}) async {
     try {
-      final result = await _dao.deleteNewItem();
-      return Result.success(result.toItem());
+      await _dao.saveNewItemOrInventory(item: item.toItemEntity());
+      return const Result.success(null);
     } catch (e) {
       return Result.error(Exception('Delete new item failed : ${e.toString()}'));
     }
   }
 
   @override
-  Future<Result<Item>> addToDeleteItem({required Item item}) async {
+  Future<Result<Item>> getToDeleteItemOrInventory() async {
     try {
-      final result = await _dao.addToDeleteItem(item: item.toItemEntity());
+      final result = await _dao.getToDeleteItemOrInventory();
       return Result.success(result.toItem());
     } catch (e) {
       return Result.error(Exception('Add to delete item failed : ${e.toString()}'));
@@ -68,10 +60,10 @@ class ItemRepositoryImpl implements ItemRepository {
   }
 
   @override
-  Future<Result<Item>> deleteToDeleteItem() async {
+  Future<Result<void>> saveToDeleteItemOrInventory({required Item item}) async {
     try {
-      final result = await _dao.deleteToDeleteItem();
-      return Result.success(result.toItem());
+      await _dao.saveToDeleteItemOrInventory(item: item.toItemEntity());
+      return const Result.success(null);
     } catch (e) {
       return Result.error(Exception('Delete to delete item failed : ${toString()}'));
     }

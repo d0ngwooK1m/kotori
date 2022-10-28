@@ -1,15 +1,11 @@
 import 'package:hive/hive.dart';
 import 'package:kotori/data/source/item/item_dao.dart';
 import 'package:kotori/data/source/item/item_entity.dart';
-import 'package:kotori/util/time.dart';
 
 class ItemDaoImpl implements ItemDao {
   final Box<ItemEntity> itemsBox;
   final Box<ItemEntity> newItemBox;
   final Box<ItemEntity> toDeleteItemBox;
-
-  final inventory = ItemEntity(name: '', desc: '', picture: '', date: Time.now, isInventory: true,);
-  final newItem = ItemEntity(name: '', desc: '', picture: '', date: Time.now);
 
   ItemDaoImpl({
     required this.itemsBox,
@@ -18,57 +14,37 @@ class ItemDaoImpl implements ItemDao {
   });
 
   @override
-  Future<List<ItemEntity>> addItemToItems(
-      {List<ItemEntity>? items}) async {
-    if (items != null) {
-      await itemsBox.clear();
-      for (var item in items) {
-        await itemsBox.add(item);
-      }
-    }
+  Future<List<ItemEntity>> getItemsWithInventories() async {
     return itemsBox.values.toList();
   }
 
   @override
-  Future<List<ItemEntity>> deleteItemFromItems({required ItemEntity item}) async {
-    final List<ItemEntity> items = [];
-    for (var value in itemsBox.values) {
-      if (item.date == value.date) {
-        items.add(inventory);
-      } else {
-        items.add(value);
-      }
-    }
+  Future<void> saveItemsWithInventories({required List<ItemEntity> items}) async {
     await itemsBox.clear();
-    final result = await addItemToItems(items: items);
-    return result;
+    for (final item in items) {
+      await itemsBox.add(item);
+    }
   }
 
   @override
-  Future<ItemEntity> addNewItem() async {
-    await newItemBox.clear();
-    await newItemBox.add(newItem);
+  Future<ItemEntity> getNewItemOrInventory() async {
     return newItemBox.values.first;
   }
 
   @override
-  Future<ItemEntity> deleteNewItem() async {
+  Future<void> saveNewItemOrInventory({required ItemEntity item}) async {
     await newItemBox.clear();
-    await newItemBox.add(inventory);
-    return newItemBox.values.first;
+    await newItemBox.add(item);
   }
 
   @override
-  Future<ItemEntity> addToDeleteItem({required ItemEntity item}) async {
+  Future<ItemEntity> getToDeleteItemOrInventory() async {
+    return toDeleteItemBox.values.first;
+  }
+
+  @override
+  Future<void> saveToDeleteItemOrInventory({required ItemEntity item}) async {
     await toDeleteItemBox.clear();
     await toDeleteItemBox.add(item);
-    return toDeleteItemBox.values.first;
-  }
-
-  @override
-  Future<ItemEntity> deleteToDeleteItem() async {
-    await toDeleteItemBox.clear();
-    await toDeleteItemBox.add(inventory);
-    return toDeleteItemBox.values.first;
   }
 }

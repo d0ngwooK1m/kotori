@@ -20,9 +20,9 @@ class _AdventureScreenState extends State<AdventureScreen> with RouteAware, Widg
     final viewModel = context.read<AdventureViewModel>();
     final state = viewModel.state;
     if (lifecycleState == AppLifecycleState.resumed) {
-      viewModel.addItemToItems(items: null);
+      viewModel.checkFirstTime();
     } else if (lifecycleState == AppLifecycleState.inactive) {
-      viewModel.addItemToItems(items: state.items);
+      viewModel.saveItemsWithInventories(items: state.items);
     }
   }
 
@@ -48,7 +48,7 @@ class _AdventureScreenState extends State<AdventureScreen> with RouteAware, Widg
   @override
   void didPush() {
     final viewModel = context.read<AdventureViewModel>();
-    viewModel.addItemToItems(items: null);
+    viewModel.checkFirstTime();
     super.didPush();
   }
 
@@ -56,7 +56,7 @@ class _AdventureScreenState extends State<AdventureScreen> with RouteAware, Widg
   void didPopNext() {
     final viewModel = context.read<AdventureViewModel>();
     final state = viewModel.state;
-    viewModel.addItemToItems(items: state.items);
+    viewModel.saveItemsWithInventories(items: state.items);
     super.didPopNext();
   }
 

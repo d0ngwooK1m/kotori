@@ -12,10 +12,16 @@ import 'package:provider/single_child_widget.dart';
 
 Future<List<SingleChildWidget>> getProviders() async {
   final diaryBox = await Hive.openBox<DiaryEntity>('diary.db');
-  final itemBox = await Hive.openBox<ItemEntity>('item.db');
+  final itemsBox = await Hive.openBox<ItemEntity>('items.db');
+  final newItemBox = await Hive.openBox<ItemEntity>('newItem.db');
+  final toDeleteItemBox = await Hive.openBox<ItemEntity>('toDeleteItem.db');
 
   final diaryDao = DiaryDaoImpl(diaryBox);
-  final itemDao = ItemDaoImpl(itemBox);
+  final itemDao = ItemDaoImpl(
+    itemsBox: itemsBox,
+    newItemBox: newItemBox,
+    toDeleteItemBox: toDeleteItemBox,
+  );
 
   final diaryRepository = DiaryRepositoryImpl(diaryDao);
   final itemRepository = ItemRepositoryImpl(itemDao);

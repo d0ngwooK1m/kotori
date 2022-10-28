@@ -10,46 +10,70 @@ class ItemRepositoryImpl implements ItemRepository {
   ItemRepositoryImpl(this._dao);
 
   @override
-  Future<Result<String>> deleteItem({required Item item}) async {
+  Future<Result<List<Item>>> addItemToItems({List<Item>? items}) async {
     try {
-      await _dao.deleteItem(item: item.toItemEntity());
-      return const Result.success('Delete item successfully');
+      final List<Item> result;
+      if (items == null) {
+        final data = await _dao.addItemToItems(items: null);
+        result = data.map((e) => e.toItem()).toList();
+      } else {
+        final entities = items.map((item) => item.toItemEntity()).toList();
+        final data = await _dao.addItemToItems(items: entities);
+        result = data.map((e) => e.toItem()).toList();
+      }
+      return Result.success(result);
     } catch (e) {
-      return Result.error(Exception('Delete item failed : ${e.toString()}'));
+      return Result.error(Exception('Add item to items failed : ${e.toString()}'));
     }
   }
 
   @override
-  Future<Result<List<Item>>> getAllItems() async {
+  Future<Result<List<Item>>> deleteItemFromItems({required Item item}) async {
     try {
-      final entities = await _dao.getAllItems();
-      final items = entities.map((entity) => entity.toItem()).toList();
-      return Result.success(items);
+      final result = await _dao.deleteItemFromItems(item: item.toItemEntity());
+      return Result.success(result.map((e) => e.toItem()).toList());
     } catch (e) {
-      return Result.error(Exception('Get all items failed : ${e.toString()}'));
+      return Result.error(Exception('Delete item from items : ${e.toString()}'));
     }
   }
 
   @override
-  Future<Result<Item>> getNewItem() async {
+  Future<Result<Item>> addNewItem() async {
     try {
-      final entity = await _dao.getNewItem();
-      return Result.success(entity.toItem());
+      final result = await _dao.addNewItem();
+      return Result.success(result.toItem());
     } catch (e) {
-      return Result.error(Exception('Get new item failed : ${e.toString()}'));
+      return Result.error(Exception('Add new item failed : ${e.toString()}'));
     }
   }
 
   @override
-  Future<Result<List<Item>>> updateAllItems({required List<Item> items}) async {
+  Future<Result<Item>> deleteNewItem() async {
     try {
-      final entities = items.map((item) => item.toItemEntity()).toList();
-      final result = await _dao.updateAllItems(items: entities);
-      final updatedItems = result.map((entity) => entity.toItem()).toList();
-      return Result.success(updatedItems);
+      final result = await _dao.deleteNewItem();
+      return Result.success(result.toItem());
     } catch (e) {
-      return Result.error(Exception('Update all items failed : ${e.toString()}'));
+      return Result.error(Exception('Delete new item failed : ${e.toString()}'));
     }
   }
 
+  @override
+  Future<Result<Item>> addToDeleteItem({required Item item}) async {
+    try {
+      final result = await _dao.addToDeleteItem(item: item.toItemEntity());
+      return Result.success(result.toItem());
+    } catch (e) {
+      return Result.error(Exception('Add to delete item failed : ${e.toString()}'));
+    }
+  }
+
+  @override
+  Future<Result<Item>> deleteToDeleteItem() async {
+    try {
+      final result = await _dao.deleteToDeleteItem();
+      return Result.success(result.toItem());
+    } catch (e) {
+      return Result.error(Exception('Delete to delete item failed : ${toString()}'));
+    }
+  }
 }

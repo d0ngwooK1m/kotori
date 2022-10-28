@@ -2,11 +2,15 @@ import 'package:kotori/domain/model/item.dart';
 import 'package:kotori/util/result.dart';
 
 abstract class ItemRepository {
-  Future<Result<Item>> getNewItem();
+  Future<Result<List<Item>>> addItemToItems({List<Item>? items});
 
-  Future<Result<List<Item>>> getAllItems();
+  Future<Result<List<Item>>> deleteItemFromItems({required Item item});
 
-  Future<Result<List<Item>>> updateAllItems({required List<Item> items});
+  Future<Result<Item>> addNewItem();
 
-  Future<Result<String>> deleteItem({required Item item});
+  Future<Result<Item>> deleteNewItem();
+
+  Future<Result<Item>> addToDeleteItem({required Item item});
+
+  Future<Result<Item>> deleteToDeleteItem();
 }

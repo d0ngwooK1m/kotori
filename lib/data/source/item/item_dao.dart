@@ -1,11 +1,15 @@
 import 'package:kotori/data/source/item/item_entity.dart';
 
 abstract class ItemDao {
-  Future<ItemEntity> getNewItem();
+  Future<List<ItemEntity>> addItemToItems({List<ItemEntity>? items});
 
-  Future<List<ItemEntity>> getAllItems();
+  Future<List<ItemEntity>> deleteItemFromItems({required ItemEntity item});
 
-  Future<List<ItemEntity>> updateAllItems({required List<ItemEntity> items});
+  Future<ItemEntity> addNewItem();
 
-  Future<void> deleteItem({required ItemEntity item});
+  Future<ItemEntity> deleteNewItem();
+
+  Future<ItemEntity> addToDeleteItem({required ItemEntity item});
+
+  Future<ItemEntity> deleteToDeleteItem();
 }

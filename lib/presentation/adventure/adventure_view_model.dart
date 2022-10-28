@@ -16,11 +16,11 @@ class AdventureViewModel extends ChangeNotifier {
     checkFirstTime();
   }
 
-  Future<void> getNewItem() async {
-    final result = await repository.getNewItem();
+  Future<void> addItemToItems({List<Item>? items}) async {
+    final result = await repository.addItemToItems(items: items);
     result.when(
-      success: (item) {
-        _state = state.copyWith(isLoading: false, newItem: item);
+      success: (data) async {
+        _state = state.copyWith(isLoading: false, items: data, message: null);
       },
       error: (e) {
         _state = state.copyWith(isLoading: false, message: e.toString());
@@ -29,14 +29,11 @@ class AdventureViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getAllItems() async {
-    _state = state.copyWith(isLoading: true);
-    notifyListeners();
-
-    final result = await repository.getAllItems();
+  Future<void> deleteItemFromItems({required Item item}) async {
+    final result = await repository.deleteItemFromItems(item: item);
     result.when(
-      success: (items) {
-        _state = state.copyWith(isLoading: false, items: items);
+      success: (data) {
+        _state = state.copyWith(isLoading: false, items: data, message: null);
       },
       error: (e) {
         _state = state.copyWith(isLoading: false, message: e.toString());
@@ -45,17 +42,11 @@ class AdventureViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updateAllItems(List<Item> items, Item? newItem) async {
-    final result = await repository.updateAllItems(items: items);
+  Future<void> addNewItem() async {
+    final result = await repository.addNewItem();
     result.when(
-      success: (items) {
-        if (newItem == null) {
-          _state = state.copyWith(
-              isLoading: false, items: items, newItem: null, deleteItem: null);
-        } else {
-          _state = state.copyWith(
-              isLoading: false, items: items, newItem: newItem, deleteItem: null);
-        }
+      success: (data) {
+        _state = state.copyWith(isLoading: false, newItem: data, message: null);
       },
       error: (e) {
         _state = state.copyWith(isLoading: false, message: e.toString());
@@ -64,14 +55,37 @@ class AdventureViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> deleteItem(Item item) async {
-    _state = state.copyWith(isLoading: true);
-    notifyListeners();
-
-    final result = await repository.deleteItem(item: item);
+  Future<void> deleteNewItem() async {
+    final result = await repository.deleteNewItem();
     result.when(
-      success: (success) {
-        _state = state.copyWith(isLoading: false, message: success);
+      success: (data) {
+        _state = state.copyWith(isLoading: false, newItem: data, message: null);
+      },
+      error: (e) {
+        _state = state.copyWith(isLoading: false, message: e.toString());
+      },
+    );
+    notifyListeners();
+  }
+
+  Future<void> addToDeleteItem({required Item item}) async {
+    final result = await repository.addToDeleteItem(item: item);
+    result.when(
+      success: (data) {
+        _state = state.copyWith(isLoading: false, deleteItem: data, message: null);
+      },
+      error: (e) {
+        _state = state.copyWith(isLoading: false, message: e.toString());
+      },
+    );
+    notifyListeners();
+  }
+
+  Future<void> deleteToDeleteItem() async {
+    final result = await repository.deleteToDeleteItem();
+    result.when(
+      success: (data) {
+        _state = state.copyWith(isLoading: false, deleteItem: data, message: null);
       },
       error: (e) {
         _state = state.copyWith(isLoading: false, message: e.toString());
@@ -85,41 +99,75 @@ class AdventureViewModel extends ChangeNotifier {
     notifyListeners();
     final firstItemList = List<Item>.generate(
         9,
-            (index) => index < 3
+        (index) => index < 3
             ? Item(name: '', desc: '', picture: '', date: Time.now)
             : Item(
-            name: '',
-            desc: '',
-            picture: '',
-            date: Time.now,
-            isInventory: true));
-    await getNewItem();
-    await updateAllItems(firstItemList, state.newItem);
-    notifyListeners();
+                name: '',
+                desc: '',
+                picture: '',
+                date: Time.now,
+                isInventory: true));
+    await addItemToItems(items: firstItemList);
   }
 
-  Future<void> setItems(Item item, int? positionNow, int positionTo) async {
+  Future<void> setItems(Item item, int positionNow, int positionTo) async {
     List<Item> inventoryItemList = [];
     for (var element in state.items) {
       inventoryItemList.add(element);
     }
-    if (positionNow == null && inventoryItemList[positionTo].isInventory) {
-      inventoryItemList[positionTo] = item;
-      _state = state.copyWith(newItem: null);
-      notifyListeners();
-    } else if (positionNow != null) {
-      final temp = inventoryItemList[positionTo];
-      inventoryItemList[positionTo] = item;
-      inventoryItemList[positionNow] = temp;
+    final temp = inventoryItemList[positionTo];
+    inventoryItemList[positionTo] = item;
+    inventoryItemList[positionNow] = temp;
+
+    await addItemToItems(items: inventoryItemList);
+  }
+
+  Future<void> newItemToItems(Item item, int positionTo) async {
+    List<Item> inventoryItemList = [];
+    for (var element in state.items) {
+      inventoryItemList.add(element);
     }
-    await updateAllItems(inventoryItemList, state.newItem);
+
+    if (inventoryItemList[positionTo].isInventory) {
+      inventoryItemList[positionTo] = item;
+      await deleteNewItem();
+      await addItemToItems(items: inventoryItemList);
+    }
+  }
+
+  Future<void> itemsToDeleteItem(Item item) async {
+    List<Item> inventoryItemList = [];
+    for (var element in state.items) {
+      inventoryItemList.add(element);
+    }
+    Item? toDeleteItem;
+    final items = inventoryItemList
+        .map((target) {
+          if (target.date == item.date) {
+            toDeleteItem = target;
+            return Item(
+              name: '',
+              desc: '',
+              picture: '',
+              date: Time.now,
+              isInventory: true,
+            );
+          } else {
+            return target;
+          }
+        })
+        .toList();
+    if (toDeleteItem != null) {
+      await addItemToItems(items: items);
+      await addToDeleteItem(item: toDeleteItem!);
+    }
   }
 
   Future<void> checkFirstTime() async {
     final prefs = await SharedPreferences.getInstance();
     final bool? firstTime = prefs.getBool('first_time');
     if (firstTime != null && !firstTime) {
-      await getAllItems();
+      await addItemToItems(items: null);
     } else {
       prefs.setBool('first_time', false);
       await getFirstTimeItems();

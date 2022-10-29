@@ -9,6 +9,7 @@ extension ToItem on ItemEntity {
       picture: picture,
       date: date,
       isInventory: isInventory,
+      id: id,
     );
   }
 }
@@ -21,6 +22,7 @@ extension ToItemEntity on Item {
       picture: picture,
       date: date,
       isInventory: isInventory,
+      id: id,
     );
   }
 }

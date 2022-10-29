@@ -35,15 +35,38 @@ class _FakeItemEntity_0 extends _i1.SmartFake implements _i2.ItemEntity {
 /// See the documentation for Mockito's code generation for more information.
 class MockItemDao extends _i1.Mock implements _i3.ItemDao {
   @override
-  _i4.Future<_i2.ItemEntity> getNewItem() => (super.noSuchMethod(
+  _i4.Future<List<_i2.ItemEntity>> getItemsWithInventories() =>
+      (super.noSuchMethod(
         Invocation.method(
-          #getNewItem,
+          #getItemsWithInventories,
+          [],
+        ),
+        returnValue: _i4.Future<List<_i2.ItemEntity>>.value(<_i2.ItemEntity>[]),
+        returnValueForMissingStub:
+            _i4.Future<List<_i2.ItemEntity>>.value(<_i2.ItemEntity>[]),
+      ) as _i4.Future<List<_i2.ItemEntity>>);
+  @override
+  _i4.Future<void> saveItemsWithInventories(
+          {required List<_i2.ItemEntity>? items}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #saveItemsWithInventories,
+          [],
+          {#items: items},
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
+  @override
+  _i4.Future<_i2.ItemEntity> getNewItemOrInventory() => (super.noSuchMethod(
+        Invocation.method(
+          #getNewItemOrInventory,
           [],
         ),
         returnValue: _i4.Future<_i2.ItemEntity>.value(_FakeItemEntity_0(
           this,
           Invocation.method(
-            #getNewItem,
+            #getNewItemOrInventory,
             [],
           ),
         )),
@@ -51,39 +74,51 @@ class MockItemDao extends _i1.Mock implements _i3.ItemDao {
             _i4.Future<_i2.ItemEntity>.value(_FakeItemEntity_0(
           this,
           Invocation.method(
-            #getNewItem,
+            #getNewItemOrInventory,
             [],
           ),
         )),
       ) as _i4.Future<_i2.ItemEntity>);
   @override
-  _i4.Future<List<_i2.ItemEntity>> getAllItems() => (super.noSuchMethod(
-        Invocation.method(
-          #getAllItems,
-          [],
-        ),
-        returnValue: _i4.Future<List<_i2.ItemEntity>>.value(<_i2.ItemEntity>[]),
-        returnValueForMissingStub:
-            _i4.Future<List<_i2.ItemEntity>>.value(<_i2.ItemEntity>[]),
-      ) as _i4.Future<List<_i2.ItemEntity>>);
-  @override
-  _i4.Future<List<_i2.ItemEntity>> updateAllItems(
-          {required List<_i2.ItemEntity>? items}) =>
+  _i4.Future<void> saveNewItemOrInventory({required _i2.ItemEntity? item}) =>
       (super.noSuchMethod(
         Invocation.method(
-          #updateAllItems,
+          #saveNewItemOrInventory,
           [],
-          {#items: items},
+          {#item: item},
         ),
-        returnValue: _i4.Future<List<_i2.ItemEntity>>.value(<_i2.ItemEntity>[]),
-        returnValueForMissingStub:
-            _i4.Future<List<_i2.ItemEntity>>.value(<_i2.ItemEntity>[]),
-      ) as _i4.Future<List<_i2.ItemEntity>>);
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
   @override
-  _i4.Future<void> deleteItem({required _i2.ItemEntity? item}) =>
+  _i4.Future<_i2.ItemEntity> getToDeleteItemOrInventory() =>
       (super.noSuchMethod(
         Invocation.method(
-          #deleteItem,
+          #getToDeleteItemOrInventory,
+          [],
+        ),
+        returnValue: _i4.Future<_i2.ItemEntity>.value(_FakeItemEntity_0(
+          this,
+          Invocation.method(
+            #getToDeleteItemOrInventory,
+            [],
+          ),
+        )),
+        returnValueForMissingStub:
+            _i4.Future<_i2.ItemEntity>.value(_FakeItemEntity_0(
+          this,
+          Invocation.method(
+            #getToDeleteItemOrInventory,
+            [],
+          ),
+        )),
+      ) as _i4.Future<_i2.ItemEntity>);
+  @override
+  _i4.Future<void> saveToDeleteItemOrInventory(
+          {required _i2.ItemEntity? item}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #saveToDeleteItemOrInventory,
           [],
           {#item: item},
         ),

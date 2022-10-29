@@ -1,4 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:kotori/util/id_generator.dart';
 
 part 'item_entity.g.dart';
 
@@ -19,12 +20,16 @@ class ItemEntity extends HiveObject {
   @HiveField(4, defaultValue: false)
   bool isInventory;
 
+  @HiveField(5)
+  String id;
+
   ItemEntity({
     required this.name,
     required this.desc,
     required this.picture,
     required this.date,
     this.isInventory = false,
+    required this.id,
   });
 }
 
@@ -35,6 +40,7 @@ extension ToFakeItemEntity on ItemEntity {
       desc: desc,
       picture: picture,
       date: date.add(Duration(days: day)),
+      id: IdGenerator.uuid.v1(),
     );
   }
 }

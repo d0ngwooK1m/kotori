@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:kotori/domain/model/item.dart';
+import 'package:kotori/domain/util/item_and_inventory_types.dart';
 import 'package:kotori/presentation/adventure/adventure_state.dart';
 import 'package:kotori/presentation/adventure/adventure_view_model.dart';
+import 'package:kotori/presentation/adventure/components/drag_target_inventory.dart';
 import 'package:kotori/util/modal_route_observer.dart';
 import 'package:provider/provider.dart';
 
@@ -12,8 +13,8 @@ class AdventureScreen extends StatefulWidget {
   State<AdventureScreen> createState() => _AdventureScreenState();
 }
 
-class _AdventureScreenState extends State<AdventureScreen> with RouteAware, WidgetsBindingObserver {
-
+class _AdventureScreenState extends State<AdventureScreen>
+    with RouteAware, WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState lifecycleState) {
     super.didChangeAppLifecycleState(lifecycleState);
@@ -22,7 +23,10 @@ class _AdventureScreenState extends State<AdventureScreen> with RouteAware, Widg
     if (lifecycleState == AppLifecycleState.resumed) {
       viewModel.checkFirstTime();
     } else if (lifecycleState == AppLifecycleState.inactive) {
-      viewModel.saveItemsWithInventories(items: state.items);
+      viewModel.saveEveryItemOrInventory(
+          items: state.items,
+          newItem: state.newItem,
+          toDeleteItem: state.deleteItem);
     }
   }
 
@@ -35,7 +39,8 @@ class _AdventureScreenState extends State<AdventureScreen> with RouteAware, Widg
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    ModalRouteObserver.observer.subscribe(this, ModalRoute.of(context) as ModalRoute<dynamic>);
+    ModalRouteObserver.observer
+        .subscribe(this, ModalRoute.of(context) as ModalRoute<dynamic>);
   }
 
   @override
@@ -56,7 +61,10 @@ class _AdventureScreenState extends State<AdventureScreen> with RouteAware, Widg
   void didPopNext() {
     final viewModel = context.read<AdventureViewModel>();
     final state = viewModel.state;
-    viewModel.saveItemsWithInventories(items: state.items);
+    viewModel.saveEveryItemOrInventory(
+        items: state.items,
+        newItem: state.newItem,
+        toDeleteItem: state.deleteItem);
     super.didPopNext();
   }
 
@@ -65,19 +73,21 @@ class _AdventureScreenState extends State<AdventureScreen> with RouteAware, Widg
     final viewModel = context.watch<AdventureViewModel>();
     final state = viewModel.state;
     return Scaffold(
-      body: state.items.isEmpty ? const Center(child: CircularProgressIndicator()) : SafeArea(
-        child: SizedBox(
-          width: double.infinity,
-          child: Column(
-            children: [
-              const SizedBox(height: 100),
-              _buildInventory(viewModel, state),
-              const SizedBox(height: 100),
-              _buildAdventureArea(viewModel, state),
-            ],
-          ),
-        ),
-      ),
+      body: state.items.isEmpty
+          ? const Center(child: CircularProgressIndicator())
+          : SafeArea(
+              child: SizedBox(
+                width: double.infinity,
+                child: Column(
+                  children: [
+                    const SizedBox(height: 100),
+                    _buildInventory(viewModel, state),
+                    const SizedBox(height: 100),
+                    _buildAdventureArea(viewModel, state),
+                  ],
+                ),
+              ),
+            ),
     );
   }
 
@@ -90,10 +100,11 @@ class _AdventureScreenState extends State<AdventureScreen> with RouteAware, Widg
         Positioned(
           top: top * 100,
           left: left * 100,
-          child: _buildInventoryTarget(
+          child: DragTargetInventory(
             viewModel: viewModel,
+            type: ItemAndInventoryTypes.itemsWithInventories,
+            item: state.items[i],
             position: i,
-            items: state.items,
           ),
         ),
       );
@@ -124,106 +135,30 @@ class _AdventureScreenState extends State<AdventureScreen> with RouteAware, Widg
           children: [
             Container(
               alignment: const FractionalOffset(0.8, 0.8),
-              child: state.newItem == null
-                  ? Container()
-                  : _buildItem(size: 90, item: state.newItem!),
+              child: state.isOkayToProcess
+                  ? GestureDetector(
+                      onTap: () {
+                        viewModel.completeProcess();
+                      },
+                      child: const Icon(Icons.forward, size: 60),
+                    )
+                  : DragTargetInventory(
+                      viewModel: viewModel,
+                      type: ItemAndInventoryTypes.newItem,
+                      item: state.newItem,
+                    ),
             ),
             Container(
               alignment: const FractionalOffset(0.2, 0.8),
-              child: _buildToDeleteTarget(
-                  viewModel: viewModel, toDeleteItem: null),
+              child: DragTargetInventory(
+                viewModel: viewModel,
+                type: ItemAndInventoryTypes.toDeleteItem,
+                item: state.deleteItem,
+              ),
             )
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildItem({required double size, int? position, required Item item}) {
-    return Draggable(
-      data: {
-        'item': item,
-        'position': position,
-      },
-      feedback: Container(
-        width: size,
-        height: size,
-        color: Colors.blue,
-      ),
-      childWhenDragging: Container(
-        width: 90,
-        height: 90,
-        decoration: BoxDecoration(
-          border: Border.all(
-            width: 5,
-            color: Colors.red,
-          ),
-        ),
-      ),
-      child: Container(
-        width: size,
-        height: size,
-        color: Colors.blue,
-      ),
-    );
-  }
-
-  Widget _buildInventoryTarget({
-    required AdventureViewModel viewModel,
-    required List<Item> items,
-    required int position,
-  }) {
-    final item = items[position];
-    return DragTarget(
-      builder: (
-        BuildContext context,
-        List<dynamic> accepted,
-        List<dynamic> rejected,
-      ) {
-        return !item.isInventory
-            ? _buildItem(size: 90, position: position, item: item)
-            : Container(
-                width: 90,
-                height: 90,
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    width: 5,
-                    color: Colors.red,
-                  ),
-                ),
-              );
-      },
-      onAccept: (data) {
-        final itemInfo = data as Map<String, dynamic>;
-        viewModel.setItems(itemInfo['item'], itemInfo['position'], position);
-      },
-    );
-  }
-
-  Widget _buildToDeleteTarget({
-    required AdventureViewModel viewModel,
-    Item? toDeleteItem,
-  }) {
-    return DragTarget(
-      builder: (
-        BuildContext context,
-        List<dynamic> accepted,
-        List<dynamic> rejected,
-      ) {
-        return toDeleteItem != null
-            ? _buildItem(size: 90, item: toDeleteItem)
-            : Container(
-                width: 90,
-                height: 90,
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    width: 5,
-                    color: Colors.red,
-                  ),
-                ),
-              );
-      },
-      onAccept: (data) {},
     );
   }
 }

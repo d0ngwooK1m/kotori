@@ -8,7 +8,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class AdventureViewModel extends ChangeNotifier {
   final ItemRepository repository;
-
   AdventureState _state = AdventureState(newItem: DefaultItem.inventory, deleteItem: DefaultItem.inventory);
 
   AdventureState get state => _state;
@@ -48,6 +47,7 @@ class AdventureViewModel extends ChangeNotifier {
         _state = state.copyWith(isLoading: false, message: e.toString());
       },
     );
+    checkProcess();
     notifyListeners();
   }
 
@@ -148,7 +148,7 @@ class AdventureViewModel extends ChangeNotifier {
   }
 
   Future<void> checkProcess() async {
-    if (state.newItem.isInventory) {
+    if (state.newItem.isInventory && !state.deleteItem.isInventory) {
       _state = state.copyWith(isOkayToProcess: true);
     }
     notifyListeners();

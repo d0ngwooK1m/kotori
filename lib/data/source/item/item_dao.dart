@@ -1,15 +1,17 @@
-import 'package:kotori/data/source/item/item_entity.dart';
+import 'package:kotori/data/source/item/items_entity.dart';
+import 'package:kotori/data/source/item/new_item_entity.dart';
+import 'package:kotori/data/source/item/to_delete_item_entity.dart';
 
 abstract class ItemDao {
-  Future<List<ItemEntity>> getItemsWithInventories();
+  Future<List<ItemsEntity>> getItemsWithInventories();
 
-  Future<void> saveItemsWithInventories({required List<ItemEntity> items});
+  Future<void> saveItemsWithInventories({required List<ItemsEntity> items});
 
-  Future<ItemEntity> getNewItemOrInventory();
+  Future<NewItemEntity> getNewItemOrInventory();
 
-  Future<void> saveNewItemOrInventory({required ItemEntity item});
+  Future<void> saveNewItemOrInventory({required NewItemEntity item});
 
-  Future<ItemEntity> getToDeleteItemOrInventory();
+  Future<ToDeleteItemEntity> getToDeleteItemOrInventory();
 
-  Future<void> saveToDeleteItemOrInventory({required ItemEntity item});
+  Future<void> saveToDeleteItemOrInventory({required ToDeleteItemEntity item});
 }

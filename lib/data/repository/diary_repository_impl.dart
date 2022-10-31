@@ -10,10 +10,12 @@ class DiaryRepositoryImpl implements DiaryRepository {
 
   DiaryRepositoryImpl(this._dao);
 
+  final now = Time.now;
+
   @override
   Future<Result<String>> editDiary(Diary diary) async {
     try {
-      await _dao.editDiary(now: Time.now, editedDiary: diary.toDiaryEntity());
+      await _dao.editDiary(now: now, editedDiary: diary.toDiaryEntity());
       return const Result.success('Edit diary successfully!');
     } catch (e) {
       return Result.error(Exception('Edit diary failed : ${e.toString()}'));
@@ -23,7 +25,7 @@ class DiaryRepositoryImpl implements DiaryRepository {
   @override
   Future<Result<Diary>> getDiary() async {
     try {
-      final diaryEntity = await _dao.getDiary(now: Time.now);
+      final diaryEntity = await _dao.getDiary(now: now);
       return Result.success(diaryEntity.toDiary());
     } catch (e) {
       return Result.error(Exception('Get diary failed : ${e.toString()}'));
@@ -43,7 +45,7 @@ class DiaryRepositoryImpl implements DiaryRepository {
   @override
   Future<Result<Map<int, Diary>>> getWeekDiaries({int week = 0}) async {
     try {
-      final map = await _dao.getWeekDiaries(now: Time.now, week: week);
+      final map = await _dao.getWeekDiaries(now: now, week: week);
       final Map<int, Diary> result = {};
       map.forEach((key, diaryEntity) {
         result.putIfAbsent(key, () => diaryEntity.toDiary());

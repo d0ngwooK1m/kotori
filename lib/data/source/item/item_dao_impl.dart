@@ -1,11 +1,13 @@
 import 'package:hive/hive.dart';
 import 'package:kotori/data/source/item/item_dao.dart';
-import 'package:kotori/data/source/item/item_entity.dart';
+import 'package:kotori/data/source/item/items_entity.dart';
+import 'package:kotori/data/source/item/new_item_entity.dart';
+import 'package:kotori/data/source/item/to_delete_item_entity.dart';
 
 class ItemDaoImpl implements ItemDao {
-  final Box<ItemEntity> itemsBox;
-  final Box<ItemEntity> newItemBox;
-  final Box<ItemEntity> toDeleteItemBox;
+  final Box<ItemsEntity> itemsBox;
+  final Box<NewItemEntity> newItemBox;
+  final Box<ToDeleteItemEntity> toDeleteItemBox;
 
   ItemDaoImpl({
     required this.itemsBox,
@@ -14,12 +16,12 @@ class ItemDaoImpl implements ItemDao {
   });
 
   @override
-  Future<List<ItemEntity>> getItemsWithInventories() async {
+  Future<List<ItemsEntity>> getItemsWithInventories() async {
     return itemsBox.values.toList();
   }
 
   @override
-  Future<void> saveItemsWithInventories({required List<ItemEntity> items}) async {
+  Future<void> saveItemsWithInventories({required List<ItemsEntity> items}) async {
     await itemsBox.clear();
     for (final item in items) {
       await itemsBox.add(item);
@@ -27,23 +29,23 @@ class ItemDaoImpl implements ItemDao {
   }
 
   @override
-  Future<ItemEntity> getNewItemOrInventory() async {
+  Future<NewItemEntity> getNewItemOrInventory() async {
     return newItemBox.values.first;
   }
 
   @override
-  Future<void> saveNewItemOrInventory({required ItemEntity item}) async {
+  Future<void> saveNewItemOrInventory({required NewItemEntity item}) async {
     await newItemBox.clear();
     await newItemBox.add(item);
   }
 
   @override
-  Future<ItemEntity> getToDeleteItemOrInventory() async {
+  Future<ToDeleteItemEntity> getToDeleteItemOrInventory() async {
     return toDeleteItemBox.values.first;
   }
 
   @override
-  Future<void> saveToDeleteItemOrInventory({required ItemEntity item}) async {
+  Future<void> saveToDeleteItemOrInventory({required ToDeleteItemEntity item}) async {
     await toDeleteItemBox.clear();
     await toDeleteItemBox.add(item);
   }

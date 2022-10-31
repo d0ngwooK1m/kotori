@@ -22,7 +22,7 @@ class ItemRepositoryImpl implements ItemRepository {
   @override
   Future<Result<void>> saveItemsWithInventories({required List<Item> items}) async {
     try {
-      await _dao.saveItemsWithInventories(items: items.map((e) => e.toItemEntity()).toList());
+      await _dao.saveItemsWithInventories(items: items.map((e) => e.toItemsEntity()).toList());
       return const Result.success(null);
     } catch (e) {
       return Result.error(Exception('Delete item from items : ${e.toString()}'));
@@ -42,7 +42,7 @@ class ItemRepositoryImpl implements ItemRepository {
   @override
   Future<Result<void>> saveNewItemOrInventory({required Item item}) async {
     try {
-      await _dao.saveNewItemOrInventory(item: item.toItemEntity());
+      await _dao.saveNewItemOrInventory(item: item.toNewItemEntity());
       return const Result.success(null);
     } catch (e) {
       return Result.error(Exception('Delete new item failed : ${e.toString()}'));
@@ -62,7 +62,7 @@ class ItemRepositoryImpl implements ItemRepository {
   @override
   Future<Result<void>> saveToDeleteItemOrInventory({required Item item}) async {
     try {
-      await _dao.saveToDeleteItemOrInventory(item: item.toItemEntity());
+      await _dao.saveToDeleteItemOrInventory(item: item.toDeleteItemEntity());
       return const Result.success(null);
     } catch (e) {
       return Result.error(Exception('Delete to delete item failed : ${toString()}'));

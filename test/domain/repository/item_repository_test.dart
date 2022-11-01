@@ -2,10 +2,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kotori/data/mapper/item_mapper.dart';
 import 'package:kotori/data/repository/item_repository_impl.dart';
 import 'package:kotori/data/source/item/item_dao.dart';
-import 'package:kotori/data/source/item/item_entity.dart';
 import 'package:kotori/domain/model/item.dart';
+import 'package:kotori/util/default_item.dart';
 import 'package:kotori/util/result.dart';
-import 'package:kotori/util/time.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
@@ -13,49 +12,63 @@ import 'item_repository_test.mocks.dart';
 
 @GenerateNiceMocks([MockSpec<ItemDao>()])
 void main() {
-  test('item_repository test', () async {
+  group('item_repository test', () {
     final dao = MockItemDao();
     final repository = ItemRepositoryImpl(dao);
-    final now = Time.now;
-    final item = ItemEntity(
-      name: '',
-      desc: '',
-      picture: '',
-      date: now,
-    );
-    final items = [
-      item.toFakeItemEntity(),
-      item.toFakeItemEntity(day: 1),
-      item.toFakeItemEntity(day: 2),
-      item.toFakeItemEntity(day: 3),
-      item.toFakeItemEntity(day: 4),
-      item.toFakeItemEntity(day: 5),
-      item.toFakeItemEntity(day: 6),
-      item.toFakeItemEntity(day: 7),
-      item.toFakeItemEntity(day: 8),
-    ];
+    final item = DefaultItem.item;
+    final newItemEntity = item.toNewItemEntity();
+    final toDeleteItemEntity = item.toDeleteItemEntity();
+    final itemsAndInventories = DefaultItem.firstItemsAndInventories;
+    final itemsAndInventoriesEntity =
+        itemsAndInventories.map((e) => e.toItemsEntity()).toList();
 
-    when(dao.getNewItem()).thenAnswer((_) async => item.toFakeItemEntity());
-    final getNewItemResult = await repository.getNewItem();
-    expect(getNewItemResult, isA<Result<Item>>());
-    verify(dao.getNewItem());
+    test('아이템이나 인벤토리들이 잘 불려와야 함', () async {
+      when(dao.getItemsWithInventories())
+          .thenAnswer((_) async => itemsAndInventoriesEntity);
+      final result =
+          await repository.getItemsWithInventories();
+      expect(result, isA<Result<List<Item>>>());
+      verify(dao.getItemsWithInventories());
+    });
 
-    when(dao.getAllItems()).thenAnswer((_) async => items);
-    final getItemsResult = await repository.getAllItems();
-    expect(getItemsResult, isA<Result<List<Item>>>());
-    verify(dao.getAllItems());
+    test('아이템과 인벤토리들이 잘 저장되어야 함', () async {
+      when(dao.saveItemsWithInventories(items: anyNamed('items')))
+          .thenAnswer((_) async {});
+      final result =
+          await repository.saveItemsWithInventories(items: itemsAndInventories);
+      expect(result, isA<Result<void>>());
+      verify(dao.saveItemsWithInventories(items: anyNamed('items')));
+    });
 
-    when(dao.deleteItem(item: argThat(isNotNull, named: 'item'))).thenAnswer(
-        (_) async => const Result.success('Delete item successfully'));
-    final deleteItemResult = await repository.deleteItem(item: item.toItem());
-    expect(deleteItemResult, isA<Result<String>>());
-    verify(dao.deleteItem(item: argThat(isNotNull, named: 'item')));
+    test('새 아이템이나 인벤토리가 잘 불려와야 함', () async {
+      when(dao.getNewItemOrInventory()).thenAnswer((_) async => newItemEntity);
+      final result =
+          await repository.getNewItemOrInventory();
+      expect(result, isA<Result<Item>>());
+      verify(dao.getNewItemOrInventory());
+    });
 
-    when(dao.updateAllItems(items: argThat(isNotNull, named: 'items')))
-        .thenAnswer((_) async => items);
-    final updatedItems = items.map((entity) => entity.toItem()).toList();
-    final updateAllItemsResult = await repository.updateAllItems(items: updatedItems);
-    expect(updateAllItemsResult, isA<Result<List<Item>>>());
-    verify(dao.updateAllItems(items: argThat(isNotNull, named: 'items')));
+    test('새 아이템이나 인벤토리가 잘 저장되어야 함', () async {
+      when(dao.saveNewItemOrInventory(item: anyNamed('item')))
+          .thenAnswer((_) async {});
+      final result =
+          await repository.saveNewItemOrInventory(item: item);
+      expect(result, isA<Result<void>>());
+      verify(dao.saveNewItemOrInventory(item: anyNamed('item')));
+    });
+
+    test('삭제 아이템이나 인벤토리가 잘 불려와야 함', () async {
+      when(dao.getToDeleteItemOrInventory()).thenAnswer((_) async => toDeleteItemEntity);
+      final result = await repository.getToDeleteItemOrInventory();
+      expect(result, isA<Result<Item>>());
+      verify(dao.getToDeleteItemOrInventory());
+    });
+
+    test('삭제 아이템이나 인벤토리가 잘 저장되어야 함', () async {
+      when(dao.saveToDeleteItemOrInventory(item: anyNamed('item'))).thenAnswer((_) async {});
+      final result = await repository.saveToDeleteItemOrInventory(item: item);
+      expect(result, isA<Result<void>>());
+      verify(dao.saveToDeleteItemOrInventory(item: anyNamed('item')));
+    });
   });
 }

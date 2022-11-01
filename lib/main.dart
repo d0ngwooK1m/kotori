@@ -21,10 +21,7 @@ void main() async {
   runApp(
     MultiProvider(
       providers: providers,
-      child: MaterialApp(
-        home: const MyApp(),
-        navigatorObservers: [ModalRouteObserver.observer],
-      ),
+      child: const MyApp(),
     ),
   );
 }
@@ -35,10 +32,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Kotori',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
+      navigatorObservers: [ModalRouteObserver.observer],
       home: const AdventureScreen(),
     );
   }

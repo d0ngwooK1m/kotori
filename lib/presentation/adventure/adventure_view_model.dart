@@ -70,13 +70,12 @@ class AdventureViewModel extends ChangeNotifier {
   Future<void> getFirstTimeItems() async {
     _state = state.copyWith(isLoading: true);
     notifyListeners();
-    final firstItemList =
-        List<Item>.generate(9, (index) => index < 3 ? newItem : inventory);
     _state = state.copyWith(
         isLoading: false,
-        items: firstItemList,
+        items: DefaultItem.firstItemsAndInventories,
         newItem: inventory,
-        deleteItem: inventory);
+        deleteItem: inventory,
+    );
     notifyListeners();
   }
 
@@ -131,7 +130,7 @@ class AdventureViewModel extends ChangeNotifier {
     }
     if (inventoryItemList[positionTo].isInventory) {
       inventoryItemList[positionTo] = item;
-      _state = state.copyWith(items: inventoryItemList, deleteItem: inventory, isOkayToProcess: false);
+      _state = state.copyWith(items: inventoryItemList, deleteItem: inventory);
     } else {
       final temp = inventoryItemList[positionTo];
       inventoryItemList[positionTo] = item;

@@ -24,10 +24,11 @@ class DraggableItem extends StatelessWidget {
         width: size,
         height: size,
         color: Colors.blue,
+        child: const Text('test'),
       ),
       childWhenDragging: Container(
-        width: 90,
-        height: 90,
+        width: size,
+        height: size,
         decoration: BoxDecoration(
           border: Border.all(
             width: 5,
@@ -39,6 +40,7 @@ class DraggableItem extends StatelessWidget {
         width: size,
         height: size,
         color: Colors.blue,
+        child: const Text('test'),
       ),
     );
   }

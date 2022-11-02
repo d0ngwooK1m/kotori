@@ -137,12 +137,14 @@ class _AdventureScreenState extends State<AdventureScreen>
               alignment: const FractionalOffset(0.8, 0.8),
               child: state.isOkayToProcess
                   ? GestureDetector(
+                      key: const Key('progressButton'),
                       onTap: () {
                         viewModel.completeProcess();
                       },
                       child: const Icon(Icons.forward, size: 60),
                     )
                   : DragTargetInventory(
+                      key: const Key('newItemOrInventory'),
                       viewModel: viewModel,
                       type: ItemAndInventoryTypes.newItem,
                       item: state.newItem,
@@ -151,6 +153,7 @@ class _AdventureScreenState extends State<AdventureScreen>
             Container(
               alignment: const FractionalOffset(0.2, 0.8),
               child: DragTargetInventory(
+                key: const Key('toDeleteItemOrInventory'),
                 viewModel: viewModel,
                 type: ItemAndInventoryTypes.toDeleteItem,
                 item: state.deleteItem,

@@ -15,16 +15,19 @@ class DraggableItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Draggable(
+      key: Key(item.date.millisecondsSinceEpoch.toString()),
       data: {
         'item': item,
         'position': position,
         'type': type,
       },
-      feedback: Container(
-        width: size,
-        height: size,
-        color: Colors.blue,
-        child: const Text('test'),
+      feedback: Material(
+        child: Container(
+          width: size,
+          height: size,
+          color: Colors.blue,
+          child: const Text('test'),
+        ),
       ),
       childWhenDragging: Container(
         width: size,

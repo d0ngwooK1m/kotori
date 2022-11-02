@@ -16,5 +16,5 @@ class DefaultItem {
       date: Time.now,
       isInventory: true,
   );
-  static final firstItemsAndInventories = List.generate(9, (index) => index < 3 ? item : inventory);
+  static final firstItemsAndInventories = List.generate(9, (index) => index < 3 ? item.toPastDateItem(days: index) : inventory);
 }

@@ -16,3 +16,9 @@ class Item with _$Item {
 
   factory Item.fromJson(Map<String, dynamic> json) => _$ItemFromJson(json);
 }
+
+extension ToPastDateItem on Item {
+  Item toPastDateItem({int days = 0}) {
+    return Item(name: name, desc: desc, picture: picture, date: date.subtract(Duration(days: days)));
+  }
+}

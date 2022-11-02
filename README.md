@@ -12,3 +12,4 @@ Clean Architecture + MVVM
 - intl
 - path_provider
 - build_runner
+- shared preferences

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kotori/domain/model/item.dart';
 import 'package:kotori/domain/util/item_and_inventory_types.dart';
+import 'package:kotori/util/key_and_string.dart';
 
 class DraggableItem extends StatelessWidget {
   final double size;
@@ -17,9 +18,9 @@ class DraggableItem extends StatelessWidget {
     return Draggable(
       key: Key(item.date.millisecondsSinceEpoch.toString()),
       data: {
-        'item': item,
-        'position': position,
-        'type': type,
+        KeyAndString.item : item,
+        KeyAndString.position : position,
+        KeyAndString.type : type,
       },
       feedback: Material(
         child: Container(

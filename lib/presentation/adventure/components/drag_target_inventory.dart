@@ -3,6 +3,7 @@ import 'package:kotori/domain/model/item.dart';
 import 'package:kotori/domain/util/item_and_inventory_types.dart';
 import 'package:kotori/presentation/adventure/adventure_view_model.dart';
 import 'package:kotori/presentation/adventure/components/draggable_item.dart';
+import 'package:kotori/util/key_and_string.dart';
 
 class DragTargetInventory extends StatelessWidget {
   final AdventureViewModel viewModel;
@@ -66,17 +67,22 @@ class DragTargetInventory extends StatelessWidget {
     } else if (itemRole == ItemAndInventoryTypes.itemsWithInventories &&
         inventoryRole == ItemAndInventoryTypes.itemsWithInventories) {
       // items to items
-      viewModel.setItems(data['item'], data['position'], position!);
+      viewModel.setItems(data[KeyAndString.item],
+          data[KeyAndString.position], position!);
     } else if (itemRole == ItemAndInventoryTypes.itemsWithInventories &&
         inventoryRole == ItemAndInventoryTypes.toDeleteItem) {
       // items to delete
-      viewModel.itemsToDeleteItem(item: data['item'], prevPosition: data['position']);
+      viewModel.itemsToDeleteItem(
+          item: data[KeyAndString.item],
+          prevPosition: data[KeyAndString.position]);
       viewModel.checkProcess();
     } else if (itemRole == ItemAndInventoryTypes.toDeleteItem &&
         inventoryRole == ItemAndInventoryTypes.itemsWithInventories) {
       // delete to items
-      viewModel.deleteItemToItems(positionTo: position!, item: data['item']);
-    } else if (itemRole == ItemAndInventoryTypes.newItem && inventoryRole == ItemAndInventoryTypes.toDeleteItem) {
+      viewModel.deleteItemToItems(
+          positionTo: position!, item: data[KeyAndString.item]);
+    } else if (itemRole == ItemAndInventoryTypes.newItem &&
+        inventoryRole == ItemAndInventoryTypes.toDeleteItem) {
       // new to delete
       viewModel.newItemToDeleteItem(item);
       viewModel.checkProcess();

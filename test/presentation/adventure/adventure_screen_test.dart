@@ -7,6 +7,7 @@ import 'package:kotori/presentation/adventure/adventure_view_model.dart';
 import 'package:kotori/presentation/adventure/components/drag_target_inventory.dart';
 import 'package:kotori/presentation/adventure/components/draggable_item.dart';
 import 'package:kotori/util/default_item.dart';
+import 'package:kotori/util/key_and_string.dart';
 import 'package:kotori/util/modal_route_observer.dart';
 import 'package:kotori/util/result.dart';
 import 'package:mockito/annotations.dart';
@@ -59,11 +60,11 @@ void main() {
         DefaultItem.item.date.millisecondsSinceEpoch.toString();
     await _pumpTestWidget(tester);
 
-    expect(find.descendant(of: find.byKey(const Key('toDeleteItemOrInventory')), matching: find.byKey(Key(dateEpochValue))), findsNothing);
+    expect(find.descendant(of: find.byKey(KeyAndString.toDeleteItemOrInventory), matching: find.byKey(Key(dateEpochValue))), findsNothing);
     expect(find.byType(DraggableItem), findsNWidgets(3));
 
     final itemLocation = tester.getTopLeft(find.byKey(Key(dateEpochValue)));
-    final toDeleteLocation = tester.getTopLeft(find.byKey(const Key('toDeleteItemOrInventory')));
+    final toDeleteLocation = tester.getTopLeft(find.byKey(KeyAndString.toDeleteItemOrInventory));
     final gesture = await tester.startGesture(itemLocation, pointer: 7);
     await tester.pump();
 
@@ -73,10 +74,10 @@ void main() {
     await gesture.up();
     await tester.pump();
 
-    expect(find.descendant(of: find.byKey(const Key('toDeleteItemOrInventory')), matching: find.byKey(Key(dateEpochValue))), findsOneWidget);
+    expect(find.descendant(of: find.byKey(KeyAndString.toDeleteItemOrInventory), matching: find.byKey(Key(dateEpochValue))), findsOneWidget);
     expect(find.byType(GestureDetector), findsOneWidget);
 
-    await tester.tap(find.byKey(const Key('progressButton')));
+    await tester.tap(find.byKey(KeyAndString.progressButton));
     await tester.pump();
 
     expect(find.byType(DraggableItem), findsNWidgets(2));

@@ -3,6 +3,7 @@ import 'package:kotori/domain/util/item_and_inventory_types.dart';
 import 'package:kotori/presentation/adventure/adventure_state.dart';
 import 'package:kotori/presentation/adventure/adventure_view_model.dart';
 import 'package:kotori/presentation/adventure/components/drag_target_inventory.dart';
+import 'package:kotori/util/key_and_string.dart';
 import 'package:kotori/util/modal_route_observer.dart';
 import 'package:provider/provider.dart';
 
@@ -137,14 +138,14 @@ class _AdventureScreenState extends State<AdventureScreen>
               alignment: const FractionalOffset(0.8, 0.8),
               child: state.isOkayToProcess
                   ? GestureDetector(
-                      key: const Key('progressButton'),
+                      key: KeyAndString.progressButton,
                       onTap: () {
                         viewModel.completeProcess();
                       },
                       child: const Icon(Icons.forward, size: 60),
                     )
                   : DragTargetInventory(
-                      key: const Key('newItemOrInventory'),
+                      key: KeyAndString.newItemOrInventory,
                       viewModel: viewModel,
                       type: ItemAndInventoryTypes.newItem,
                       item: state.newItem,
@@ -153,7 +154,7 @@ class _AdventureScreenState extends State<AdventureScreen>
             Container(
               alignment: const FractionalOffset(0.2, 0.8),
               child: DragTargetInventory(
-                key: const Key('toDeleteItemOrInventory'),
+                key: KeyAndString.toDeleteItemOrInventory,
                 viewModel: viewModel,
                 type: ItemAndInventoryTypes.toDeleteItem,
                 item: state.deleteItem,

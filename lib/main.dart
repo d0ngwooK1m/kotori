@@ -6,6 +6,7 @@ import 'package:kotori/data/source/item/new_item_entity.dart';
 import 'package:kotori/data/source/item/to_delete_item_entity.dart';
 import 'package:kotori/di/provider_setup.dart';
 import 'package:kotori/presentation/adventure/adventure_screen.dart';
+import 'package:kotori/presentation/adventure/adventure_view_model.dart';
 import 'package:kotori/util/modal_route_observer.dart';
 import 'package:provider/provider.dart';
 
@@ -37,7 +38,64 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       navigatorObservers: [ModalRouteObserver.observer],
-      home: const AdventureScreen(),
+      home: const MainPage(),
+    );
+  }
+}
+
+class MainPage extends StatefulWidget {
+  const MainPage({Key? key}) : super(key: key);
+
+  @override
+  State<MainPage> createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
+  int index = 0;
+  final widgets = const [
+    AdventureScreen(),
+    Center(
+      child: Text('test'),
+    ),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final viewModel = context.watch<AdventureViewModel>();
+    final state = viewModel.state;
+    return Scaffold(
+      body: SafeArea(
+        child: widgets.elementAt(index),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.map), label: 'adventure'),
+          BottomNavigationBarItem(icon: Icon(Icons.auto_graph), label: 'graph'),
+        ],
+        onTap: (int page) {
+          setState(
+            () {
+              index = page;
+              if (page == 0) {
+                viewModel.getEveryItemOrInventory();
+              } else {
+                viewModel.saveEveryItemOrInventory(
+                  items: state.items,
+                  newItem: state.newItem,
+                  toDeleteItem: state.deleteItem,
+                );
+              }
+            },
+          );
+        },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          print('it\'s a diary button!');
+        },
+        child: const Icon(Icons.edit),
+      ),
     );
   }
 }

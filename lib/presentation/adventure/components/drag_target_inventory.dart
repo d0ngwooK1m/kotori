@@ -81,6 +81,7 @@ class DragTargetInventory extends StatelessWidget {
       // delete to items
       viewModel.deleteItemToItems(
           positionTo: position!, item: data[KeyAndString.item]);
+      viewModel.checkProcess();
     } else if (itemRole == ItemAndInventoryTypes.newItem &&
         inventoryRole == ItemAndInventoryTypes.toDeleteItem) {
       // new to delete

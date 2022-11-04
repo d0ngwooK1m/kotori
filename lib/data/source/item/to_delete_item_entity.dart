@@ -4,13 +4,14 @@ part 'to_delete_item_entity.g.dart';
 
 @HiveType(typeId: 3)
 class ToDeleteItemEntity extends HiveObject {
-  @HiveField(0)
+
+  @HiveField(0, defaultValue: '')
   String name;
 
-  @HiveField(1)
+  @HiveField(1, defaultValue: '')
   String desc;
 
-  @HiveField(2)
+  @HiveField(2, defaultValue: '')
   String picture;
 
   @HiveField(3)
@@ -20,10 +21,10 @@ class ToDeleteItemEntity extends HiveObject {
   bool isInventory;
 
   ToDeleteItemEntity(
-    this.name,
-    this.desc,
-    this.picture,
-    this.date,
-    this.isInventory,
-  );
+      this.name,
+      this.desc,
+      this.picture,
+      this.date,
+      this.isInventory,
+      );
 }

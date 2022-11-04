@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:kotori/domain/model/item.dart';
-import 'package:kotori/domain/repository/item_repository.dart';
+import 'package:kotori/domain/use_case/item/item_use_cases.dart';
 import 'package:kotori/presentation/adventure/adventure_state.dart';
 import 'package:kotori/util/default_item.dart';
 import 'package:kotori/util/result.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AdventureViewModel extends ChangeNotifier {
-  final ItemRepository repository;
+  final ItemUseCases useCases;
   AdventureState _state = AdventureState(newItem: DefaultItem.inventory, deleteItem: DefaultItem.inventory);
 
   AdventureState get state => _state;
 
-  AdventureViewModel(this.repository) {
+  AdventureViewModel(this.useCases) {
     checkFirstTime();
   }
 
@@ -20,9 +20,9 @@ class AdventureViewModel extends ChangeNotifier {
   final newItem = DefaultItem.item;
 
   Future<void> getEveryItemOrInventory() async {
-    final result = await repository.getItemsWithInventories();
-    final newItem = await repository.getNewItemOrInventory();
-    final deleteItem = await repository.getToDeleteItemOrInventory();
+    final result = await useCases.getItemsWithInventoriesUseCase();
+    final newItem = await useCases.getNewItemOrInventoryUseCase();
+    final deleteItem = await useCases.getToDeleteItemOrInventoryUseCase();
     result.when(
       success: (data) {
         _state = state.copyWith(isLoading: false, items: data, message: null);
@@ -56,11 +56,11 @@ class AdventureViewModel extends ChangeNotifier {
     required Item newItem,
     required Item toDeleteItem,
   }) async {
-    final result = await repository.saveItemsWithInventories(items: items);
+    final result = await useCases.saveItemsWithInventoriesUseCase(items: items);
     final newItemResult =
-        await repository.saveNewItemOrInventory(item: newItem);
+        await useCases.saveNewItemOrInventoryUseCase(item: newItem);
     final deleteItemResult =
-        await repository.saveToDeleteItemOrInventory(item: toDeleteItem);
+        await useCases.saveToDeleteItemOrInventoryUseCase(item: toDeleteItem);
     _setStateResultWithVoid(result);
     _setStateResultWithVoid(newItemResult);
     _setStateResultWithVoid(deleteItemResult);
@@ -149,6 +149,8 @@ class AdventureViewModel extends ChangeNotifier {
   Future<void> checkProcess() async {
     if (state.newItem.isInventory && !state.deleteItem.isInventory) {
       _state = state.copyWith(isOkayToProcess: true);
+    } else {
+      _state = state.copyWith(isOkayToProcess: false);
     }
     notifyListeners();
   }

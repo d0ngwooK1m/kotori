@@ -1,6 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kotori/domain/model/item.dart';
-import 'package:kotori/domain/repository/item_repository.dart';
+import 'package:kotori/domain/use_case/item/get_items_with_inventories_use_case.dart';
+import 'package:kotori/domain/use_case/item/get_new_item_or_inventory_use_case.dart';
+import 'package:kotori/domain/use_case/item/get_to_delete_item_or_inventory_use_case.dart';
+import 'package:kotori/domain/use_case/item/item_use_cases.dart';
+import 'package:kotori/domain/use_case/item/save_items_with_inventories_use_case.dart';
+import 'package:kotori/domain/use_case/item/save_new_item_or_inventory_use_case.dart';
+import 'package:kotori/domain/use_case/item/save_to_delete_item_or_inventory_use_case.dart';
 import 'package:kotori/presentation/adventure/adventure_view_model.dart';
 import 'package:kotori/util/default_item.dart';
 import 'package:kotori/util/result.dart';
@@ -9,47 +15,55 @@ import 'package:mockito/mockito.dart';
 
 import 'adventure_view_model_test.mocks.dart';
 
-@GenerateNiceMocks([MockSpec<ItemRepository>()])
+@GenerateNiceMocks([
+  MockSpec<GetItemsWithInventoriesUseCase>(),
+  MockSpec<GetNewItemOrInventoryUseCase>(),
+  MockSpec<GetToDeleteItemOrInventoryUseCase>(),
+  MockSpec<SaveItemsWithInventoriesUseCase>(),
+  MockSpec<SaveNewItemOrInventoryUseCase>(),
+  MockSpec<SaveToDeleteItemOrInventoryUseCase>(),
+])
 void main() {
   group('adventure view model test', () {
+    final fakeGetItems = MockGetItemsWithInventoriesUseCase();
+    final fakeGetNewItem = MockGetNewItemOrInventoryUseCase();
+    final fakeGetToDeleteItem = MockGetToDeleteItemOrInventoryUseCase();
+    final saveFakeItems = MockSaveItemsWithInventoriesUseCase();
+    final saveFakeNewItem = MockSaveNewItemOrInventoryUseCase();
+    final saveFakeToDeleteItem = MockSaveToDeleteItemOrInventoryUseCase();
+    final useCases = ItemUseCases(
+      getItemsWithInventoriesUseCase: fakeGetItems,
+      getNewItemOrInventoryUseCase: fakeGetNewItem,
+      getToDeleteItemOrInventoryUseCase: fakeGetToDeleteItem,
+      saveItemsWithInventoriesUseCase: saveFakeItems,
+      saveNewItemOrInventoryUseCase: saveFakeNewItem,
+      saveToDeleteItemOrInventoryUseCase: saveFakeToDeleteItem,
+    );
+    final viewModel = AdventureViewModel(useCases);
+    final items = DefaultItem.firstItemsAndInventories;
+    final item = DefaultItem.item;
+    final inventory = DefaultItem.inventory;
+
+    when(fakeGetItems())
+        .thenAnswer((_) async => Result<List<Item>>.success(items));
+    when(fakeGetNewItem()).thenAnswer((_) async => Result<Item>.success(inventory));
+    when(fakeGetToDeleteItem())
+        .thenAnswer((_) async => Result<Item>.success(inventory));
+
     test('checkFirstTime test', () async {
-      final repository = MockItemRepository();
-      final viewModel = AdventureViewModel(repository);
-      final items = DefaultItem.firstItemsAndInventories;
-      final item = DefaultItem.item;
-
-      when(repository.getItemsWithInventories())
-          .thenAnswer((_) async => Result<List<Item>>.success(items));
-      when(repository.getNewItemOrInventory())
-          .thenAnswer((_) async => Result<Item>.success(item));
-      when(repository.getToDeleteItemOrInventory())
-          .thenAnswer((_) async => Result<Item>.success(item));
-
       await viewModel.checkFirstTime();
 
       expect(viewModel.state.isLoading, false);
       expect(viewModel.state.items.isNotEmpty, true);
-      expect(viewModel.state.newItem.isInventory, false);
-      expect(viewModel.state.deleteItem.isInventory, false);
+      expect(viewModel.state.newItem.isInventory, true);
+      expect(viewModel.state.deleteItem.isInventory, true);
 
-      verify(repository.getItemsWithInventories());
-      verify(repository.getNewItemOrInventory());
-      verify(repository.getToDeleteItemOrInventory());
+      verify(fakeGetItems());
+      verify(fakeGetNewItem());
+      verify(fakeGetToDeleteItem());
     });
 
     test('setItems test', () async {
-      final repository = MockItemRepository();
-      final viewModel = AdventureViewModel(repository);
-      final items = DefaultItem.firstItemsAndInventories;
-      final item = DefaultItem.item;
-
-      when(repository.getItemsWithInventories())
-          .thenAnswer((_) async => Result<List<Item>>.success(items));
-      when(repository.getNewItemOrInventory())
-          .thenAnswer((_) async => Result<Item>.success(item));
-      when(repository.getToDeleteItemOrInventory())
-          .thenAnswer((_) async => Result<Item>.success(item));
-
       await viewModel.checkFirstTime();
       expect(viewModel.state.items.first.isInventory, false);
       expect(viewModel.state.items.last.isInventory, true);
@@ -58,23 +72,17 @@ void main() {
       expect(viewModel.state.items.first.isInventory, true);
       expect(viewModel.state.items.last.isInventory, false);
 
-      verify(repository.getItemsWithInventories());
-      verify(repository.getNewItemOrInventory());
-      verify(repository.getToDeleteItemOrInventory());
+      verify(fakeGetItems());
+      verify(fakeGetNewItem());
+      verify(fakeGetToDeleteItem());
     });
 
     test('newItemToItems test', () async {
-      final repository = MockItemRepository();
-      final viewModel = AdventureViewModel(repository);
-      final items = DefaultItem.firstItemsAndInventories;
-      final item = DefaultItem.item;
-
-      when(repository.getItemsWithInventories())
+      when(fakeGetItems())
           .thenAnswer((_) async => Result<List<Item>>.success(items));
-      when(repository.getNewItemOrInventory())
-          .thenAnswer((_) async => Result<Item>.success(item));
-      when(repository.getToDeleteItemOrInventory())
-          .thenAnswer((_) async => Result<Item>.success(item));
+      when(fakeGetNewItem()).thenAnswer((_) async => Result<Item>.success(item));
+      when(fakeGetToDeleteItem())
+          .thenAnswer((_) async => Result<Item>.success(inventory));
 
       await viewModel.checkFirstTime();
       expect(viewModel.state.items.last.isInventory, true);
@@ -84,76 +92,51 @@ void main() {
       expect(viewModel.state.items.last.isInventory, false);
       expect(viewModel.state.newItem.isInventory, true);
 
-      verify(repository.getItemsWithInventories());
-      verify(repository.getNewItemOrInventory());
-      verify(repository.getToDeleteItemOrInventory());
+      verify(fakeGetItems());
+      verify(fakeGetNewItem());
+      verify(fakeGetToDeleteItem());
     });
 
     test('itemsToDeleteItem test', () async {
-      final repository = MockItemRepository();
-      final viewModel = AdventureViewModel(repository);
-      final items = DefaultItem.firstItemsAndInventories;
-      final item = DefaultItem.item;
-      final inventory = DefaultItem.inventory;
-
-      when(repository.getItemsWithInventories())
-          .thenAnswer((_) async => Result<List<Item>>.success(items));
-      when(repository.getNewItemOrInventory())
-          .thenAnswer((_) async => Result<Item>.success(item));
-      when(repository.getToDeleteItemOrInventory())
-          .thenAnswer((_) async => Result<Item>.success(inventory));
-
       await viewModel.checkFirstTime();
       expect(viewModel.state.items.first.isInventory, false);
       expect(viewModel.state.deleteItem.isInventory, true);
 
-      await viewModel.itemsToDeleteItem(item: viewModel.state.items.first, prevPosition: 0);
+      await viewModel.itemsToDeleteItem(
+          item: viewModel.state.items.first, prevPosition: 0);
       expect(viewModel.state.items.first.isInventory, true);
       expect(viewModel.state.deleteItem.isInventory, false);
 
-      verify(repository.getItemsWithInventories());
-      verify(repository.getNewItemOrInventory());
-      verify(repository.getToDeleteItemOrInventory());
+      verify(fakeGetItems());
+      verify(fakeGetNewItem());
+      verify(fakeGetToDeleteItem());
     });
 
     test('deleteItemToItems test', () async {
-      final repository = MockItemRepository();
-      final viewModel = AdventureViewModel(repository);
-      final items = DefaultItem.firstItemsAndInventories;
-      final item = DefaultItem.item;
-
-      when(repository.getItemsWithInventories())
+      when(fakeGetItems())
           .thenAnswer((_) async => Result<List<Item>>.success(items));
-      when(repository.getNewItemOrInventory())
+      when(fakeGetNewItem()).thenAnswer((_) async => Result<Item>.success(inventory));
+      when(fakeGetToDeleteItem())
           .thenAnswer((_) async => Result<Item>.success(item));
-      when(repository.getToDeleteItemOrInventory())
-          .thenAnswer((_) async => Result<Item>.success(item));
-
       await viewModel.checkFirstTime();
       expect(viewModel.state.items.last.isInventory, true);
       expect(viewModel.state.deleteItem.isInventory, false);
 
-      await viewModel.deleteItemToItems(positionTo: 8, item: viewModel.state.deleteItem);
+      await viewModel.deleteItemToItems(
+          positionTo: 8, item: viewModel.state.deleteItem);
       expect(viewModel.state.items.last.isInventory, false);
       expect(viewModel.state.deleteItem.isInventory, true);
 
-      verify(repository.getItemsWithInventories());
-      verify(repository.getNewItemOrInventory());
-      verify(repository.getToDeleteItemOrInventory());
+      verify(fakeGetItems());
+      verify(fakeGetNewItem());
+      verify(fakeGetToDeleteItem());
     });
 
     test('newItemToDeleteItem test', () async {
-      final repository = MockItemRepository();
-      final viewModel = AdventureViewModel(repository);
-      final items = DefaultItem.firstItemsAndInventories;
-      final item = DefaultItem.item;
-      final inventory  = DefaultItem.inventory;
-
-      when(repository.getItemsWithInventories())
+      when(fakeGetItems())
           .thenAnswer((_) async => Result<List<Item>>.success(items));
-      when(repository.getNewItemOrInventory())
-          .thenAnswer((_) async => Result<Item>.success(item));
-      when(repository.getToDeleteItemOrInventory())
+      when(fakeGetNewItem()).thenAnswer((_) async => Result<Item>.success(item));
+      when(fakeGetToDeleteItem())
           .thenAnswer((_) async => Result<Item>.success(inventory));
 
       await viewModel.checkFirstTime();
@@ -164,69 +147,55 @@ void main() {
       expect(viewModel.state.newItem.isInventory, true);
       expect(viewModel.state.deleteItem.isInventory, false);
 
-      verify(repository.getItemsWithInventories());
-      verify(repository.getNewItemOrInventory());
-      verify(repository.getToDeleteItemOrInventory());
+      verify(fakeGetItems());
+      verify(fakeGetNewItem());
+      verify(fakeGetToDeleteItem());
     });
 
     test('checkProcess and completeProcess test', () async {
-      final repository = MockItemRepository();
-      final viewModel = AdventureViewModel(repository);
-      final items = DefaultItem.firstItemsAndInventories;
-      final inventory = DefaultItem.inventory;
-
-      when(repository.getItemsWithInventories())
+      when(fakeGetItems())
           .thenAnswer((_) async => Result<List<Item>>.success(items));
-      when(repository.getNewItemOrInventory())
+      when(fakeGetNewItem()).thenAnswer((_) async => Result<Item>.success(inventory));
+      when(fakeGetToDeleteItem())
           .thenAnswer((_) async => Result<Item>.success(inventory));
-      when(repository.getToDeleteItemOrInventory())
-          .thenAnswer((_) async => Result<Item>.success(inventory));
-
       await viewModel.checkFirstTime();
       expect(viewModel.state.isOkayToProcess, false);
 
-      await viewModel.itemsToDeleteItem(item: viewModel.state.items.first, prevPosition: 0);
+      await viewModel.itemsToDeleteItem(
+          item: viewModel.state.items.first, prevPosition: 0);
       await viewModel.checkProcess();
       expect(viewModel.state.isOkayToProcess, true);
 
       await viewModel.completeProcess();
       expect(viewModel.state.isOkayToProcess, false);
 
-      verify(repository.getItemsWithInventories());
-      verify(repository.getNewItemOrInventory());
-      verify(repository.getToDeleteItemOrInventory());
+      verify(fakeGetItems());
+      verify(fakeGetNewItem());
+      verify(fakeGetToDeleteItem());
     });
 
     test('saveEveryItemOrInventory test', () async {
-      final repository = MockItemRepository();
-      final viewModel = AdventureViewModel(repository);
-      final items = DefaultItem.firstItemsAndInventories;
-      final inventory = DefaultItem.inventory;
-
-      when(repository.getItemsWithInventories())
-          .thenAnswer((_) async => Result<List<Item>>.success(items));
-      when(repository.getNewItemOrInventory())
-          .thenAnswer((_) async => Result<Item>.success(inventory));
-      when(repository.getToDeleteItemOrInventory())
-          .thenAnswer((_) async => Result<Item>.success(inventory));
-
       await viewModel.checkFirstTime();
       expect(viewModel.state.message, null);
 
-      verify(repository.getItemsWithInventories());
-      verify(repository.getNewItemOrInventory());
-      verify(repository.getToDeleteItemOrInventory());
+      verify(fakeGetItems());
+      verify(fakeGetNewItem());
+      verify(fakeGetToDeleteItem());
 
-      when(repository.saveItemsWithInventories(items: anyNamed('items'))).thenAnswer((_) async => const Result.success(null));
-      when(repository.saveNewItemOrInventory(item: anyNamed('item'))).thenAnswer((_) async => const Result.success(null));
-      when(repository.saveToDeleteItemOrInventory(item: anyNamed('item'))).thenAnswer((_) async => const Result.success(null));
+      when(saveFakeItems(items: anyNamed('items')))
+          .thenAnswer((_) async => const Result.success(null));
+      when(saveFakeNewItem(item: anyNamed('item')))
+          .thenAnswer((_) async => const Result.success(null));
+      when(saveFakeToDeleteItem(item: anyNamed('item')))
+          .thenAnswer((_) async => const Result.success(null));
 
-      await viewModel.saveEveryItemOrInventory(items: items, newItem: inventory, toDeleteItem: inventory);
+      await viewModel.saveEveryItemOrInventory(
+          items: items, newItem: inventory, toDeleteItem: inventory);
       expect(viewModel.state.message, null);
 
-      verify(repository.saveItemsWithInventories(items: anyNamed('items')));
-      verify(repository.saveNewItemOrInventory(item: anyNamed('item')));
-      verify(repository.saveToDeleteItemOrInventory(item: anyNamed('item')));
+      verify(saveFakeItems(items: anyNamed('items')));
+      verify(saveFakeNewItem(item: anyNamed('item')));
+      verify(saveFakeToDeleteItem(item: anyNamed('item')));
     });
   });
 }

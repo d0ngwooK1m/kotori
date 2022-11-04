@@ -4,13 +4,14 @@ part 'new_item_entity.g.dart';
 
 @HiveType(typeId: 2)
 class NewItemEntity extends HiveObject {
-  @HiveField(0)
+
+  @HiveField(0, defaultValue: '')
   String name;
 
-  @HiveField(1)
+  @HiveField(1, defaultValue: '')
   String desc;
 
-  @HiveField(2)
+  @HiveField(2, defaultValue: '')
   String picture;
 
   @HiveField(3)
@@ -20,10 +21,10 @@ class NewItemEntity extends HiveObject {
   bool isInventory;
 
   NewItemEntity(
-    this.name,
-    this.desc,
-    this.picture,
-    this.date,
-    this.isInventory,
-  );
+      this.name,
+      this.desc,
+      this.picture,
+      this.date,
+      this.isInventory,
+      );
 }

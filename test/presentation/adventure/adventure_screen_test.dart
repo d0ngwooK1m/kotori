@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kotori/domain/model/item.dart';
-import 'package:kotori/domain/repository/item_repository.dart';
+import 'package:kotori/domain/use_case/item/get_items_with_inventories_use_case.dart';
+import 'package:kotori/domain/use_case/item/get_new_item_or_inventory_use_case.dart';
+import 'package:kotori/domain/use_case/item/get_to_delete_item_or_inventory_use_case.dart';
+import 'package:kotori/domain/use_case/item/item_use_cases.dart';
+import 'package:kotori/domain/use_case/item/save_items_with_inventories_use_case.dart';
+import 'package:kotori/domain/use_case/item/save_new_item_or_inventory_use_case.dart';
+import 'package:kotori/domain/use_case/item/save_to_delete_item_or_inventory_use_case.dart';
 import 'package:kotori/presentation/adventure/adventure_screen.dart';
 import 'package:kotori/presentation/adventure/adventure_view_model.dart';
 import 'package:kotori/presentation/adventure/components/drag_target_inventory.dart';
@@ -16,19 +22,38 @@ import 'package:provider/provider.dart';
 
 import 'adventure_screen_test.mocks.dart';
 
-@GenerateNiceMocks([MockSpec<ItemRepository>()])
+@GenerateNiceMocks([
+  MockSpec<GetItemsWithInventoriesUseCase>(),
+  MockSpec<GetNewItemOrInventoryUseCase>(),
+  MockSpec<GetToDeleteItemOrInventoryUseCase>(),
+  MockSpec<SaveItemsWithInventoriesUseCase>(),
+  MockSpec<SaveNewItemOrInventoryUseCase>(),
+  MockSpec<SaveToDeleteItemOrInventoryUseCase>(),
+])
 void main() {
   Future<void> _pumpTestWidget(WidgetTester tester) async {
-    final repository = MockItemRepository();
-    final viewModel = AdventureViewModel(repository);
+    final fakeGetItems = MockGetItemsWithInventoriesUseCase();
+    final fakeGetNewItem = MockGetNewItemOrInventoryUseCase();
+    final fakeGetToDeleteItem = MockGetToDeleteItemOrInventoryUseCase();
+    final saveFakeItems = MockSaveItemsWithInventoriesUseCase();
+    final saveFakeNewItem = MockSaveNewItemOrInventoryUseCase();
+    final saveFakeToDeleteItem = MockSaveToDeleteItemOrInventoryUseCase();
+    final useCases = ItemUseCases(
+      getItemsWithInventoriesUseCase: fakeGetItems,
+      getNewItemOrInventoryUseCase: fakeGetNewItem,
+      getToDeleteItemOrInventoryUseCase: fakeGetToDeleteItem,
+      saveItemsWithInventoriesUseCase: saveFakeItems,
+      saveNewItemOrInventoryUseCase: saveFakeNewItem,
+      saveToDeleteItemOrInventoryUseCase: saveFakeToDeleteItem,
+    );
+    final viewModel = AdventureViewModel(useCases);
     final items = DefaultItem.firstItemsAndInventories;
     final inventory = DefaultItem.inventory;
 
-    when(repository.getItemsWithInventories())
+    when(fakeGetItems())
         .thenAnswer((_) async => Result<List<Item>>.success(items));
-    when(repository.getNewItemOrInventory())
-        .thenAnswer((_) async => Result<Item>.success(inventory));
-    when(repository.getToDeleteItemOrInventory())
+    when(fakeGetNewItem()).thenAnswer((_) async => Result<Item>.success(inventory));
+    when(fakeGetToDeleteItem())
         .thenAnswer((_) async => Result<Item>.success(inventory));
 
     await tester.pumpWidget(

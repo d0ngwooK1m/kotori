@@ -92,7 +92,7 @@ class _MainPageState extends State<MainPage> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          print('it\'s a diary button!');
+          print('it\'s a daily_diary button!');
         },
         child: const Icon(Icons.edit),
       ),

@@ -13,12 +13,12 @@ class ItemUseCases {
   final SaveNewItemOrInventoryUseCase saveNewItemOrInventoryUseCase;
   final SaveToDeleteItemOrInventoryUseCase saveToDeleteItemOrInventoryUseCase;
 
-  ItemUseCases({
-    required this.getItemsWithInventoriesUseCase,
-    required this.getNewItemOrInventoryUseCase,
-    required this.getToDeleteItemOrInventoryUseCase,
-    required this.saveItemsWithInventoriesUseCase,
-    required this.saveNewItemOrInventoryUseCase,
-    required this.saveToDeleteItemOrInventoryUseCase,
-  });
+  ItemUseCases(
+    this.getItemsWithInventoriesUseCase,
+    this.getNewItemOrInventoryUseCase,
+    this.getToDeleteItemOrInventoryUseCase,
+    this.saveItemsWithInventoriesUseCase,
+    this.saveNewItemOrInventoryUseCase,
+    this.saveToDeleteItemOrInventoryUseCase,
+  );
 }

@@ -32,12 +32,12 @@ void main() {
     final saveFakeNewItem = MockSaveNewItemOrInventoryUseCase();
     final saveFakeToDeleteItem = MockSaveToDeleteItemOrInventoryUseCase();
     final useCases = ItemUseCases(
-      getItemsWithInventoriesUseCase: fakeGetItems,
-      getNewItemOrInventoryUseCase: fakeGetNewItem,
-      getToDeleteItemOrInventoryUseCase: fakeGetToDeleteItem,
-      saveItemsWithInventoriesUseCase: saveFakeItems,
-      saveNewItemOrInventoryUseCase: saveFakeNewItem,
-      saveToDeleteItemOrInventoryUseCase: saveFakeToDeleteItem,
+      fakeGetItems,
+      fakeGetNewItem,
+      fakeGetToDeleteItem,
+      saveFakeItems,
+      saveFakeNewItem,
+      saveFakeToDeleteItem,
     );
     final viewModel = AdventureViewModel(useCases);
     final items = DefaultItem.firstItemsAndInventories;

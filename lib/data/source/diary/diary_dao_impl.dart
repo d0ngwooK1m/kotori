@@ -1,6 +1,6 @@
 import 'package:hive/hive.dart';
-import 'package:kotori/data/source/diary/diary_entity.dart';
 import 'package:kotori/data/source/diary/diary_dao.dart';
+import 'package:kotori/data/source/diary/diary_entity.dart';
 import 'package:kotori/util/time.dart';
 
 class DiaryDaoImpl implements DiaryDao {
@@ -8,40 +8,44 @@ class DiaryDaoImpl implements DiaryDao {
 
   DiaryDaoImpl(this.box);
 
-  // 일기 읽어오기
   @override
   Future<DiaryEntity> getDiary({required DateTime now}) async {
-    final diary = box.values.last;
-
-    return now.isAtSameMomentAs(diary.date)
-        ? diary
-        : DiaryEntity(
+    final newDiary = DiaryEntity(
       emotion: 0,
       picture: '',
       desc: '',
       date: now,
     );
+    if (box.values.isNotEmpty) {
+      final diary = box.values.last;
+      return now.isAtSameMomentAs(diary.date) ? diary : newDiary;
+    } else {
+      return newDiary;
+    }
   }
 
-  // 일기 추가
+  // 일기 저장
   @override
-  Future<void> insertDiary({required DiaryEntity diary}) async {
-    await box.add(diary);
+  Future<void> saveDiary({
+    required DateTime now,
+    required DiaryEntity editedDiary,
+  }) async {
+    if (box.values.isNotEmpty) {
+      final diary = box.values.last;
+      if (now.isAtSameMomentAs(diary.date)) {
+        await box.deleteAt(box.values.length - 1);
+        await box.add(editedDiary);
+      } else {
+        await box.add(editedDiary);
+      }
+    } else {
+      await box.add(editedDiary);
+    }
   }
 
-  // 일기 수정
   @override
-  Future<void> editDiary({required DateTime now, required DiaryEntity editedDiary}) async {
-    final diary = await getDiary(now: now);
-    diary.emotion = editedDiary.emotion;
-    diary.picture = editedDiary.picture;
-    diary.desc = editedDiary.desc;
-    diary.save();
-  }
-
-  // 일주일치 일기 불러오기
-  @override
-  Future<Map<int, DiaryEntity>> getWeekDiaries({required DateTime now, int week = 0}) async {
+  Future<Map<int, DiaryEntity>> getWeekDiaries(
+      {required DateTime now, int week = 0}) async {
     // 오늘 날짜, 앱 최초 설치한 날짜 필요
     // 첫 그래프 값은 오늘 날짜가 있는 주의 월요일 - 일요일 DiaryEntity 값
     // 앞으로 뒤로 버튼 존재
@@ -58,12 +62,12 @@ class DiaryDaoImpl implements DiaryDao {
     for (var i = 0; i < 7; i++) {
       map.putIfAbsent(
           i,
-              () => DiaryEntity(
-            emotion: 0,
-            picture: '',
-            desc: '',
-            date: weekend.subtract(Duration(days: 6 - i)),
-          ));
+          () => DiaryEntity(
+                emotion: 0,
+                picture: '',
+                desc: '',
+                date: weekend.subtract(Duration(days: 6 - i)),
+              ));
     }
 
     final result = Map.fromEntries(
@@ -71,6 +75,4 @@ class DiaryDaoImpl implements DiaryDao {
 
     return result;
   }
-
-
 }

@@ -14,38 +14,35 @@ void main() {
     final box = await Hive.openBox<DiaryEntity>('test_diaries.db');
     await box.clear();
     final dao = DiaryDaoImpl(box);
-    final weekend = Time.getWeekend(Time.now, 0);
+    final now = Time.now;
+    final weekend = Time.getWeekend(now, 0);
+    final diariesWithoutInput = await dao.getWeekDiaries(now: now, week: 0);
+    expect(diariesWithoutInput.values.map((diary) => diary.date).toList(), [
+      weekend.subtract(const Duration(days: 6)),
+      weekend.subtract(const Duration(days: 5)),
+      weekend.subtract(const Duration(days: 4)),
+      weekend.subtract(const Duration(days: 3)),
+      weekend.subtract(const Duration(days: 2)),
+      weekend.subtract(const Duration(days: 1)),
+      weekend.subtract(const Duration(days: 0)),
+    ]);
 
-    await dao.insertDiary(
-      diary: DiaryEntity(
-        emotion: 3,
-        picture: '',
-        desc: '',
-        date: Time.now,
-      ),
-    );
+    final todayDiary = await dao.getDiary(now: now);
+    expect(todayDiary.emotion, 0);
+    expect(todayDiary.date, now);
+    expect(todayDiary.desc.isEmpty, true);
+    expect(todayDiary.picture.isEmpty, true);
 
-    expect(dao.box.values.length, 1);
+    final editedDiary = DiaryEntity(emotion: 3, picture: '', desc: 'edited daily_diary', date: now);
+    await dao.saveDiary(now: now, editedDiary: editedDiary);
 
-    final diary = await dao.getDiary(now: Time.now);
+    final editedDiaryResult = await dao.getDiary(now: now);
+    expect(editedDiaryResult.emotion, 3);
+    expect(editedDiaryResult.date, now);
+    expect(editedDiaryResult.desc.isEmpty, false);
+    expect(editedDiaryResult.picture.isEmpty, true);
 
-    expect(diary.emotion, 3);
-
-    await dao.editDiary(now: Time.now, editedDiary: DiaryEntity(
-      emotion: 5,
-      picture: '',
-      desc: '',
-      date: Time.now,
-    ));
-
-    expect(dao.box.values.first.emotion, 5);
-
-    final editedDiary = await dao.getDiary(now: Time.now);
-
-    expect(editedDiary.emotion, 5);
-
-    final diaries = await dao.getWeekDiaries(now: Time.now, week: 0);
-
+    final diaries = await dao.getWeekDiaries(now: now, week: 0);
     expect(diaries.values.map((diary) => diary.date).toList(), [
       weekend.subtract(const Duration(days: 6)),
       weekend.subtract(const Duration(days: 5)),

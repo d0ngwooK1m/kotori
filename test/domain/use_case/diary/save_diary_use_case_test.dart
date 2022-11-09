@@ -15,9 +15,9 @@ void main() {
     final repository = MockDiaryRepository();
     final useCase = SaveDiaryUseCase(repository);
 
-    when(repository.saveDiary(now: anyNamed('now'), editedDiary: anyNamed('editedDiary'))).thenAnswer((_) async => const Result.success(null));
-    final result = await useCase(now: Time.now, editedDiary: Diary(emotion: 3, desc: '', picture: '', date: Time.now));
+    when(repository.saveDiary(diary: anyNamed('diary'))).thenAnswer((_) async => const Result.success(null));
+    final result = await useCase(diary: Diary(emotion: 3, desc: '', picture: '', date: Time.now));
     expect(result, isA<Result<void>>());
-    verify(repository.saveDiary(now: anyNamed('now'), editedDiary: anyNamed('editedDiary')));
+    verify(repository.saveDiary(diary: anyNamed('diary')));
   });
 }

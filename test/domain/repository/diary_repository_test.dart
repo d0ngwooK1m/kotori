@@ -34,13 +34,11 @@ void main() {
     });
 
     test('일기가 잘 저장되어야 한다', () async {
-      when(dao.saveDiary(
-              now: anyNamed('now'), editedDiary: anyNamed('editedDiary')))
+      when(dao.saveDiary(diary: anyNamed('diary')))
           .thenAnswer((_) async => const Result.success(null));
-      final result = await repository.saveDiary(now: now, editedDiary: entity.toDiary());
+      final result = await repository.saveDiary(diary: entity.toDiary());
       expect(result, isA<Result<void>>());
-      verify(dao.saveDiary(
-          now: anyNamed('now'), editedDiary: anyNamed('editedDiary')));
+      verify(dao.saveDiary(diary: anyNamed('diary')));
     });
 
     test('일주일치 일기가 잘 불려야 한다', () async {

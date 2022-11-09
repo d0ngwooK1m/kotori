@@ -7,17 +7,16 @@ import 'package:kotori/util/time.dart';
 class DailyDiaryViewModel extends ChangeNotifier {
   final DailyDiaryUseCases useCases;
 
-  var _state = DailyDiaryState(now: Time.now);
+  var _state = DailyDiaryState();
 
   DailyDiaryState get state => _state;
 
-  DailyDiaryViewModel(this.useCases);
+  DailyDiaryViewModel(this.useCases) {
+    getDiary(now: Time.now);
+  }
 
   Future<void> getDiary({required DateTime now}) async {
-    _state = state.copyWith(
-        diary: Diary(emotion: 0, desc: '', picture: '', date: Time.now));
-
-    final result = await useCases.getDiaryUseCase(now: now);
+    final result = await useCases.getDiaryUseCase.call(now: now);
     result.when(
       success: (data) {
         _state = state.copyWith(
@@ -27,7 +26,6 @@ class DailyDiaryViewModel extends ChangeNotifier {
       },
       error: (e) {
         _state = state.copyWith(
-          diary: null,
           message: e.toString(),
         );
       },
@@ -35,18 +33,17 @@ class DailyDiaryViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> saveDiary({required DateTime now, required Diary editedDiary}) async {
-    if (state.now == editedDiary.date) {
-      final result =
-      await useCases.saveDiaryUseCase(now: now, editedDiary: editedDiary);
-      result.when(
-        success: (none) {
-          _state = state.copyWith(message: null);
-        },
-        error: (e) {
-          _state = state.copyWith(message: e.toString());
-        },
-      );
-    }
+  Future<void> saveDiary({required Diary diary}) async {
+    final result = await useCases.saveDiaryUseCase(diary: diary);
+    result.when(
+      success: (none) {
+        _state = state.copyWith(message: null);
+      },
+      error: (e) {
+        _state = state.copyWith(message: e.toString());
+      },
+    );
   }
+
+
 }

@@ -20,9 +20,9 @@ class DiaryRepositoryImpl implements DiaryRepository {
   }
 
   @override
-  Future<Result<void>> saveDiary({required DateTime now, required Diary editedDiary}) async {
+  Future<Result<void>> saveDiary({required Diary diary}) async {
     try {
-      await _dao.saveDiary(now: now, editedDiary: editedDiary.toDiaryEntity());
+      await _dao.saveDiary(diary: diary.toDiaryEntity());
       return const Result.success(null);
     } catch (e) {
       return Result.error(Exception('Save daily_diary failed : ${e.toString()}'));

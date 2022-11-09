@@ -14,59 +14,37 @@ class AdventureScreen extends StatefulWidget {
   State<AdventureScreen> createState() => _AdventureScreenState();
 }
 
-class _AdventureScreenState extends State<AdventureScreen>
-    with RouteAware, WidgetsBindingObserver {
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState lifecycleState) {
-    super.didChangeAppLifecycleState(lifecycleState);
-    final viewModel = context.read<AdventureViewModel>();
-    final state = viewModel.state;
-    if (lifecycleState == AppLifecycleState.resumed) {
-      viewModel.checkFirstTime();
-    } else if (lifecycleState == AppLifecycleState.inactive) {
-      viewModel.saveEveryItemOrInventory(
-          items: state.items,
-          newItem: state.newItem,
-          toDeleteItem: state.deleteItem);
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addObserver(this);
-  }
-
+class _AdventureScreenState extends State<AdventureScreen> with RouteAware {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    ModalRouteObserver.observer
+    ModalRouteObserver.adventureObserver
         .subscribe(this, ModalRoute.of(context) as ModalRoute<dynamic>);
   }
 
   @override
   void dispose() {
-    ModalRouteObserver.observer.unsubscribe(this);
-    WidgetsBinding.instance.removeObserver(this);
+    ModalRouteObserver.adventureObserver.unsubscribe(this);
     super.dispose();
   }
 
   @override
-  void didPush() {
+  Future<void> didPush() async {
     final viewModel = context.read<AdventureViewModel>();
-    viewModel.checkFirstTime();
+    await viewModel.checkFirstTime();
     super.didPush();
   }
 
   @override
-  void didPopNext() {
+  Future<void> didPop() async {
     final viewModel = context.read<AdventureViewModel>();
     final state = viewModel.state;
-    viewModel.saveEveryItemOrInventory(
-        items: state.items,
-        newItem: state.newItem,
-        toDeleteItem: state.deleteItem);
-    super.didPopNext();
+    await viewModel.saveEveryItemOrInventory(
+      items: state.items,
+      newItem: state.newItem,
+      toDeleteItem: state.deleteItem,
+    );
+    super.didPop();
   }
 
   @override

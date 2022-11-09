@@ -7,7 +7,7 @@ class SaveDiaryUseCase {
 
   SaveDiaryUseCase(this.repository);
 
-  Future<Result<void>> call({required DateTime now, required Diary editedDiary}) async {
-    return await repository.saveDiary(now: now, editedDiary: editedDiary);
+  Future<Result<void>> call({required Diary diary}) async {
+    return await repository.saveDiary(diary: diary);
   }
 }

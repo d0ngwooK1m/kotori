@@ -7,6 +7,7 @@ import 'package:kotori/data/source/item/to_delete_item_entity.dart';
 import 'package:kotori/di/provider_setup.dart';
 import 'package:kotori/presentation/adventure/adventure_screen.dart';
 import 'package:kotori/presentation/adventure/adventure_view_model.dart';
+import 'package:kotori/presentation/daily_diary/daily_diary_screen.dart';
 import 'package:kotori/util/modal_route_observer.dart';
 import 'package:provider/provider.dart';
 
@@ -37,7 +38,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      navigatorObservers: [ModalRouteObserver.observer],
+      navigatorObservers: [
+        ModalRouteObserver.adventureObserver,
+        ModalRouteObserver.dailyDiaryObserver
+      ],
       home: const MainPage(),
     );
   }
@@ -50,7 +54,7 @@ class MainPage extends StatefulWidget {
   State<MainPage> createState() => _MainPageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   int index = 0;
   final widgets = const [
     AdventureScreen(),
@@ -58,6 +62,35 @@ class _MainPageState extends State<MainPage> {
       child: Text('test'),
     ),
   ];
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    final adventureViewModel = context.read<AdventureViewModel>();
+    final adventureState = adventureViewModel.state;
+
+    if (state == AppLifecycleState.resumed) {
+      adventureViewModel.checkFirstTime();
+    } else if (state == AppLifecycleState.inactive) {
+      adventureViewModel.saveEveryItemOrInventory(
+        items: adventureState.items,
+        newItem: adventureState.newItem,
+        toDeleteItem: adventureState.deleteItem,
+      );
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,6 +105,7 @@ class _MainPageState extends State<MainPage> {
           BottomNavigationBarItem(icon: Icon(Icons.map), label: 'adventure'),
           BottomNavigationBarItem(icon: Icon(Icons.auto_graph), label: 'graph'),
         ],
+        currentIndex: index,
         onTap: (int page) {
           setState(
             () {
@@ -92,10 +126,25 @@ class _MainPageState extends State<MainPage> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          print('it\'s a daily_diary button!');
+          _navigateAndDisplaySelection(context);
         },
         child: const Icon(Icons.edit),
       ),
     );
+  }
+
+  Future<void> _navigateAndDisplaySelection(BuildContext context) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (BuildContext context) => const DailyDiaryScreen(),
+      ),
+    );
+
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context)
+      ..removeCurrentSnackBar()
+      ..showSnackBar(SnackBar(behavior: SnackBarBehavior.floating, content: Text('$result')));
   }
 }

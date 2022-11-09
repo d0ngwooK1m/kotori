@@ -3,7 +3,7 @@ part 'diary_entity.g.dart';
 
 @HiveType(typeId: 0)
 class DiaryEntity extends HiveObject {
-  @HiveField(0)
+  @HiveField(0, defaultValue: -1)
   int emotion;
 
   @HiveField(1)
@@ -15,11 +15,15 @@ class DiaryEntity extends HiveObject {
   @HiveField(3)
   DateTime date;
 
+  @HiveField(4, defaultValue: false)
+  bool isSaved;
+
   DiaryEntity({
-    required this.emotion,
+    this.emotion = -1,
     required this.picture,
     required this.desc,
     required this.date,
+    this.isSaved = false,
   });
 }
 

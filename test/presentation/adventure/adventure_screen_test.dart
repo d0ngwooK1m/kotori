@@ -64,7 +64,7 @@ void main() {
           theme: ThemeData(
             primarySwatch: Colors.blue,
           ),
-          navigatorObservers: [ModalRouteObserver.observer],
+          navigatorObservers: [ModalRouteObserver.adventureObserver],
           home: const AdventureScreen(),
         ),
       ),

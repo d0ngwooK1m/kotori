@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 
 class ModalRouteObserver {
- static final observer = RouteObserver<ModalRoute<dynamic>>();
+ static final adventureObserver = RouteObserver<ModalRoute<dynamic>>();
+ static final dailyDiaryObserver = RouteObserver<ModalRoute<dynamic>>();
 }

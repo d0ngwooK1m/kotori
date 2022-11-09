@@ -11,7 +11,6 @@ class DiaryDaoImpl implements DiaryDao {
   @override
   Future<DiaryEntity> getDiary({required DateTime now}) async {
     final newDiary = DiaryEntity(
-      emotion: 0,
       picture: '',
       desc: '',
       date: now,
@@ -27,19 +26,18 @@ class DiaryDaoImpl implements DiaryDao {
   // 일기 저장
   @override
   Future<void> saveDiary({
-    required DateTime now,
-    required DiaryEntity editedDiary,
+    required DiaryEntity diary,
   }) async {
     if (box.values.isNotEmpty) {
-      final diary = box.values.last;
-      if (now.isAtSameMomentAs(diary.date)) {
-        await box.deleteAt(box.values.length - 1);
-        await box.add(editedDiary);
+      final lastDiary = box.values.last;
+      if (!lastDiary.date.isAtSameMomentAs(diary.date) && lastDiary.isSaved) {
+        await box.add(diary);
       } else {
-        await box.add(editedDiary);
+        await box.deleteAt(box.values.length - 1);
+        await box.add(diary);
       }
     } else {
-      await box.add(editedDiary);
+      await box.add(diary);
     }
   }
 

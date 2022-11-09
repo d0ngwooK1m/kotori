@@ -11,6 +11,7 @@ class Diary with _$Diary {
     required String picture,
     required String desc,
     required DateTime date,
+    @Default(false) bool isSaved,
   }) = _Diary;
 
   factory Diary.fromJson(Map<String, dynamic> json) => _$DiaryFromJson(json);

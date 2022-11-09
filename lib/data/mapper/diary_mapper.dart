@@ -8,6 +8,7 @@ extension ToDiary on DiaryEntity {
       picture: picture,
       desc: desc,
       date: date,
+      isSaved: isSaved,
     );
   }
 }
@@ -19,6 +20,7 @@ extension ToDiaryEntity on Diary {
       picture: picture,
       desc: desc,
       date: date,
+      isSaved: isSaved,
     );
   }
 }

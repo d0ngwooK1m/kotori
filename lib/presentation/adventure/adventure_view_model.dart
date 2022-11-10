@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:kotori/domain/model/item.dart';
-import 'package:kotori/domain/use_case/item/item_use_cases.dart';
+import 'package:kotori/domain/use_case/adventure_use_cases.dart';
 import 'package:kotori/presentation/adventure/adventure_state.dart';
 import 'package:kotori/util/default_item.dart';
 import 'package:kotori/util/result.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AdventureViewModel extends ChangeNotifier {
-  final ItemUseCases useCases;
+  final AdventureUseCases useCases;
   AdventureState _state = AdventureState(newItem: DefaultItem.inventory, deleteItem: DefaultItem.inventory);
 
   AdventureState get state => _state;

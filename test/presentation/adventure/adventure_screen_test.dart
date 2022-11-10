@@ -4,7 +4,7 @@ import 'package:kotori/domain/model/item.dart';
 import 'package:kotori/domain/use_case/item/get_items_with_inventories_use_case.dart';
 import 'package:kotori/domain/use_case/item/get_new_item_or_inventory_use_case.dart';
 import 'package:kotori/domain/use_case/item/get_to_delete_item_or_inventory_use_case.dart';
-import 'package:kotori/domain/use_case/item/item_use_cases.dart';
+import 'package:kotori/domain/use_case/adventure_use_cases.dart';
 import 'package:kotori/domain/use_case/item/save_items_with_inventories_use_case.dart';
 import 'package:kotori/domain/use_case/item/save_new_item_or_inventory_use_case.dart';
 import 'package:kotori/domain/use_case/item/save_to_delete_item_or_inventory_use_case.dart';
@@ -32,13 +32,23 @@ import 'adventure_screen_test.mocks.dart';
 ])
 void main() {
   Future<void> _pumpTestWidget(WidgetTester tester) async {
+    final items = DefaultItem.firstItemsAndInventories;
+    final inventory = DefaultItem.inventory;
+
     final fakeGetItems = MockGetItemsWithInventoriesUseCase();
     final fakeGetNewItem = MockGetNewItemOrInventoryUseCase();
     final fakeGetToDeleteItem = MockGetToDeleteItemOrInventoryUseCase();
     final saveFakeItems = MockSaveItemsWithInventoriesUseCase();
     final saveFakeNewItem = MockSaveNewItemOrInventoryUseCase();
     final saveFakeToDeleteItem = MockSaveToDeleteItemOrInventoryUseCase();
-    final useCases = ItemUseCases(
+
+    when(fakeGetItems())
+        .thenAnswer((_) async => Result<List<Item>>.success(items));
+    when(fakeGetNewItem()).thenAnswer((_) async => Result<Item>.success(inventory));
+    when(fakeGetToDeleteItem())
+        .thenAnswer((_) async => Result<Item>.success(inventory));
+
+    final useCases = AdventureUseCases(
       fakeGetItems,
       fakeGetNewItem,
       fakeGetToDeleteItem,
@@ -47,14 +57,6 @@ void main() {
       saveFakeToDeleteItem,
     );
     final viewModel = AdventureViewModel(useCases);
-    final items = DefaultItem.firstItemsAndInventories;
-    final inventory = DefaultItem.inventory;
-
-    when(fakeGetItems())
-        .thenAnswer((_) async => Result<List<Item>>.success(items));
-    when(fakeGetNewItem()).thenAnswer((_) async => Result<Item>.success(inventory));
-    when(fakeGetToDeleteItem())
-        .thenAnswer((_) async => Result<Item>.success(inventory));
 
     await tester.pumpWidget(
       MultiProvider(

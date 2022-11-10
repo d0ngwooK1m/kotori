@@ -3,7 +3,7 @@ import 'package:kotori/domain/model/item.dart';
 import 'package:kotori/domain/use_case/item/get_items_with_inventories_use_case.dart';
 import 'package:kotori/domain/use_case/item/get_new_item_or_inventory_use_case.dart';
 import 'package:kotori/domain/use_case/item/get_to_delete_item_or_inventory_use_case.dart';
-import 'package:kotori/domain/use_case/item/item_use_cases.dart';
+import 'package:kotori/domain/use_case/adventure_use_cases.dart';
 import 'package:kotori/domain/use_case/item/save_items_with_inventories_use_case.dart';
 import 'package:kotori/domain/use_case/item/save_new_item_or_inventory_use_case.dart';
 import 'package:kotori/domain/use_case/item/save_to_delete_item_or_inventory_use_case.dart';
@@ -31,7 +31,10 @@ void main() {
     final saveFakeItems = MockSaveItemsWithInventoriesUseCase();
     final saveFakeNewItem = MockSaveNewItemOrInventoryUseCase();
     final saveFakeToDeleteItem = MockSaveToDeleteItemOrInventoryUseCase();
-    final useCases = ItemUseCases(
+
+
+
+    final useCases = AdventureUseCases(
       fakeGetItems,
       fakeGetNewItem,
       fakeGetToDeleteItem,

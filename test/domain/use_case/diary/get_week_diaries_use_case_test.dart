@@ -26,7 +26,7 @@ void main() {
       5: Diary(emotion: 0, picture: '', desc: '', date: weekend.subtract(const Duration(days: 1))),
       6: Diary(emotion: 0, picture: '', desc: '', date: weekend),
     }));
-    final result = await useCase(now: now);
+    final result = await useCase();
     expect(result, isA<Result<Map<int, Diary>>>());
     verify(repository.getWeekDiaries(now: anyNamed('now')));
   });

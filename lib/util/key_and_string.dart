@@ -4,6 +4,9 @@ class KeyAndString {
   static const progressButton = Key('progressButton');
   static const newItemOrInventory = Key('newItemOrInventory');
   static const toDeleteItemOrInventory = Key('toDeleteItemOrInventory');
+  static const dailyDiaryEmotionsKey = Key('emotionsContainer');
+  static const dailyDiarySelectedEmotionKey = Key('selectedEmotion');
+  static const dailyDiarySaveButton = Key('save');
   static const item = 'item';
   static const position = 'position';
   static const type = 'type';

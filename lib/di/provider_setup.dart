@@ -7,13 +7,13 @@ import 'package:kotori/data/source/item/item_dao_impl.dart';
 import 'package:kotori/data/source/item/items_entity.dart';
 import 'package:kotori/data/source/item/new_item_entity.dart';
 import 'package:kotori/data/source/item/to_delete_item_entity.dart';
-import 'package:kotori/domain/use_case/diary/daily_diary/daily_diary_use_cases.dart';
+import 'package:kotori/domain/use_case/daily_diary_use_cases.dart';
 import 'package:kotori/domain/use_case/diary/get_diary_use_case.dart';
 import 'package:kotori/domain/use_case/diary/save_diary_use_case.dart';
 import 'package:kotori/domain/use_case/item/get_items_with_inventories_use_case.dart';
 import 'package:kotori/domain/use_case/item/get_new_item_or_inventory_use_case.dart';
 import 'package:kotori/domain/use_case/item/get_to_delete_item_or_inventory_use_case.dart';
-import 'package:kotori/domain/use_case/item/item_use_cases.dart';
+import 'package:kotori/domain/use_case/adventure_use_cases.dart';
 import 'package:kotori/domain/use_case/item/save_items_with_inventories_use_case.dart';
 import 'package:kotori/domain/use_case/item/save_new_item_or_inventory_use_case.dart';
 import 'package:kotori/domain/use_case/item/save_to_delete_item_or_inventory_use_case.dart';
@@ -39,7 +39,7 @@ Future<List<SingleChildWidget>> getProviders() async {
   final diaryRepository = DiaryRepositoryImpl(diaryDao);
   final itemRepository = ItemRepositoryImpl(itemDao);
 
-  final itemUseCases = ItemUseCases(
+  final itemUseCases = AdventureUseCases(
     GetItemsWithInventoriesUseCase(itemRepository),
     GetNewItemOrInventoryUseCase(itemRepository),
     GetToDeleteItemOrInventoryUseCase(itemRepository),

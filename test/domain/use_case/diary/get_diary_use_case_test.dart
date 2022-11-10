@@ -26,7 +26,7 @@ void main() {
         ),
       ),
     );
-    final result = await useCase(now: now);
+    final result = await useCase();
     expect(result, isA<Result<Diary>>());
     verify(repository.getDiary(now: anyNamed('now')));
   });

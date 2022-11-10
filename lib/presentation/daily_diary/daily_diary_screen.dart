@@ -52,10 +52,10 @@ class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
     final viewModel = context.read<DailyDiaryViewModel>();
     final diaryState = viewModel.state.diary!;
     final diary = Diary(
-        emotion: selectedColorIdx ?? -1,
-        picture: diaryState.picture,
-        desc: controller.text,
-        date: diaryState.date,
+      emotion: selectedColorIdx ?? -1,
+      picture: diaryState.picture,
+      desc: controller.text,
+      date: diaryState.date,
     );
     await viewModel.saveDiary(diary: diary);
     super.didPop();
@@ -77,7 +77,7 @@ class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
           child: Center(
             child: ListView(
               children: [
-                _buildEmotion(diary: state.diary!),
+                _buildEmotion(diary: state.diary),
                 _buildDesc(diary: state.diary),
               ],
             ),
@@ -86,6 +86,7 @@ class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
         bottomNavigationBar: const SizedBox(height: kBottomNavigationBarHeight),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: FloatingActionButton(
+          key: KeyAndString.dailyDiarySaveButton,
           onPressed: () {
             final inputText = controller.text;
             final newDiary = Diary(
@@ -103,24 +104,28 @@ class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
     );
   }
 
-  Widget _buildEmotion({required Diary diary}) {
+  Widget _buildEmotion({required Diary? diary}) {
     final date =
-        '${diary.date.year}${KeyAndString.year} ${diary.date.month}${KeyAndString.month} ${diary.date.day}${KeyAndString.day}';
+        '${diary?.date.year}${KeyAndString.year} ${diary?.date.month}${KeyAndString.month} ${diary?.date.day}${KeyAndString.day}';
     return Column(
       children: [
         const SizedBox(height: 20),
         Text(
-          date + KeyAndString.dailyDiaryScreenTitle,
+          (diary == null ? '' : date) + KeyAndString.dailyDiaryScreenTitle,
           style: const TextStyle(fontSize: 36),
         ),
         const SizedBox(height: 20),
         Row(
+          key: KeyAndString.dailyDiaryEmotionsKey,
           mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(
             5,
             (index) => Padding(
               padding: const EdgeInsets.symmetric(horizontal: 18),
               child: GestureDetector(
+                key: index == selectedColorIdx
+                    ? KeyAndString.dailyDiarySelectedEmotionKey
+                    : Key(index.toString()),
                 onTap: () {
                   setState(() {
                     selectedColorIdx = index;
@@ -131,7 +136,7 @@ class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
                   width: 40,
                   decoration: BoxDecoration(
                     border: Border.all(
-                      width: _indexChecker(diary.emotion, index) ? 5 : 0,
+                      width: _indexChecker(diary?.emotion ?? -1, index) ? 5 : 0,
                     ),
                     color: colors[index],
                   ),
@@ -162,12 +167,15 @@ class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
           fontSize: 24,
         ),
         decoration: InputDecoration(
-          hintText: diary == null ? KeyAndString.dailyDiaryDescHintText : '',
+          hintText: (diary == null || diary.desc == '')
+              ? KeyAndString.dailyDiaryDescHintText
+              : '',
           focusedBorder: InputBorder.none,
         ),
         onChanged: (text) {
           controller.text = text;
-          controller.selection = TextSelection.fromPosition(TextPosition(offset: controller.text.length));
+          controller.selection = TextSelection.fromPosition(
+              TextPosition(offset: controller.text.length));
         },
       ),
     );

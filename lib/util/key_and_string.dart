@@ -14,6 +14,7 @@ class KeyAndString {
   static const dailyDiaryDescHintText = '오늘의 마음 산행 일지를 적어주세요';
   static const dailyDiaryTempSaved = '일지를 임시저장 했어요';
   static const dailyDiarySaved = '일지를 저장했어요';
+  static const dailySaveFailed = '오늘의 기분을 선택해주세요';
   static const year = '년';
   static const month = '월';
   static const day = '일';

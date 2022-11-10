@@ -143,8 +143,10 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
 
     if (!mounted) return;
 
-    ScaffoldMessenger.of(context)
-      ..removeCurrentSnackBar()
-      ..showSnackBar(SnackBar(behavior: SnackBarBehavior.floating, content: Text('$result')));
+    if (result != null) {
+      ScaffoldMessenger.of(context)
+        ..removeCurrentSnackBar()
+        ..showSnackBar(SnackBar(behavior: SnackBarBehavior.floating, content: Text('$result')));
+    }
   }
 }

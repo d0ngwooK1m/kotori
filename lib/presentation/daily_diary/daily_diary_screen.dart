@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kotori/domain/model/diary.dart';
+import 'package:kotori/presentation/daily_diary/daily_diary_state.dart';
 import 'package:kotori/presentation/daily_diary/daily_diary_view_model.dart';
 import 'package:kotori/util/key_and_string.dart';
 import 'package:kotori/util/modal_route_observer.dart';
@@ -22,7 +23,7 @@ class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
     Colors.green
   ];
 
-  int? selectedColorIdx;
+  int selectedColorIdx = -1;
   TextEditingController controller = TextEditingController();
 
   @override
@@ -44,6 +45,11 @@ class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
     final viewModel = context.read<DailyDiaryViewModel>();
     await viewModel.getDiary(now: Time.now);
     controller.text = viewModel.state.diary!.desc;
+    if (viewModel.state.diary != null) {
+      setState(() {
+        selectedColorIdx = viewModel.state.diary!.emotion;
+      });
+    }
     super.didPush();
   }
 
@@ -52,7 +58,7 @@ class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
     final viewModel = context.read<DailyDiaryViewModel>();
     final diaryState = viewModel.state.diary!;
     final diary = Diary(
-      emotion: selectedColorIdx ?? -1,
+      emotion: selectedColorIdx,
       picture: diaryState.picture,
       desc: controller.text,
       date: diaryState.date,
@@ -69,7 +75,13 @@ class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
     return WillPopScope(
       onWillPop: () async {
         if (!mounted) return false;
-        Navigator.pop(context, KeyAndString.dailyDiaryTempSaved);
+        if (state.diary != null) {
+          if (!(state.diary!.isSaved) && selectedColorIdx != -1) {
+            Navigator.pop(context, KeyAndString.dailyDiaryTempSaved);
+          } else {
+            Navigator.pop(context);
+          }
+        }
         return true;
       },
       child: Scaffold(
@@ -88,15 +100,7 @@ class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
         floatingActionButton: FloatingActionButton(
           key: KeyAndString.dailyDiarySaveButton,
           onPressed: () {
-            final inputText = controller.text;
-            final newDiary = Diary(
-                emotion: selectedColorIdx ?? -1,
-                picture: '',
-                desc: inputText,
-                date: state.diary!.date,
-                isSaved: true);
-            viewModel.saveDiary(diary: newDiary);
-            Navigator.pop(context, KeyAndString.dailyDiarySaved);
+            _saveDiary(viewModel, state);
           },
           child: const Icon(Icons.save),
         ),
@@ -107,6 +111,7 @@ class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
   Widget _buildEmotion({required Diary? diary}) {
     final date =
         '${diary?.date.year}${KeyAndString.year} ${diary?.date.month}${KeyAndString.month} ${diary?.date.day}${KeyAndString.day}';
+
     return Column(
       children: [
         const SizedBox(height: 20),
@@ -136,7 +141,7 @@ class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
                   width: 40,
                   decoration: BoxDecoration(
                     border: Border.all(
-                      width: _indexChecker(diary?.emotion ?? -1, index) ? 5 : 0,
+                      width: selectedColorIdx == index ? 5 : 0,
                     ),
                     color: colors[index],
                   ),
@@ -147,14 +152,6 @@ class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
         ),
       ],
     );
-  }
-
-  bool _indexChecker(int emotion, int index) {
-    if (selectedColorIdx != null) {
-      return selectedColorIdx == index;
-    } else {
-      return emotion == index;
-    }
   }
 
   Widget _buildDesc({required Diary? diary}) {
@@ -179,5 +176,26 @@ class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
         },
       ),
     );
+  }
+
+  void _saveDiary(DailyDiaryViewModel viewModel, DailyDiaryState state) {
+    final inputText = controller.text;
+    final newDiary = Diary(
+        emotion: selectedColorIdx,
+        picture: '',
+        desc: inputText,
+        date: state.diary!.date,
+        isSaved: true);
+    if (selectedColorIdx == -1) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          behavior: SnackBarBehavior.floating,
+          content: Text(KeyAndString.dailySaveFailed),
+        ),
+      );
+      return;
+    }
+    viewModel.saveDiary(diary: newDiary);
+    Navigator.pop(context, KeyAndString.dailyDiarySaved);
   }
 }

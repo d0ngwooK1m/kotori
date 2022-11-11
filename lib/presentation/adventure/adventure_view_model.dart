@@ -4,17 +4,16 @@ import 'package:kotori/domain/use_case/adventure_use_cases.dart';
 import 'package:kotori/presentation/adventure/adventure_state.dart';
 import 'package:kotori/util/default_item.dart';
 import 'package:kotori/util/result.dart';
+import 'package:kotori/util/time.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AdventureViewModel extends ChangeNotifier {
   final AdventureUseCases useCases;
-  AdventureState _state = AdventureState(newItem: DefaultItem.inventory, deleteItem: DefaultItem.inventory);
+  AdventureState _state = AdventureState();
 
   AdventureState get state => _state;
 
-  AdventureViewModel(this.useCases) {
-    checkFirstTime();
-  }
+  AdventureViewModel(this.useCases);
 
   final inventory = DefaultItem.inventory;
   final newItem = DefaultItem.item;
@@ -47,7 +46,6 @@ class AdventureViewModel extends ChangeNotifier {
         _state = state.copyWith(isLoading: false, message: e.toString());
       },
     );
-    checkProcess();
     notifyListeners();
   }
 
@@ -71,10 +69,10 @@ class AdventureViewModel extends ChangeNotifier {
     _state = state.copyWith(isLoading: true);
     notifyListeners();
     _state = state.copyWith(
-        isLoading: false,
-        items: DefaultItem.firstItemsAndInventories,
-        newItem: inventory,
-        deleteItem: inventory,
+      isLoading: false,
+      items: DefaultItem.firstItemsAndInventories,
+      newItem: inventory,
+      deleteItem: inventory,
     );
     notifyListeners();
   }
@@ -107,12 +105,13 @@ class AdventureViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> itemsToDeleteItem({required Item item, required int prevPosition}) async {
+  Future<void> itemsToDeleteItem(
+      {required Item item, required int prevPosition}) async {
     List<Item> inventoryItemList = [];
     for (var element in state.items) {
       inventoryItemList.add(element);
     }
-    if(state.deleteItem.isInventory) {
+    if (state.deleteItem!.isInventory) {
       inventoryItemList[prevPosition] = inventory;
       _state = state.copyWith(deleteItem: item, items: inventoryItemList);
     } else {
@@ -123,7 +122,8 @@ class AdventureViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> deleteItemToItems({required int positionTo, required Item item}) async {
+  Future<void> deleteItemToItems(
+      {required int positionTo, required Item item}) async {
     List<Item> inventoryItemList = [];
     for (var element in state.items) {
       inventoryItemList.add(element);
@@ -140,23 +140,29 @@ class AdventureViewModel extends ChangeNotifier {
   }
 
   Future<void> newItemToDeleteItem(Item item) async {
-    if (state.deleteItem.isInventory) {
+    if (state.deleteItem!.isInventory) {
       _state = state.copyWith(newItem: inventory, deleteItem: item);
     }
     notifyListeners();
   }
 
-  Future<void> checkProcess() async {
-    if (state.newItem.isInventory && !state.deleteItem.isInventory) {
-      _state = state.copyWith(isOkayToProcess: true);
-    } else {
-      _state = state.copyWith(isOkayToProcess: false);
-    }
+  Future<void> checkIsOkayToDelete() async {
+    _state = state.copyWith(isOkayToDelete: true);
     notifyListeners();
   }
 
-  Future<void> completeProcess() async {
-    _state = state.copyWith(deleteItem: inventory, isOkayToProcess: false);
+  Future<void> completeIsOkayToDelete() async {
+    _state = state.copyWith(deleteItem: inventory, isOkayToDelete: false);
+    notifyListeners();
+  }
+
+  Future<void> checkIsOkayToUse() async {
+    _state = state.copyWith(isOkayToUse: true);
+    notifyListeners();
+  }
+
+  Future<void> completeIsOkayToUse() async {
+    _state = state.copyWith(isOkayToUse: false);
     notifyListeners();
   }
 
@@ -180,5 +186,38 @@ class AdventureViewModel extends ChangeNotifier {
         _state = state.copyWith(isLoading: false, message: e.toString());
       },
     );
+  }
+
+  Future<void> checkNewItemGenerate() async {
+    print('first working');
+    bool isItemAlreadyExist = false;
+    for (var element in state.items) {
+      if (!element.isInventory && element.date == Time.now) {
+        isItemAlreadyExist = true;
+      }
+    }
+    if ((!state.newItem!.isInventory && state.newItem!.date == Time.now) ||
+        (!state.deleteItem!.isInventory &&
+            state.deleteItem!.date == Time.now)) {
+      isItemAlreadyExist = true;
+    }
+    if (!isItemAlreadyExist) {
+      print('check new Item gen working');
+      final result = await useCases.isOkayToMakeNewItemUseCase();
+      result.when(
+        success: (data) {
+          print('data is $data');
+          if (data == true) {
+            _state = state.copyWith(newItem: DefaultItem.item);
+          } else if (data == false) {
+            // TODO 사용화면 만들어 둘 것
+          }
+        },
+        error: (e) {
+          _state = state.copyWith(message: e.toString());
+        },
+      );
+      notifyListeners();
+    }
   }
 }

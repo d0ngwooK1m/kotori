@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:kotori/domain/model/diary.dart';
 import 'package:kotori/domain/use_case/daily_diary_use_cases.dart';
+import 'package:kotori/presentation/adventure/adventure_state.dart';
 import 'package:kotori/presentation/daily_diary/daily_diary_state.dart';
 import 'package:kotori/util/time.dart';
 
 class DailyDiaryViewModel extends ChangeNotifier {
   final DailyDiaryUseCases useCases;
 
-  var _state = DailyDiaryState();
+  DailyDiaryState _state = DailyDiaryState();
 
   DailyDiaryState get state => _state;
 
-  DailyDiaryViewModel(this.useCases) {
-    getDiary(now: Time.now);
-  }
+  DailyDiaryViewModel(this.useCases);
 
   Future<void> getDiary({required DateTime now}) async {
     final result = await useCases.getDiaryUseCase();

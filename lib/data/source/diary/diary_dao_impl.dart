@@ -23,7 +23,32 @@ class DiaryDaoImpl implements DiaryDao {
     }
   }
 
-  // 일기 저장
+  @override
+  Future<bool?> isOkayToMakeItem() async {
+    if (box.values.length >= 2) {
+      final lastDiary = box.values.last;
+      final oneBeforeLastDiary = box.values.elementAt(box.values.length - 2);
+      if (lastDiary.isSaved && oneBeforeLastDiary.isSaved) {
+        if (lastDiary.emotion > oneBeforeLastDiary.emotion) {
+          return true;
+        } else if (lastDiary.emotion < oneBeforeLastDiary.emotion) {
+          return false;
+        } else {
+          return null;
+        }
+      } else {
+        return null;
+      }
+    } else {
+      if (box.values.isNotEmpty) {
+        final lastDiary = box.values.last;
+        return lastDiary.isSaved ? true : null;
+      } else {
+        return null;
+      }
+    }
+  }
+
   @override
   Future<void> saveDiary({
     required DiaryEntity diary,

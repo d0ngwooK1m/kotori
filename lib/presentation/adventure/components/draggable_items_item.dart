@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:kotori/domain/model/item.dart';
 import 'package:kotori/domain/util/item_and_inventory_types.dart';
+import 'package:kotori/presentation/adventure/adventure_view_model.dart';
 import 'package:kotori/util/key_and_string.dart';
 
-class DraggableItem extends StatelessWidget {
+class DraggableItemsItem extends StatelessWidget {
+  final AdventureViewModel viewModel;
   final double size;
   final int? position;
-  final Item item;
   final ItemAndInventoryTypes type;
 
-  const DraggableItem(
-      {Key? key, required this.size, this.position, required this.item, required this.type,})
+  const DraggableItemsItem(
+      {Key? key, required this.viewModel, required this.size, this.position, required this.type,})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Draggable(
-      key: Key(item.date.millisecondsSinceEpoch.toString()),
+      key: Key(viewModel.newItem.date.millisecondsSinceEpoch.toString()),
       data: {
-        KeyAndString.item : item,
+        KeyAndString.item : viewModel.state.items[position!],
         KeyAndString.position : position,
         KeyAndString.type : type,
       },

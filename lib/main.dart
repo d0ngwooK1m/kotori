@@ -8,6 +8,7 @@ import 'package:kotori/di/provider_setup.dart';
 import 'package:kotori/presentation/adventure/adventure_screen.dart';
 import 'package:kotori/presentation/adventure/adventure_view_model.dart';
 import 'package:kotori/presentation/daily_diary/daily_diary_screen.dart';
+import 'package:kotori/util/default_item.dart';
 import 'package:kotori/util/modal_route_observer.dart';
 import 'package:provider/provider.dart';
 
@@ -74,8 +75,8 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
     } else if (state == AppLifecycleState.inactive) {
       adventureViewModel.saveEveryItemOrInventory(
         items: adventureState.items,
-        newItem: adventureState.newItem,
-        toDeleteItem: adventureState.deleteItem,
+        newItem: adventureState.newItem!,
+        toDeleteItem: adventureState.deleteItem!,
       );
     }
   }
@@ -115,8 +116,8 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
               } else {
                 viewModel.saveEveryItemOrInventory(
                   items: state.items,
-                  newItem: state.newItem,
-                  toDeleteItem: state.deleteItem,
+                  newItem: state.newItem!,
+                  toDeleteItem: state.deleteItem!,
                 );
               }
             },
@@ -125,10 +126,17 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
+        backgroundColor: state.isOkayToDelete || state.isOkayToUse ? Colors.red : Colors.blue,
         onPressed: () {
-          _navigateAndDisplaySelection(context);
+          if (state.isOkayToDelete || state.isOkayToUse) {
+            _showDialog(context, viewModel);
+          } else {
+            _navigateAndDisplaySelection(context);
+          }
         },
-        child: const Icon(Icons.edit),
+        child: state.isOkayToDelete || state.isOkayToUse
+            ? const Icon(Icons.forward)
+            : const Icon(Icons.edit),
       ),
     );
   }
@@ -146,7 +154,49 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
     if (result != null) {
       ScaffoldMessenger.of(context)
         ..removeCurrentSnackBar()
-        ..showSnackBar(SnackBar(behavior: SnackBarBehavior.floating, content: Text('$result')));
+        ..showSnackBar(SnackBar(
+            duration: const Duration(milliseconds: 1500),
+            behavior: SnackBarBehavior.floating,
+            content: Text('$result')));
     }
+  }
+
+  dynamic _showDialog(BuildContext context, AdventureViewModel viewModel) {
+    final state = viewModel.state;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext buildContext) {
+        return AlertDialog(
+          content: state.isOkayToDelete && !state.isOkayToUse
+              ? Text('아이템을 삭제할까요?')
+              : Text('아이템을 사용할까요?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                if (!mounted) return;
+                if (state.isOkayToDelete && !state.isOkayToUse) {
+                  viewModel.saveEveryItemOrInventory(
+                      items: state.items,
+                      newItem: state.newItem!,
+                      toDeleteItem: DefaultItem.inventory);
+                  viewModel.completeIsOkayToDelete();
+                } else {
+                  //TODO: 사용 state에 추가 하고 저장
+                }
+                Navigator.of(buildContext).pop();
+              },
+              child: Text('예'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(buildContext).pop();
+              },
+              child: Text('아니오'),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

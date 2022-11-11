@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:kotori/domain/util/item_and_inventory_types.dart';
 import 'package:kotori/presentation/adventure/adventure_state.dart';
 import 'package:kotori/presentation/adventure/adventure_view_model.dart';
-import 'package:kotori/presentation/adventure/components/drag_target_inventory.dart';
+import 'package:kotori/presentation/adventure/components/drag_target_items_inventory.dart';
+import 'package:kotori/presentation/adventure/components/drag_target_new_inventory.dart';
+import 'package:kotori/presentation/adventure/components/drag_target_to_delete_inventory.dart';
 import 'package:kotori/util/key_and_string.dart';
 import 'package:kotori/util/modal_route_observer.dart';
 import 'package:provider/provider.dart';
@@ -28,6 +30,7 @@ class _AdventureScreenState extends State<AdventureScreen> with RouteAware {
     super.dispose();
   }
 
+
   @override
   Future<void> didPush() async {
     final viewModel = context.read<AdventureViewModel>();
@@ -41,8 +44,8 @@ class _AdventureScreenState extends State<AdventureScreen> with RouteAware {
     final state = viewModel.state;
     await viewModel.saveEveryItemOrInventory(
       items: state.items,
-      newItem: state.newItem,
-      toDeleteItem: state.deleteItem,
+      newItem: state.newItem!,
+      toDeleteItem: state.deleteItem!,
     );
     super.didPop();
   }
@@ -55,18 +58,18 @@ class _AdventureScreenState extends State<AdventureScreen> with RouteAware {
       body: state.items.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : SafeArea(
-              child: SizedBox(
-                width: double.infinity,
-                child: Column(
-                  children: [
-                    const SizedBox(height: 100),
-                    _buildInventory(viewModel, state),
-                    const SizedBox(height: 100),
-                    _buildAdventureArea(viewModel, state),
-                  ],
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 100),
+                        _buildInventory(viewModel, state),
+                        const SizedBox(height: 100),
+                        _buildAdventureArea(viewModel),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-            ),
     );
   }
 
@@ -79,10 +82,9 @@ class _AdventureScreenState extends State<AdventureScreen> with RouteAware {
         Positioned(
           top: top * 100,
           left: left * 100,
-          child: DragTargetInventory(
+          child: DragTargetItemsInventory(
             viewModel: viewModel,
             type: ItemAndInventoryTypes.itemsWithInventories,
-            item: state.items[i],
             position: i,
           ),
         ),
@@ -101,8 +103,7 @@ class _AdventureScreenState extends State<AdventureScreen> with RouteAware {
     );
   }
 
-  Widget _buildAdventureArea(
-      AdventureViewModel viewModel, AdventureState state) {
+  Widget _buildAdventureArea(AdventureViewModel viewModel) {
     return Expanded(
       child: Container(
         decoration: BoxDecoration(
@@ -114,28 +115,18 @@ class _AdventureScreenState extends State<AdventureScreen> with RouteAware {
           children: [
             Container(
               alignment: const FractionalOffset(0.8, 0.8),
-              child: state.isOkayToProcess
-                  ? GestureDetector(
-                      key: KeyAndString.progressButton,
-                      onTap: () {
-                        viewModel.completeProcess();
-                      },
-                      child: const Icon(Icons.forward, size: 60),
-                    )
-                  : DragTargetInventory(
-                      key: KeyAndString.newItemOrInventory,
-                      viewModel: viewModel,
-                      type: ItemAndInventoryTypes.newItem,
-                      item: state.newItem,
-                    ),
+              child: DragTargetNewInventory(
+                key: KeyAndString.newItemOrInventory,
+                viewModel: viewModel,
+                type: ItemAndInventoryTypes.newItem,
+              ),
             ),
             Container(
               alignment: const FractionalOffset(0.2, 0.8),
-              child: DragTargetInventory(
+              child: DragTargetToDeleteInventory(
                 key: KeyAndString.toDeleteItemOrInventory,
                 viewModel: viewModel,
                 type: ItemAndInventoryTypes.toDeleteItem,
-                item: state.deleteItem,
               ),
             )
           ],

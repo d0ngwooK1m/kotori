@@ -20,6 +20,16 @@ class DiaryRepositoryImpl implements DiaryRepository {
   }
 
   @override
+  Future<Result<bool?>> isOkayToMakeItem() async {
+    final result = await _dao.isOkayToMakeItem();
+    try {
+      return Result.success(result);
+    } catch (e) {
+      return Result.error(Exception('Is okay to make item failed : ${e.toString()}'));
+    }
+  }
+
+  @override
   Future<Result<void>> saveDiary({required Diary diary}) async {
     try {
       await _dao.saveDiary(diary: diary.toDiaryEntity());

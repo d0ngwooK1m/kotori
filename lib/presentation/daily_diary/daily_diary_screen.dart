@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kotori/domain/model/diary.dart';
+import 'package:kotori/presentation/adventure/adventure_view_model.dart';
 import 'package:kotori/presentation/daily_diary/daily_diary_state.dart';
 import 'package:kotori/presentation/daily_diary/daily_diary_view_model.dart';
 import 'package:kotori/util/key_and_string.dart';
@@ -70,6 +71,7 @@ class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
   @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<DailyDiaryViewModel>();
+    final itemViewModel = context.read<AdventureViewModel>();
     final state = viewModel.state;
 
     return WillPopScope(
@@ -99,8 +101,8 @@ class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: FloatingActionButton(
           key: KeyAndString.dailyDiarySaveButton,
-          onPressed: () {
-            _saveDiary(viewModel, state);
+          onPressed: () async {
+            await _saveDiary(viewModel, itemViewModel, state);
           },
           child: const Icon(Icons.save),
         ),
@@ -160,7 +162,7 @@ class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
       child: TextField(
         controller: controller,
         maxLines: 10,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 24,
         ),
         decoration: InputDecoration(
@@ -178,24 +180,27 @@ class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
     );
   }
 
-  void _saveDiary(DailyDiaryViewModel viewModel, DailyDiaryState state) {
+  Future<void> _saveDiary(DailyDiaryViewModel viewModel, AdventureViewModel itemViewModel, DailyDiaryState state) async {
     final inputText = controller.text;
     final newDiary = Diary(
         emotion: selectedColorIdx,
         picture: '',
         desc: inputText,
         date: state.diary!.date,
-        isSaved: true);
+        isSaved: true,);
     if (selectedColorIdx == -1) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
+          duration: Duration(milliseconds: 1500),
           behavior: SnackBarBehavior.floating,
           content: Text(KeyAndString.dailySaveFailed),
         ),
       );
       return;
     }
-    viewModel.saveDiary(diary: newDiary);
+    await viewModel.saveDiary(diary: newDiary);
+    await itemViewModel.checkNewItemGenerate();
+    if (!mounted) return;
     Navigator.pop(context, KeyAndString.dailyDiarySaved);
   }
 }

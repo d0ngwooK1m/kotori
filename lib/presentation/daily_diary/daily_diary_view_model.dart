@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kotori/domain/model/diary.dart';
 import 'package:kotori/domain/use_case/daily_diary_use_cases.dart';
-import 'package:kotori/presentation/adventure/adventure_state.dart';
 import 'package:kotori/presentation/daily_diary/daily_diary_state.dart';
-import 'package:kotori/util/time.dart';
 
 class DailyDiaryViewModel extends ChangeNotifier {
   final DailyDiaryUseCases useCases;
@@ -43,6 +41,4 @@ class DailyDiaryViewModel extends ChangeNotifier {
       },
     );
   }
-
-
 }

@@ -1,25 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:kotori/domain/model/item.dart';
 import 'package:kotori/domain/util/item_and_inventory_types.dart';
 import 'package:kotori/presentation/adventure/adventure_view_model.dart';
 import 'package:kotori/util/key_and_string.dart';
+import 'package:kotori/util/time.dart';
+import 'package:provider/provider.dart';
 
 class DraggableNewItem extends StatelessWidget {
-  final AdventureViewModel viewModel;
   final double size;
   final int? position;
   final ItemAndInventoryTypes type;
 
   const DraggableNewItem(
-      {Key? key, required this.viewModel, required this.size, this.position, required this.type,})
+      {Key? key, required this.size, this.position, required this.type,})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final viewModel = context.watch<AdventureViewModel>();
+    final state = viewModel.state;
     return Draggable(
-      key: Key(viewModel.newItem.date.millisecondsSinceEpoch.toString()),
+      key: Key(state.newItem?.date.millisecondsSinceEpoch.toString() ?? Time.now.toString()),
       data: {
-        KeyAndString.item : viewModel.state.newItem,
+        KeyAndString.item : state.newItem,
         KeyAndString.position : position,
         KeyAndString.type : type,
       },
@@ -28,7 +30,7 @@ class DraggableNewItem extends StatelessWidget {
           width: size,
           height: size,
           color: Colors.blue,
-          child: const Text('test'),
+          child: Text(state.newItem?.date.toString() ?? KeyAndString.item),
         ),
       ),
       childWhenDragging: Container(
@@ -45,7 +47,7 @@ class DraggableNewItem extends StatelessWidget {
         width: size,
         height: size,
         color: Colors.blue,
-        child: const Text('test'),
+        child: Text(viewModel.state.newItem?.date.toString() ?? KeyAndString.item),
       ),
     );
   }

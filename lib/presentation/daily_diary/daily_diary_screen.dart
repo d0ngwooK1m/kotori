@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kotori/domain/model/diary.dart';
 import 'package:kotori/presentation/adventure/adventure_view_model.dart';
-import 'package:kotori/presentation/daily_diary/daily_diary_state.dart';
 import 'package:kotori/presentation/daily_diary/daily_diary_view_model.dart';
 import 'package:kotori/util/key_and_string.dart';
 import 'package:kotori/util/modal_route_observer.dart';
@@ -44,69 +43,71 @@ class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
   @override
   Future<void> didPush() async {
     final viewModel = context.read<DailyDiaryViewModel>();
+    final diaryViewModel = context.watch<DailyDiaryViewModel>();
+
     await viewModel.getDiary(now: Time.now);
-    controller.text = viewModel.state.diary!.desc;
-    if (viewModel.state.diary != null) {
-      setState(() {
-        selectedColorIdx = viewModel.state.diary!.emotion;
-      });
-    }
+    controller.text = diaryViewModel.state.diary?.desc ?? '';
+    setState(() {
+      selectedColorIdx = diaryViewModel.state.diary?.emotion ?? -1;
+    });
     super.didPush();
   }
 
   @override
   Future<void> didPop() async {
-    final viewModel = context.read<DailyDiaryViewModel>();
-    final diaryState = viewModel.state.diary!;
+    final diaryViewModel = context.read<DailyDiaryViewModel>();
+    final diaryState = diaryViewModel.state;
     final diary = Diary(
       emotion: selectedColorIdx,
-      picture: diaryState.picture,
+      picture: diaryState.diary?.picture ?? '',
       desc: controller.text,
-      date: diaryState.date,
+      date: diaryState.diary?.date ?? Time.now,
     );
-    await viewModel.saveDiary(diary: diary);
+    await diaryViewModel.saveDiary(diary: diary);
     super.didPop();
   }
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<DailyDiaryViewModel>();
-    final itemViewModel = context.read<AdventureViewModel>();
-    final state = viewModel.state;
-
-    return WillPopScope(
-      onWillPop: () async {
-        if (!mounted) return false;
-        if (state.diary != null) {
-          if (!(state.diary!.isSaved) && selectedColorIdx != -1) {
-            Navigator.pop(context, KeyAndString.dailyDiaryTempSaved);
-          } else {
-            Navigator.pop(context);
-          }
-        }
-        return true;
-      },
-      child: Scaffold(
-        body: SafeArea(
-          child: Center(
-            child: ListView(
-              children: [
-                _buildEmotion(diary: state.diary),
-                _buildDesc(diary: state.diary),
-              ],
+    return Consumer<DailyDiaryViewModel>(
+      builder: (_, viewModel, __) {
+        final state = viewModel.state;
+        final adventureViewModel = context.read<AdventureViewModel>();
+        return WillPopScope(
+          onWillPop: () async {
+            if (!mounted) return false;
+            if (state.diary != null) {
+              if (!(state.diary!.isSaved) && selectedColorIdx != -1) {
+                Navigator.pop(context, KeyAndString.dailyDiaryTempSaved);
+              } else {
+                Navigator.pop(context);
+              }
+            }
+            return true;
+          },
+          child: Scaffold(
+            body: SafeArea(
+              child: Center(
+                child: ListView(
+                  children: [
+                    _buildEmotion(diary: state.diary),
+                    _buildDesc(diary: state.diary),
+                  ],
+                ),
+              ),
+            ),
+            bottomNavigationBar: const SizedBox(height: kBottomNavigationBarHeight),
+            floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+            floatingActionButton: FloatingActionButton(
+              key: KeyAndString.dailyDiarySaveButton,
+              onPressed: () async {
+                await _saveDiary(viewModel, adventureViewModel);
+              },
+              child: const Icon(Icons.save),
             ),
           ),
-        ),
-        bottomNavigationBar: const SizedBox(height: kBottomNavigationBarHeight),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        floatingActionButton: FloatingActionButton(
-          key: KeyAndString.dailyDiarySaveButton,
-          onPressed: () async {
-            await _saveDiary(viewModel, itemViewModel, state);
-          },
-          child: const Icon(Icons.save),
-        ),
-      ),
+        );
+      }
     );
   }
 
@@ -180,14 +181,16 @@ class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
     );
   }
 
-  Future<void> _saveDiary(DailyDiaryViewModel viewModel, AdventureViewModel itemViewModel, DailyDiaryState state) async {
+  Future<void> _saveDiary(DailyDiaryViewModel diaryViewModel, AdventureViewModel adventureViewModel) async {
+    final state = diaryViewModel.state;
     final inputText = controller.text;
     final newDiary = Diary(
         emotion: selectedColorIdx,
         picture: '',
         desc: inputText,
         date: state.diary!.date,
-        isSaved: true,);
+        isSaved: true,
+    );
     if (selectedColorIdx == -1) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -198,8 +201,8 @@ class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
       );
       return;
     }
-    await viewModel.saveDiary(diary: newDiary);
-    await itemViewModel.checkNewItemGenerate();
+    await diaryViewModel.saveDiary(diary: newDiary);
+    await adventureViewModel.checkNewItemGenerate();
     if (!mounted) return;
     Navigator.pop(context, KeyAndString.dailyDiarySaved);
   }

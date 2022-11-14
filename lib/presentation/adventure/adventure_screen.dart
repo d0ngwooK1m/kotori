@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:kotori/domain/util/item_and_inventory_types.dart';
-import 'package:kotori/presentation/adventure/adventure_state.dart';
 import 'package:kotori/presentation/adventure/adventure_view_model.dart';
 import 'package:kotori/presentation/adventure/components/drag_target_items_inventory.dart';
 import 'package:kotori/presentation/adventure/components/drag_target_new_inventory.dart';
 import 'package:kotori/presentation/adventure/components/drag_target_to_delete_inventory.dart';
+import 'package:kotori/presentation/adventure/components/drag_target_to_use_item_inventory.dart';
 import 'package:kotori/util/key_and_string.dart';
 import 'package:kotori/util/modal_route_observer.dart';
 import 'package:provider/provider.dart';
@@ -30,7 +30,6 @@ class _AdventureScreenState extends State<AdventureScreen> with RouteAware {
     super.dispose();
   }
 
-
   @override
   Future<void> didPush() async {
     final viewModel = context.read<AdventureViewModel>();
@@ -53,27 +52,24 @@ class _AdventureScreenState extends State<AdventureScreen> with RouteAware {
   @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<AdventureViewModel>();
-    final state = viewModel.state;
     return Scaffold(
-      body: state.items.isEmpty
-          ? const Center(child: CircularProgressIndicator())
-          : SafeArea(
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 100),
-                        _buildInventory(viewModel, state),
-                        const SizedBox(height: 100),
-                        _buildAdventureArea(viewModel),
-                      ],
-                    ),
-                  ),
+      body: SafeArea(
+              child: SizedBox(
+                width: double.infinity,
+                child: Column(
+                  children: [
+                    const SizedBox(height: 100),
+                    _buildInventory(),
+                    const SizedBox(height: 100),
+                    _buildAdventureArea(viewModel),
+                  ],
                 ),
+              ),
+            ),
     );
   }
 
-  Widget _buildInventory(AdventureViewModel viewModel, AdventureState state) {
+  Widget _buildInventory() {
     final List<Widget> slots = [];
     for (var i = 0; i < 9; i++) {
       final top = (i ~/ 3);
@@ -83,7 +79,6 @@ class _AdventureScreenState extends State<AdventureScreen> with RouteAware {
           top: top * 100,
           left: left * 100,
           child: DragTargetItemsInventory(
-            viewModel: viewModel,
             type: ItemAndInventoryTypes.itemsWithInventories,
             position: i,
           ),
@@ -104,6 +99,7 @@ class _AdventureScreenState extends State<AdventureScreen> with RouteAware {
   }
 
   Widget _buildAdventureArea(AdventureViewModel viewModel) {
+    final state = viewModel.state;
     return Expanded(
       child: Container(
         decoration: BoxDecoration(
@@ -112,26 +108,42 @@ class _AdventureScreenState extends State<AdventureScreen> with RouteAware {
           ),
         ),
         child: Stack(
-          children: [
-            Container(
-              alignment: const FractionalOffset(0.8, 0.8),
-              child: DragTargetNewInventory(
-                key: KeyAndString.newItemOrInventory,
-                viewModel: viewModel,
-                type: ItemAndInventoryTypes.newItem,
-              ),
-            ),
-            Container(
-              alignment: const FractionalOffset(0.2, 0.8),
-              child: DragTargetToDeleteInventory(
-                key: KeyAndString.toDeleteItemOrInventory,
-                viewModel: viewModel,
-                type: ItemAndInventoryTypes.toDeleteItem,
-              ),
-            )
-          ],
+          children: !state.isOkayToUse
+              ? _buildNormalInventories()
+              : _buildToUseInventory(context),
         ),
       ),
     );
+  }
+
+  List<Widget> _buildNormalInventories() {
+    return [
+      Container(
+        alignment: const FractionalOffset(0.8, 0.8),
+        child: const DragTargetNewInventory(
+          key: KeyAndString.newItemOrInventory,
+          type: ItemAndInventoryTypes.newItem,
+        ),
+      ),
+      Container(
+        alignment: const FractionalOffset(0.2, 0.8),
+        child: const DragTargetToDeleteInventory(
+          key: KeyAndString.toDeleteItemOrInventory,
+          type: ItemAndInventoryTypes.toDeleteItem,
+        ),
+      ),
+    ];
+  }
+
+  List<Widget> _buildToUseInventory(BuildContext context) {
+    return [
+      Container(
+        alignment: const FractionalOffset(0.5, 0.8),
+        child: DragTargetToUseItemInventory(
+          context: context,
+          type: ItemAndInventoryTypes.toUseItem,
+        ),
+      ),
+    ];
   }
 }

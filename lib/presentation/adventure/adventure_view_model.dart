@@ -146,6 +146,16 @@ class AdventureViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> itemsToUseItem(int position, Item item) async {
+    List<Item> inventoryItemList = [];
+    for (var element in state.items) {
+      inventoryItemList.add(element);
+    }
+    inventoryItemList[position] = inventory;
+    _state = state.copyWith(items: inventoryItemList, isOkayToUse: true);
+    notifyListeners();
+  }
+
   Future<void> checkIsOkayToDelete() async {
     _state = state.copyWith(isOkayToDelete: true);
     notifyListeners();
@@ -189,28 +199,27 @@ class AdventureViewModel extends ChangeNotifier {
   }
 
   Future<void> checkNewItemGenerate() async {
-    print('first working');
     bool isItemAlreadyExist = false;
     for (var element in state.items) {
       if (!element.isInventory && element.date == Time.now) {
         isItemAlreadyExist = true;
       }
     }
-    if ((!state.newItem!.isInventory && state.newItem!.date == Time.now) ||
+    if ((!state.newItem!.isInventory &&
+            state.newItem!.date == Time.now) ||
         (!state.deleteItem!.isInventory &&
             state.deleteItem!.date == Time.now)) {
       isItemAlreadyExist = true;
     }
     if (!isItemAlreadyExist) {
-      print('check new Item gen working');
       final result = await useCases.isOkayToMakeNewItemUseCase();
       result.when(
-        success: (data) {
-          print('data is $data');
+        success: (data) async {
+
           if (data == true) {
             _state = state.copyWith(newItem: DefaultItem.item);
           } else if (data == false) {
-            // TODO 사용화면 만들어 둘 것
+            _state = state.copyWith(isOkayToUse: true);
           }
         },
         error: (e) {

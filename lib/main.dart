@@ -9,6 +9,7 @@ import 'package:kotori/presentation/adventure/adventure_screen.dart';
 import 'package:kotori/presentation/adventure/adventure_view_model.dart';
 import 'package:kotori/presentation/daily_diary/daily_diary_screen.dart';
 import 'package:kotori/util/default_item.dart';
+import 'package:kotori/util/key_and_string.dart';
 import 'package:kotori/util/modal_route_observer.dart';
 import 'package:provider/provider.dart';
 
@@ -67,16 +68,15 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
+    // if (!mounted) return;
     final adventureViewModel = context.read<AdventureViewModel>();
     final adventureState = adventureViewModel.state;
 
-    if (state == AppLifecycleState.resumed) {
-      adventureViewModel.checkFirstTime();
-    } else if (state == AppLifecycleState.inactive) {
+    if (state == AppLifecycleState.inactive) {
       adventureViewModel.saveEveryItemOrInventory(
         items: adventureState.items,
-        newItem: adventureState.newItem!,
-        toDeleteItem: adventureState.deleteItem!,
+        newItem: adventureState.newItem ?? DefaultItem.inventory,
+        toDeleteItem: adventureState.deleteItem ?? DefaultItem.inventory,
       );
     }
   }
@@ -95,50 +95,51 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<AdventureViewModel>();
-    final state = viewModel.state;
-    return Scaffold(
-      body: SafeArea(
-        child: widgets.elementAt(index),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.map), label: 'adventure'),
-          BottomNavigationBarItem(icon: Icon(Icons.auto_graph), label: 'graph'),
-        ],
-        currentIndex: index,
-        onTap: (int page) {
-          setState(
-            () {
-              index = page;
-              if (page == 0) {
-                viewModel.getEveryItemOrInventory();
-              } else {
-                viewModel.saveEveryItemOrInventory(
-                  items: state.items,
-                  newItem: state.newItem!,
-                  toDeleteItem: state.deleteItem!,
-                );
-              }
-            },
-          );
-        },
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: state.isOkayToDelete || state.isOkayToUse ? Colors.red : Colors.blue,
-        onPressed: () {
-          if (state.isOkayToDelete || state.isOkayToUse) {
-            _showDialog(context, viewModel);
-          } else {
-            _navigateAndDisplaySelection(context);
-          }
-        },
-        child: state.isOkayToDelete || state.isOkayToUse
-            ? const Icon(Icons.forward)
-            : const Icon(Icons.edit),
-      ),
-    );
+    return Consumer<AdventureViewModel>(builder: (_, viewModel, __) {
+      final state = viewModel.state;
+      return Scaffold(
+        body: SafeArea(
+          child: widgets.elementAt(index),
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.map), label: 'adventure'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.auto_graph), label: 'graph'),
+          ],
+          currentIndex: index,
+          onTap: (int page) async {
+            await viewModel.saveEveryItemOrInventory(
+              items: state.items,
+              newItem: state.newItem!,
+              toDeleteItem: state.deleteItem!,
+            );
+            await viewModel.getEveryItemOrInventory();
+            setState(() {
+                // if (!mounted) return;
+                index = page;
+              });
+          },
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButton: FloatingActionButton(
+          key: KeyAndString.fabKey,
+          backgroundColor: state.isOkayToDelete || state.isOkayToUse
+              ? Colors.red
+              : Colors.blue,
+          onPressed: () {
+            if (state.isOkayToDelete || state.isOkayToUse) {
+              _showDialog(context, viewModel);
+            } else {
+              _navigateAndDisplaySelection(context);
+            }
+          },
+          child: state.isOkayToDelete || state.isOkayToUse
+              ? const Icon(Icons.forward)
+              : const Icon(Icons.edit),
+        ),
+      );
+    });
   }
 
   Future<void> _navigateAndDisplaySelection(BuildContext context) async {
@@ -169,12 +170,11 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
       builder: (BuildContext buildContext) {
         return AlertDialog(
           content: state.isOkayToDelete && !state.isOkayToUse
-              ? Text('아이템을 삭제할까요?')
-              : Text('아이템을 사용할까요?'),
+              ? const Text(KeyAndString.mainPageToDeleteText)
+              : const Text(KeyAndString.mainPageToUseItemText),
           actions: [
             TextButton(
               onPressed: () {
-                if (!mounted) return;
                 if (state.isOkayToDelete && !state.isOkayToUse) {
                   viewModel.saveEveryItemOrInventory(
                       items: state.items,
@@ -182,17 +182,18 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
                       toDeleteItem: DefaultItem.inventory);
                   viewModel.completeIsOkayToDelete();
                 } else {
-                  //TODO: 사용 state에 추가 하고 저장
+                  viewModel.completeIsOkayToUse();
                 }
+                if (!mounted) return;
                 Navigator.of(buildContext).pop();
               },
-              child: Text('예'),
+              child: const Text(KeyAndString.mainPageYesText),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(buildContext).pop();
               },
-              child: Text('아니오'),
+              child: const Text(KeyAndString.mainPageNoText),
             ),
           ],
         );

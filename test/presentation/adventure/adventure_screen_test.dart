@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kotori/domain/model/item.dart';
+import 'package:kotori/domain/use_case/diary/is_okay_to_make_item_use_case.dart';
 import 'package:kotori/domain/use_case/item/get_items_with_inventories_use_case.dart';
 import 'package:kotori/domain/use_case/item/get_new_item_or_inventory_use_case.dart';
 import 'package:kotori/domain/use_case/item/get_to_delete_item_or_inventory_use_case.dart';
@@ -10,8 +11,10 @@ import 'package:kotori/domain/use_case/item/save_new_item_or_inventory_use_case.
 import 'package:kotori/domain/use_case/item/save_to_delete_item_or_inventory_use_case.dart';
 import 'package:kotori/presentation/adventure/adventure_screen.dart';
 import 'package:kotori/presentation/adventure/adventure_view_model.dart';
-import 'package:kotori/presentation/adventure/components/drag_target_inventory.dart';
-import 'package:kotori/presentation/adventure/components/draggable_item.dart';
+import 'package:kotori/presentation/adventure/components/drag_target_items_inventory.dart';
+import 'package:kotori/presentation/adventure/components/drag_target_new_inventory.dart';
+import 'package:kotori/presentation/adventure/components/drag_target_to_delete_inventory.dart';
+import 'package:kotori/presentation/adventure/components/draggable_items_item.dart';
 import 'package:kotori/util/default_item.dart';
 import 'package:kotori/util/key_and_string.dart';
 import 'package:kotori/util/modal_route_observer.dart';
@@ -29,6 +32,7 @@ import 'adventure_screen_test.mocks.dart';
   MockSpec<SaveItemsWithInventoriesUseCase>(),
   MockSpec<SaveNewItemOrInventoryUseCase>(),
   MockSpec<SaveToDeleteItemOrInventoryUseCase>(),
+  MockSpec<IsOkayToMakeNewItemUseCase>(),
 ])
 void main() {
   Future<void> _pumpTestWidget(WidgetTester tester) async {
@@ -41,6 +45,7 @@ void main() {
     final saveFakeItems = MockSaveItemsWithInventoriesUseCase();
     final saveFakeNewItem = MockSaveNewItemOrInventoryUseCase();
     final saveFakeToDeleteItem = MockSaveToDeleteItemOrInventoryUseCase();
+    final fakeIsOkayToMakeNewItem = MockIsOkayToMakeNewItemUseCase();
 
     when(fakeGetItems())
         .thenAnswer((_) async => Result<List<Item>>.success(items));
@@ -55,6 +60,7 @@ void main() {
       saveFakeItems,
       saveFakeNewItem,
       saveFakeToDeleteItem,
+      fakeIsOkayToMakeNewItem,
     );
     final viewModel = AdventureViewModel(useCases);
 
@@ -78,20 +84,22 @@ void main() {
   testWidgets('아이템, 인벤토리 잘 빌드되었는지 확인', (WidgetTester tester) async {
     await _pumpTestWidget(tester);
 
-    expect(find.byType(DraggableItem), findsNWidgets(3));
-    expect(find.byType(DragTargetInventory), findsNWidgets(11));
+    expect(find.byType(DraggableItemsItem), findsNWidgets(2));
+    expect(find.byType(DragTargetItemsInventory), findsNWidgets(9));
+    expect(find.byType(DragTargetNewInventory), findsOneWidget);
+    expect(find.byType(DragTargetToDeleteInventory), findsOneWidget);
   });
 
   testWidgets('아이템 간 이동 및 삭제 되는지 확인', (WidgetTester tester) async {
     final dateEpochValue =
-        DefaultItem.item.date.millisecondsSinceEpoch.toString();
+        DefaultItem.item.toPastDateItem(days: 1).date.millisecondsSinceEpoch.toString();
     await _pumpTestWidget(tester);
 
     expect(find.descendant(of: find.byKey(KeyAndString.toDeleteItemOrInventory), matching: find.byKey(Key(dateEpochValue))), findsNothing);
-    expect(find.byType(DraggableItem), findsNWidgets(3));
+    expect(find.byType(DraggableItemsItem), findsNWidgets(2));
 
-    final itemLocation = tester.getTopLeft(find.byKey(Key(dateEpochValue)));
-    final toDeleteLocation = tester.getTopLeft(find.byKey(KeyAndString.toDeleteItemOrInventory));
+    final itemLocation = tester.getCenter(find.byKey(Key(dateEpochValue)));
+    final toDeleteLocation = tester.getCenter(find.byKey(KeyAndString.toDeleteItemOrInventory));
     final gesture = await tester.startGesture(itemLocation, pointer: 7);
     await tester.pump();
 
@@ -102,12 +110,7 @@ void main() {
     await tester.pump();
 
     expect(find.descendant(of: find.byKey(KeyAndString.toDeleteItemOrInventory), matching: find.byKey(Key(dateEpochValue))), findsOneWidget);
-    expect(find.byType(GestureDetector), findsOneWidget);
-
-    await tester.tap(find.byKey(KeyAndString.progressButton));
-    await tester.pump();
-
-    expect(find.byType(DraggableItem), findsNWidgets(2));
+    expect(find.byKey(Key(dateEpochValue)), findsOneWidget);
   });
 
   // 3. 아이템 탭 되는지 확인 (추후)

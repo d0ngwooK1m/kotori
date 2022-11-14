@@ -77,7 +77,7 @@ class DiaryDaoImpl implements DiaryDao {
     final weekend = Time.getWeekend(now, week);
     for (var element in box.values) {
       final inDays = weekend.difference(element.date).inDays.toInt();
-      if (inDays < 7) {
+      if (inDays < 7 && inDays >= 0) {
         map.putIfAbsent(6 - inDays, () => element);
       }
     }
@@ -86,16 +86,15 @@ class DiaryDaoImpl implements DiaryDao {
       map.putIfAbsent(
           i,
           () => DiaryEntity(
-                emotion: 0,
                 picture: '',
                 desc: '',
                 date: weekend.subtract(Duration(days: 6 - i)),
-              ));
+              )
+      );
     }
 
     final result = Map.fromEntries(
         map.entries.toList()..sort((e1, e2) => e1.key.compareTo(e2.key)));
-
     return result;
   }
 }

@@ -30,7 +30,7 @@ class DraggableNewItem extends StatelessWidget {
           width: size,
           height: size,
           color: Colors.blue,
-          child: Text(state.newItem?.date.toString() ?? KeyAndString.item),
+          child: Text(viewModel.state.newItem?.date.toString().split(' ').first ?? KeyAndString.item),
         ),
       ),
       childWhenDragging: Container(
@@ -47,7 +47,7 @@ class DraggableNewItem extends StatelessWidget {
         width: size,
         height: size,
         color: Colors.blue,
-        child: Text(viewModel.state.newItem?.date.toString() ?? KeyAndString.item),
+        child: Text(viewModel.state.newItem?.date.toString().split(' ').first ?? KeyAndString.item),
       ),
     );
   }

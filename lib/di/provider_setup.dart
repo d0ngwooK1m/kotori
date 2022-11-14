@@ -10,6 +10,7 @@ import 'package:kotori/data/source/item/to_delete_item_entity.dart';
 import 'package:kotori/domain/use_case/adventure_use_cases.dart';
 import 'package:kotori/domain/use_case/daily_diary_use_cases.dart';
 import 'package:kotori/domain/use_case/diary/get_diary_use_case.dart';
+import 'package:kotori/domain/use_case/diary/get_week_diaries_use_case.dart';
 import 'package:kotori/domain/use_case/diary/is_okay_to_make_item_use_case.dart';
 import 'package:kotori/domain/use_case/diary/save_diary_use_case.dart';
 import 'package:kotori/domain/use_case/item/get_items_with_inventories_use_case.dart';
@@ -20,6 +21,7 @@ import 'package:kotori/domain/use_case/item/save_new_item_or_inventory_use_case.
 import 'package:kotori/domain/use_case/item/save_to_delete_item_or_inventory_use_case.dart';
 import 'package:kotori/presentation/adventure/adventure_view_model.dart';
 import 'package:kotori/presentation/daily_diary/daily_diary_view_model.dart';
+import 'package:kotori/presentation/week_diaries/week_diaries_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
@@ -54,11 +56,14 @@ Future<List<SingleChildWidget>> getProviders() async {
     SaveDiaryUseCase(diaryRepository),
   );
 
+  final getWeekDiariesUseCase =  GetWeekDiariesUseCase(diaryRepository);
   final adventureViewModel = AdventureViewModel(itemUseCases);
   final dailyDiaryViewModel = DailyDiaryViewModel(dailyDiaryUseCases);
+  final weekDiariesViewModel = WeekDiariesViewModel(getWeekDiariesUseCase);
 
   return [
     ChangeNotifierProvider(create: (_) => dailyDiaryViewModel),
     ChangeNotifierProvider(create: (_) => adventureViewModel),
+    ChangeNotifierProvider(create: (_) => weekDiariesViewModel),
   ];
 }

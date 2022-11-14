@@ -30,7 +30,7 @@ class DraggableToDeleteItem extends StatelessWidget {
           width: size,
           height: size,
           color: Colors.blue,
-          child: Text(state.deleteItem?.date.toString() ?? KeyAndString.item),
+          child: Text(state.deleteItem?.date.toString().split(' ').first ?? KeyAndString.item),
         ),
       ),
       childWhenDragging: Container(
@@ -47,7 +47,7 @@ class DraggableToDeleteItem extends StatelessWidget {
         width: size,
         height: size,
         color: Colors.blue,
-        child: Text(state.deleteItem?.date.toString() ?? KeyAndString.item),
+        child: Text(state.deleteItem?.date.toString().split(' ').first ?? KeyAndString.item),
       ),
     );
   }

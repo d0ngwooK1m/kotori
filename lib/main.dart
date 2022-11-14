@@ -8,6 +8,9 @@ import 'package:kotori/di/provider_setup.dart';
 import 'package:kotori/presentation/adventure/adventure_screen.dart';
 import 'package:kotori/presentation/adventure/adventure_view_model.dart';
 import 'package:kotori/presentation/daily_diary/daily_diary_screen.dart';
+import 'package:kotori/presentation/daily_diary/daily_diary_view_model.dart';
+import 'package:kotori/presentation/week_diaries/week_diaries_screen.dart';
+import 'package:kotori/presentation/week_diaries/week_diaries_view_model.dart';
 import 'package:kotori/util/default_item.dart';
 import 'package:kotori/util/key_and_string.dart';
 import 'package:kotori/util/modal_route_observer.dart';
@@ -60,15 +63,12 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   int index = 0;
   final widgets = const [
     AdventureScreen(),
-    Center(
-      child: Text('test'),
-    ),
+    WeekDiariesScreen(),
   ];
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    // if (!mounted) return;
     final adventureViewModel = context.read<AdventureViewModel>();
     final adventureState = adventureViewModel.state;
 
@@ -97,6 +97,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return Consumer<AdventureViewModel>(builder: (_, viewModel, __) {
       final state = viewModel.state;
+      final weekDiariesViewModel = context.read<WeekDiariesViewModel>();
       return Scaffold(
         body: SafeArea(
           child: widgets.elementAt(index),
@@ -109,14 +110,17 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
           ],
           currentIndex: index,
           onTap: (int page) async {
-            await viewModel.saveEveryItemOrInventory(
-              items: state.items,
-              newItem: state.newItem!,
-              toDeleteItem: state.deleteItem!,
-            );
-            await viewModel.getEveryItemOrInventory();
+            if (page == 1) {
+              await viewModel.saveEveryItemOrInventory(
+                items: state.items,
+                newItem: state.newItem!,
+                toDeleteItem: state.deleteItem!,
+              );
+              await weekDiariesViewModel.getWeekDiaries();
+            } else {
+              await viewModel.getEveryItemOrInventory();
+            }
             setState(() {
-                // if (!mounted) return;
                 index = page;
               });
           },

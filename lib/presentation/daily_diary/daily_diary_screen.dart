@@ -189,7 +189,6 @@ class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
         picture: '',
         desc: inputText,
         date: state.diary!.date,
-        isSaved: true,
     );
     if (selectedColorIdx == -1) {
       ScaffoldMessenger.of(context).showSnackBar(

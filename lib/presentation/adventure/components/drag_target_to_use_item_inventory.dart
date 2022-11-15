@@ -54,6 +54,7 @@ class DragTargetToUseItemInventory extends StatelessWidget {
       viewModel.itemsToUseItem(
           data[KeyAndString.position], data[KeyAndString.item]);
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          behavior: SnackBarBehavior.floating,
           duration: Duration(milliseconds: 1500),
           content: Text(KeyAndString.mainPageToUseItemUsedText)));
     }

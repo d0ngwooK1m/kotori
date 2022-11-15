@@ -15,19 +15,19 @@ void main() {
     final repository = MockDiaryRepository();
     final useCase = GetWeekDiariesUseCase(repository);
     final now = Time.now;
-    final weekend = Time.getWeekend(now, 0);
+    final week = Time.getWeek(now, 0);
+    Diary getDiary({int pastDays = 0}) {
+      return Diary(
+        emotion: 0,
+        picture: '',
+        desc: '',
+        date: week[pastDays],
+      );
+    }
 
-    when(repository.getWeekDiaries(now: anyNamed('now'))).thenAnswer((_) async => Result.success({
-      0: Diary(emotion: 0, picture: '', desc: '', date: weekend.subtract(const Duration(days: 6))),
-      1: Diary(emotion: 0, picture: '', desc: '', date: weekend.subtract(const Duration(days: 5))),
-      2: Diary(emotion: 0, picture: '', desc: '', date: weekend.subtract(const Duration(days: 4))),
-      3: Diary(emotion: 0, picture: '', desc: '', date: weekend.subtract(const Duration(days: 3))),
-      4: Diary(emotion: 0, picture: '', desc: '', date: weekend.subtract(const Duration(days: 2))),
-      5: Diary(emotion: 0, picture: '', desc: '', date: weekend.subtract(const Duration(days: 1))),
-      6: Diary(emotion: 0, picture: '', desc: '', date: weekend),
-    }));
+    when(repository.getWeekDiaries(now: anyNamed('now'))).thenAnswer((_) async => Result.success(List.generate(7, (index) => getDiary(pastDays: index))));
     final result = await useCase();
-    expect(result, isA<Result<Map<int, Diary>>>());
+    expect(result, isA<Result<List<Diary>>>());
     verify(repository.getWeekDiaries(now: anyNamed('now')));
   });
 }

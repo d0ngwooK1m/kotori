@@ -17,17 +17,20 @@ void main() {
     final dao = MockDiaryDao();
     final repository = DiaryRepositoryImpl(dao);
     final now = Time.now;
-    final weekend = Time.getWeekend(now, 0);
-    final entity = DiaryEntity(
-      emotion: 0,
-      picture: '',
-      desc: '',
-      date: weekend,
-    );
+    final week = Time.getWeek(now, 0);
+
+    DiaryEntity getEntity({int pastDays = 0}) {
+      return DiaryEntity(
+        emotion: 0,
+        picture: '',
+        desc: '',
+        date: week[pastDays],
+      );
+    }
 
     test('일기가 잘 불려와야 한다.', () async {
       when(dao.getDiary(now: anyNamed('now')))
-          .thenAnswer((_) async => entity.toFakeDiaryEntity());
+          .thenAnswer((_) async => getEntity());
       final getDiaryResult = await repository.getDiary(now: now);
       expect(getDiaryResult, isA<Result<Diary>>());
       verify(dao.getDiary(now: anyNamed('now')));
@@ -36,24 +39,16 @@ void main() {
     test('일기가 잘 저장되어야 한다', () async {
       when(dao.saveDiary(diary: anyNamed('diary')))
           .thenAnswer((_) async => const Result.success(null));
-      final result = await repository.saveDiary(diary: entity.toDiary());
+      final result = await repository.saveDiary(diary: getEntity().toDiary());
       expect(result, isA<Result<void>>());
       verify(dao.saveDiary(diary: anyNamed('diary')));
     });
 
     test('일주일치 일기가 잘 불려야 한다', () async {
       when(dao.getWeekDiaries(now: anyNamed('now'), week: anyNamed('week')))
-          .thenAnswer((_) async => {
-                0: entity.toFakeDiaryEntity(day: 6),
-                1: entity.toFakeDiaryEntity(day: 5),
-                2: entity.toFakeDiaryEntity(day: 4),
-                3: entity.toFakeDiaryEntity(day: 3),
-                4: entity.toFakeDiaryEntity(day: 2),
-                5: entity.toFakeDiaryEntity(day: 1),
-                6: entity.toFakeDiaryEntity(day: 0),
-              });
+          .thenAnswer((_) async => List.generate(7, (index) => getEntity(pastDays: index)));
       final getDiariesResult = await repository.getWeekDiaries(now: now);
-      expect(getDiariesResult, isA<Result<Map<int, Diary>>>());
+      expect(getDiariesResult, isA<Result<List<Diary>>>());
       verify(dao.getWeekDiaries(
         now: anyNamed('now'),
         week: anyNamed('week'),

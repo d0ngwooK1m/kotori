@@ -8,14 +8,7 @@ part 'week_diaries_state.g.dart';
 @freezed
 class WeekDiariesState with _$WeekDiariesState {
   factory WeekDiariesState({
-    @Default({
-      0: null,
-      1: null,
-      3: null,
-      4: null,
-      5: null,
-      6: null,
-    }) Map<int, Diary?> weekDiaries,
+    @Default([null, null, null, null, null, null, null,]) List<Diary?> weekDiaries,
     @Default(0) int week,
     String? message,
   }) = _WeekDiariesState;

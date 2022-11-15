@@ -26,7 +26,7 @@ class _WeekDiariesScreenState extends State<WeekDiariesScreen> {
                 _buildSelector(viewModel),
                 EmotionGraph(weekDiaries: weekDiaries),
                 const SizedBox(height: 10),
-                _buildDiarySummaries(weekDiaries.values.toList()),
+                _buildDiarySummaries(weekDiaries),
               ],
             ),
           ),
@@ -36,11 +36,11 @@ class _WeekDiariesScreenState extends State<WeekDiariesScreen> {
   }
 
   Widget _buildSelector(WeekDiariesViewModel viewModel) {
-    final diaries = viewModel.state.weekDiaries.values;
+    final diaries = viewModel.state.weekDiaries;
     final monday = diaries.first?.date.toString().split(' ').first ?? '';
     final sunday = diaries.last?.date.toString().split(' ').first ?? '';
     final latestSunday =
-        Time.getWeekend(Time.now, 0).toString().split(' ').first;
+        Time.getWeek(Time.now, 0).last.toString().split(' ').first;
     final state = viewModel.state;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,

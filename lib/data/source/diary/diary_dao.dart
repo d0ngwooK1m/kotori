@@ -7,5 +7,5 @@ abstract class DiaryDao {
 
   Future<void> saveDiary({required DiaryEntity diary});
 
-  Future<Map<int, DiaryEntity>> getWeekDiaries({required DateTime now, int week = 0});
+  Future<List<DiaryEntity>> getWeekDiaries({required DateTime now, int week = 0});
 }

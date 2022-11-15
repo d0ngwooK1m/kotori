@@ -8,7 +8,7 @@ class GetWeekDiariesUseCase {
 
   GetWeekDiariesUseCase(this.repository);
 
-  Future<Result<Map<int, Diary>>> call({int week = 0}) async {
+  Future<Result<List<Diary>>> call({int week = 0}) async {
     return await repository.getWeekDiaries(now: Time.now, week: week);
   }
 }

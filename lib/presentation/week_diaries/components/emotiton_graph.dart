@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:kotori/domain/model/diary.dart';
 
 class EmotionGraph extends StatelessWidget {
-  final Map<int, Diary?> weekDiaries;
+  final List<Diary?> weekDiaries;
 
   const EmotionGraph({Key? key, required this.weekDiaries}) : super(key: key);
 
@@ -27,7 +27,7 @@ class EmotionGraph extends StatelessWidget {
 }
 
 class GraphPainter extends CustomPainter {
-  final Map<int, Diary?> weekDiaries;
+  final List<Diary?> weekDiaries;
   final BuildContext context;
 
   final int upperValue = 5;
@@ -116,7 +116,7 @@ class GraphPainter extends CustomPainter {
     final path = Path();
     path.moveTo(0, size.height);
 
-    final diaries = weekDiaries.values.toList();
+    final diaries = weekDiaries;
     for (var i = 0; i < 7; i++) {
       final emotion = diaries[i]?.emotion ?? -1;
       path.lineTo((i * size.width / 6),

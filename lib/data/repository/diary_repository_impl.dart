@@ -40,13 +40,10 @@ class DiaryRepositoryImpl implements DiaryRepository {
   }
 
   @override
-  Future<Result<Map<int, Diary>>> getWeekDiaries({required DateTime now, int week = 0}) async {
+  Future<Result<List<Diary>>> getWeekDiaries({required DateTime now, int week = 0}) async {
     try {
-      final map = await _dao.getWeekDiaries(now: now, week: week);
-      final Map<int, Diary> result = {};
-      map.forEach((key, diaryEntity) {
-        result.putIfAbsent(key, () => diaryEntity.toDiary());
-      });
+      final diaryEntities = await _dao.getWeekDiaries(now: now, week: week);
+      final result = diaryEntities.map((entity) => entity.toDiary()).toList();
       return Result.success(result);
     } catch (e) {
       return Result.error(Exception('Get week daily_diary failed : ${e.toString()}'));

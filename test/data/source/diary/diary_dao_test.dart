@@ -15,20 +15,12 @@ void main() {
     await box.clear();
     final dao = DiaryDaoImpl(box);
     final now = Time.now;
-    final weekend = Time.getWeekend(now, 0);
+    final week = Time.getWeek(now, 0);
     final diariesWithoutInput = await dao.getWeekDiaries(now: now, week: 0);
-    expect(diariesWithoutInput.values.map((diary) => diary.date).toList(), [
-      weekend.subtract(const Duration(days: 6)),
-      weekend.subtract(const Duration(days: 5)),
-      weekend.subtract(const Duration(days: 4)),
-      weekend.subtract(const Duration(days: 3)),
-      weekend.subtract(const Duration(days: 2)),
-      weekend.subtract(const Duration(days: 1)),
-      weekend.subtract(const Duration(days: 0)),
-    ]);
+    expect(diariesWithoutInput.map((entity) => entity.date).toList(), week);
 
     final todayDiary = await dao.getDiary(now: now);
-    expect(todayDiary.emotion, 0);
+    expect(todayDiary.emotion, -1);
     expect(todayDiary.date, now);
     expect(todayDiary.desc.isEmpty, true);
     expect(todayDiary.picture.isEmpty, true);
@@ -46,16 +38,5 @@ void main() {
     expect(editedDiaryResult.date, now);
     expect(editedDiaryResult.desc.isEmpty, true);
     expect(editedDiaryResult.picture.isEmpty, true);
-
-    final diaries = await dao.getWeekDiaries(now: now, week: 0);
-    expect(diaries.values.map((diary) => diary.date).toList(), [
-      weekend.subtract(const Duration(days: 6)),
-      weekend.subtract(const Duration(days: 5)),
-      weekend.subtract(const Duration(days: 4)),
-      weekend.subtract(const Duration(days: 3)),
-      weekend.subtract(const Duration(days: 2)),
-      weekend.subtract(const Duration(days: 1)),
-      weekend.subtract(const Duration(days: 0)),
-    ]);
   });
 }

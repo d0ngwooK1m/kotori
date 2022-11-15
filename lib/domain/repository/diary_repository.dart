@@ -8,5 +8,5 @@ abstract class DiaryRepository {
 
   Future<Result<void>> saveDiary({required Diary diary});
 
-  Future<Result<Map<int, Diary>>> getWeekDiaries({required DateTime now, int week = 0});
+  Future<Result<List<Diary>>> getWeekDiaries({required DateTime now, int week = 0});
 }

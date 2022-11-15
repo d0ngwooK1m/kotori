@@ -15,86 +15,59 @@ class DiaryDaoImpl implements DiaryDao {
       desc: '',
       date: now,
     );
-    if (box.values.isNotEmpty) {
-      final diary = box.values.last;
-      return now.isAtSameMomentAs(diary.date) ? diary : newDiary;
-    } else {
-      return newDiary;
-    }
+    final result = box.get(Time.getDateKey());
+    return result ?? newDiary;
   }
 
   @override
   Future<bool?> isOkayToMakeItem() async {
-    if (box.values.length >= 2) {
-      final lastDiary = box.values.last;
-      final oneBeforeLastDiary = box.values.elementAt(box.values.length - 2);
-      if (lastDiary.isSaved && oneBeforeLastDiary.isSaved) {
-        if (lastDiary.emotion > oneBeforeLastDiary.emotion) {
-          return true;
-        } else if (lastDiary.emotion < oneBeforeLastDiary.emotion) {
-          return false;
-        } else {
-          return null;
-        }
-      } else {
+    final result = box.get(Time.getDateKey());
+    if (result != null) {
+      if (!result.isSaved || result.emotion == 2) {
         return null;
-      }
-    } else {
-      if (box.values.isNotEmpty) {
-        final lastDiary = box.values.last;
-        return lastDiary.isSaved ? true : null;
-      } else {
-        return null;
+      } else if (result.isSaved && result.emotion > 2) {
+        return true;
+      } else if (result.isSaved && result.emotion < 0) {
+        return false;
       }
     }
+    return null;
   }
 
   @override
   Future<void> saveDiary({
     required DiaryEntity diary,
   }) async {
-    if (box.values.isNotEmpty) {
-      final lastDiary = box.values.last;
-      if (!lastDiary.date.isAtSameMomentAs(diary.date) && lastDiary.isSaved) {
-        await box.add(diary);
-      } else {
-        await box.deleteAt(box.values.length - 1);
-        await box.add(diary);
+    final result = box.get(Time.getDateKey());
+    if (result == null) {
+      for (var diary in box.values) {
+        if (!diary.isSaved) {
+          await box.delete(diary.key);
+        }
       }
-    } else {
-      await box.add(diary);
+      await box.put(Time.getDateKey(), diary);
+    } else if (!result.isSaved) {
+      result.isSaved = true;
+      result.emotion = diary.emotion;
+      result.desc = diary.desc;
+      result.picture = diary.picture;
+      result.save();
     }
   }
 
   @override
-  Future<Map<int, DiaryEntity>> getWeekDiaries(
-      {required DateTime now, int week = 0}) async {
+  Future<List<DiaryEntity>> getWeekDiaries({required DateTime now, int week = 0}) async {
     // 오늘 날짜, 앱 최초 설치한 날짜 필요
     // 첫 그래프 값은 오늘 날짜가 있는 주의 월요일 - 일요일 DiaryEntity 값
     // 앞으로 뒤로 버튼 존재
     // 누르면 한주씩 앞 뒤로 이동, 오늘 날짜가 있는 주 이후, 최초 설치 날짜가 있는 주 이전으로는 이동 불가 => 이건 좀 더 고려해볼 것
-    final Map<int, DiaryEntity> map = {};
-    final weekend = Time.getWeekend(now, week);
-    for (var element in box.values) {
-      final inDays = weekend.difference(element.date).inDays.toInt();
-      if (inDays < 7 && inDays >= 0) {
-        map.putIfAbsent(6 - inDays, () => element);
-      }
+    final List<DiaryEntity> result = [];
+    final weekList = Time.getWeek(now, week);
+    for (var dateTime in weekList) {
+      final diary = box.get(dateTime.millisecondsSinceEpoch.toString());
+      diary == null ? result.add(DiaryEntity(picture: '', desc: '', date: dateTime)) : result.add(diary);
     }
 
-    for (var i = 0; i < 7; i++) {
-      map.putIfAbsent(
-          i,
-          () => DiaryEntity(
-                picture: '',
-                desc: '',
-                date: weekend.subtract(Duration(days: 6 - i)),
-              )
-      );
-    }
-
-    final result = Map.fromEntries(
-        map.entries.toList()..sort((e1, e2) => e1.key.compareTo(e2.key)));
     return result;
   }
 }

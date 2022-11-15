@@ -198,7 +198,7 @@ class AdventureViewModel extends ChangeNotifier {
     );
   }
 
-  Future<void> checkNewItemGenerate() async {
+  Future<void> checkIsOkayToMakeOrUseItem() async {
     bool isItemAlreadyExist = false;
     for (var element in state.items) {
       if (!element.isInventory && element.date == Time.now) {
@@ -212,14 +212,15 @@ class AdventureViewModel extends ChangeNotifier {
       isItemAlreadyExist = true;
     }
     if (!isItemAlreadyExist) {
-      final result = await useCases.isOkayToMakeNewItemUseCase();
+      final result = await useCases.isOkayToMakeOrUseItemUseCase();
       result.when(
         success: (data) async {
-
           if (data == true) {
-            _state = state.copyWith(newItem: DefaultItem.item);
+            _state = state.copyWith(newItem: DefaultItem.item, isOkayToUse: false);
           } else if (data == false) {
             _state = state.copyWith(isOkayToUse: true);
+          } else {
+            _state = state.copyWith(isOkayToUse: false);
           }
         },
         error: (e) {

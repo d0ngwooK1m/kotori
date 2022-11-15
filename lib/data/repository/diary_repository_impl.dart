@@ -20,8 +20,8 @@ class DiaryRepositoryImpl implements DiaryRepository {
   }
 
   @override
-  Future<Result<bool?>> isOkayToMakeItem() async {
-    final result = await _dao.isOkayToMakeItem();
+  Future<Result<bool?>> isOkayToMakeOrUseItem() async {
+    final result = await _dao.isOkayToMakeOrUseItem();
     try {
       return Result.success(result);
     } catch (e) {

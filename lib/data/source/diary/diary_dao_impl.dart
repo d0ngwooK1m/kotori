@@ -20,14 +20,16 @@ class DiaryDaoImpl implements DiaryDao {
   }
 
   @override
-  Future<bool?> isOkayToMakeItem() async {
+  Future<bool?> isOkayToMakeOrUseItem() async {
     final result = box.get(Time.getDateKey());
-    if (result != null) {
-      if (!result.isSaved || result.emotion == 2) {
+    if (result != null && !result.isSaved) {
+      result.isSaved = true;
+      result.save();
+      if (result.emotion == 2) {
         return null;
-      } else if (result.isSaved && result.emotion > 2) {
+      } else if (result.emotion > 2) {
         return true;
-      } else if (result.isSaved && result.emotion < 0) {
+      } else if (result.emotion < 2) {
         return false;
       }
     }
@@ -46,8 +48,7 @@ class DiaryDaoImpl implements DiaryDao {
         }
       }
       await box.put(Time.getDateKey(), diary);
-    } else if (!result.isSaved) {
-      result.isSaved = true;
+    } else {
       result.emotion = diary.emotion;
       result.desc = diary.desc;
       result.picture = diary.picture;

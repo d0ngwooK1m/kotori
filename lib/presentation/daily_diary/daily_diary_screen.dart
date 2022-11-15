@@ -202,7 +202,7 @@ class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
       return;
     }
     await diaryViewModel.saveDiary(diary: newDiary);
-    await adventureViewModel.checkNewItemGenerate();
+    await adventureViewModel.checkIsOkayToMakeOrUseItem();
     if (!mounted) return;
     Navigator.pop(context, KeyAndString.dailyDiarySaved);
   }

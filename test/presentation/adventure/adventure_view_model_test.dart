@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kotori/domain/model/item.dart';
-import 'package:kotori/domain/use_case/diary/is_okay_to_make_item_use_case.dart';
+import 'package:kotori/domain/use_case/diary/is_okay_to_make_or_use_item_use_case.dart';
 import 'package:kotori/domain/use_case/item/get_items_with_inventories_use_case.dart';
 import 'package:kotori/domain/use_case/item/get_new_item_or_inventory_use_case.dart';
 import 'package:kotori/domain/use_case/item/get_to_delete_item_or_inventory_use_case.dart';
@@ -23,7 +23,7 @@ import 'adventure_view_model_test.mocks.dart';
   MockSpec<SaveItemsWithInventoriesUseCase>(),
   MockSpec<SaveNewItemOrInventoryUseCase>(),
   MockSpec<SaveToDeleteItemOrInventoryUseCase>(),
-  MockSpec<IsOkayToMakeNewItemUseCase>(),
+  MockSpec<IsOkayToMakeOrUseItemUseCase>(),
 ])
 void main() {
   group('adventure view model test', () {
@@ -73,7 +73,7 @@ void main() {
     test('checkNewItemGenerate test', () async {
       when(fakeIsOkayToMakeNewItem()).thenAnswer((_) async => const Result.success(true));
 
-      await viewModel.checkNewItemGenerate();
+      await viewModel.checkIsOkayToMakeOrUseItem();
       expect(viewModel.state.newItem!.isInventory, false);
 
       verify(fakeIsOkayToMakeNewItem());

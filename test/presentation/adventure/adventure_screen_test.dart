@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kotori/domain/model/item.dart';
-import 'package:kotori/domain/use_case/diary/is_okay_to_make_item_use_case.dart';
+import 'package:kotori/domain/use_case/diary/is_okay_to_make_or_use_item_use_case.dart';
 import 'package:kotori/domain/use_case/item/get_items_with_inventories_use_case.dart';
 import 'package:kotori/domain/use_case/item/get_new_item_or_inventory_use_case.dart';
 import 'package:kotori/domain/use_case/item/get_to_delete_item_or_inventory_use_case.dart';
@@ -32,7 +32,7 @@ import 'adventure_screen_test.mocks.dart';
   MockSpec<SaveItemsWithInventoriesUseCase>(),
   MockSpec<SaveNewItemOrInventoryUseCase>(),
   MockSpec<SaveToDeleteItemOrInventoryUseCase>(),
-  MockSpec<IsOkayToMakeNewItemUseCase>(),
+  MockSpec<IsOkayToMakeOrUseItemUseCase>(),
 ])
 void main() {
   Future<void> _pumpTestWidget(WidgetTester tester) async {

@@ -4,7 +4,7 @@ import 'package:kotori/util/result.dart';
 abstract class DiaryRepository {
   Future<Result<Diary>> getDiary({required DateTime now});
 
-  Future<Result<bool?>> isOkayToMakeItem();
+  Future<Result<bool?>> isOkayToMakeOrUseItem();
 
   Future<Result<void>> saveDiary({required Diary diary});
 

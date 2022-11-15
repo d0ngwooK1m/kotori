@@ -11,7 +11,7 @@ import 'package:kotori/domain/use_case/adventure_use_cases.dart';
 import 'package:kotori/domain/use_case/daily_diary_use_cases.dart';
 import 'package:kotori/domain/use_case/diary/get_diary_use_case.dart';
 import 'package:kotori/domain/use_case/diary/get_week_diaries_use_case.dart';
-import 'package:kotori/domain/use_case/diary/is_okay_to_make_item_use_case.dart';
+import 'package:kotori/domain/use_case/diary/is_okay_to_make_or_use_item_use_case.dart';
 import 'package:kotori/domain/use_case/diary/save_diary_use_case.dart';
 import 'package:kotori/domain/use_case/item/get_items_with_inventories_use_case.dart';
 import 'package:kotori/domain/use_case/item/get_new_item_or_inventory_use_case.dart';
@@ -49,7 +49,7 @@ Future<List<SingleChildWidget>> getProviders() async {
     SaveItemsWithInventoriesUseCase(itemRepository),
     SaveNewItemOrInventoryUseCase(itemRepository),
     SaveToDeleteItemOrInventoryUseCase(itemRepository),
-    IsOkayToMakeNewItemUseCase(diaryRepository),
+    IsOkayToMakeOrUseItemUseCase(diaryRepository),
   );
   final dailyDiaryUseCases = DailyDiaryUseCases(
     GetDiaryUseCase(diaryRepository),

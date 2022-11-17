@@ -31,8 +31,8 @@ class DraggableItemsItem extends StatelessWidget {
         child: Container(
           width: size,
           height: size,
-          color: Colors.blue,
-          child: Text(viewModel.state.items[position].date.toString().split(' ').first),
+          color: Colors.transparent,
+          child: Image.asset(state.items[position].picture),
         ),
       ),
       childWhenDragging: Container(
@@ -48,8 +48,8 @@ class DraggableItemsItem extends StatelessWidget {
       child: Container(
         width: size,
         height: size,
-        color: Colors.blue,
-        child: Text(viewModel.state.items[position].date.toString().split(' ').first),
+        color: Colors.transparent,
+        child: Image.asset(state.items[position].picture),
       ),
     );
   }

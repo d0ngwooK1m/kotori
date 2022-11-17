@@ -33,7 +33,7 @@ void main() {
     final saveFakeItems = MockSaveItemsWithInventoriesUseCase();
     final saveFakeNewItem = MockSaveNewItemOrInventoryUseCase();
     final saveFakeToDeleteItem = MockSaveToDeleteItemOrInventoryUseCase();
-    final fakeIsOkayToMakeNewItem = MockIsOkayToMakeNewItemUseCase();
+    final fakeIsOkayToMakeNewItem = MockIsOkayToMakeOrUseItemUseCase();
 
 
 

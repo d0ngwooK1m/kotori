@@ -9,7 +9,7 @@ class Item with _$Item {
   factory Item({
     required String name,
     required String desc,
-    required String picture,
+    @Default('assets/images/question_mark.png') String picture,
     required DateTime date,
     @Default(false) bool isInventory,
   }) = _Item;

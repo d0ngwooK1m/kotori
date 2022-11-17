@@ -14,6 +14,7 @@ import 'package:kotori/presentation/week_diaries/week_diaries_view_model.dart';
 import 'package:kotori/util/default_item.dart';
 import 'package:kotori/util/key_and_string.dart';
 import 'package:kotori/util/modal_route_observer.dart';
+import 'package:kotori/util/time.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -71,6 +72,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
     super.didChangeAppLifecycleState(state);
     final adventureViewModel = context.read<AdventureViewModel>();
     final adventureState = adventureViewModel.state;
+    final dailDiaryViewModel = context.read<DailyDiaryViewModel>();
 
     if (state == AppLifecycleState.inactive) {
       adventureViewModel.saveEveryItemOrInventory(
@@ -78,6 +80,8 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
         newItem: adventureState.newItem ?? DefaultItem.inventory,
         toDeleteItem: adventureState.deleteItem ?? DefaultItem.inventory,
       );
+    } else if (state == AppLifecycleState.resumed) {
+      dailDiaryViewModel.getDiary(now: Time.now);
     }
   }
 

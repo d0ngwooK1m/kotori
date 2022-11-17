@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kotori/domain/model/diary.dart';
 import 'package:kotori/presentation/adventure/adventure_view_model.dart';
 import 'package:kotori/presentation/daily_diary/daily_diary_view_model.dart';
+import 'package:kotori/presentation/week_diaries/week_diaries_view_model.dart';
 import 'package:kotori/util/key_and_string.dart';
 import 'package:kotori/util/modal_route_observer.dart';
 import 'package:kotori/util/time.dart';
@@ -73,6 +74,7 @@ class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
       builder: (_, viewModel, __) {
         final state = viewModel.state;
         final adventureViewModel = context.read<AdventureViewModel>();
+        final weekDiariesViewModel = context.read<WeekDiariesViewModel>();
         return WillPopScope(
           onWillPop: () async {
             if (!mounted) return false;
@@ -101,7 +103,7 @@ class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
             floatingActionButton: FloatingActionButton(
               key: KeyAndString.dailyDiarySaveButton,
               onPressed: () async {
-                await _saveDiary(viewModel, adventureViewModel);
+                await _saveDiary(viewModel, adventureViewModel, weekDiariesViewModel);
               },
               child: const Icon(Icons.save),
             ),
@@ -171,6 +173,7 @@ class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
               ? KeyAndString.dailyDiaryDescHintText
               : '',
           focusedBorder: InputBorder.none,
+          border: InputBorder.none,
         ),
         onChanged: (text) {
           controller.text = text;
@@ -181,7 +184,7 @@ class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
     );
   }
 
-  Future<void> _saveDiary(DailyDiaryViewModel diaryViewModel, AdventureViewModel adventureViewModel) async {
+  Future<void> _saveDiary(DailyDiaryViewModel diaryViewModel, AdventureViewModel adventureViewModel, WeekDiariesViewModel weekDiariesViewModel) async {
     final state = diaryViewModel.state;
     final inputText = controller.text;
     final newDiary = Diary(
@@ -202,6 +205,8 @@ class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
     }
     await diaryViewModel.saveDiary(diary: newDiary);
     await adventureViewModel.checkIsOkayToMakeOrUseItem();
+    await weekDiariesViewModel.getWeekDiaries();
+
     if (!mounted) return;
     Navigator.pop(context, KeyAndString.dailyDiarySaved);
   }

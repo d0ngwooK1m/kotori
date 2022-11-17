@@ -11,7 +11,7 @@ class NewItemEntity extends HiveObject {
   @HiveField(1, defaultValue: '')
   String desc;
 
-  @HiveField(2, defaultValue: '')
+  @HiveField(2, defaultValue: 'assets/images/question_mark.png')
   String picture;
 
   @HiveField(3)

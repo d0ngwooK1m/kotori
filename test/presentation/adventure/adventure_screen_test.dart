@@ -45,7 +45,7 @@ void main() {
     final saveFakeItems = MockSaveItemsWithInventoriesUseCase();
     final saveFakeNewItem = MockSaveNewItemOrInventoryUseCase();
     final saveFakeToDeleteItem = MockSaveToDeleteItemOrInventoryUseCase();
-    final fakeIsOkayToMakeNewItem = MockIsOkayToMakeNewItemUseCase();
+    final fakeIsOkayToMakeNewItem = MockIsOkayToMakeOrUseItemUseCase();
 
     when(fakeGetItems())
         .thenAnswer((_) async => Result<List<Item>>.success(items));

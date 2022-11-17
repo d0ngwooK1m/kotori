@@ -230,4 +230,16 @@ class AdventureViewModel extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<void> saveItemInfo({required Item item, required int position}) async {
+    List<Item> inventoryItemList = [];
+    for (var element in state.items) {
+      inventoryItemList.add(element);
+    }
+
+    inventoryItemList[position] = item;
+
+    _state = state.copyWith(items: inventoryItemList);
+    notifyListeners();
+  }
 }

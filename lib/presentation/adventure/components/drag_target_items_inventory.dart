@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kotori/domain/util/item_and_inventory_types.dart';
 import 'package:kotori/presentation/adventure/adventure_view_model.dart';
 import 'package:kotori/presentation/adventure/components/draggable_items_item.dart';
+import 'package:kotori/presentation/adventure/components/item_detail_dialog.dart';
 import 'package:kotori/util/key_and_string.dart';
 import 'package:provider/provider.dart';
 
@@ -9,11 +10,9 @@ class DragTargetItemsInventory extends StatelessWidget {
   final int position;
   final ItemAndInventoryTypes type;
 
-  const DragTargetItemsInventory({
-    Key? key,
-    required this.position,
-    required this.type,
-  }) : super(key: key);
+  const DragTargetItemsInventory(
+      {Key? key, required this.position, required this.type})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -21,16 +20,21 @@ class DragTargetItemsInventory extends StatelessWidget {
     final state = viewModel.state;
     return DragTarget(
       builder: (
-          BuildContext context,
-          List<dynamic> accepted,
-          List<dynamic> rejected,
-          ) {
+        BuildContext context,
+        List<dynamic> accepted,
+        List<dynamic> rejected,
+      ) {
         return (state.items.isNotEmpty && !state.items[position].isInventory)
-            ? DraggableItemsItem(
-          size: 90,
-          position: position,
-          type: type,
-        )
+            ? GestureDetector(
+                onTap: () {
+                  _showItemDialog(context);
+                },
+                child: DraggableItemsItem(
+                  size: 90,
+                  position: position,
+                  type: type,
+                ),
+              )
             : _buildEmptyInventory();
       },
       onAccept: (data) {
@@ -63,8 +67,8 @@ class DragTargetItemsInventory extends StatelessWidget {
     } else if (itemRole == ItemAndInventoryTypes.itemsWithInventories &&
         inventoryRole == ItemAndInventoryTypes.itemsWithInventories) {
       // items to items
-      viewModel.setItems(data[KeyAndString.item],
-          data[KeyAndString.position], position);
+      viewModel.setItems(
+          data[KeyAndString.item], data[KeyAndString.position], position);
     } else if (itemRole == ItemAndInventoryTypes.toDeleteItem &&
         inventoryRole == ItemAndInventoryTypes.itemsWithInventories) {
       // delete to items
@@ -72,5 +76,18 @@ class DragTargetItemsInventory extends StatelessWidget {
           positionTo: position, item: data[KeyAndString.item]);
       viewModel.completeIsOkayToDelete();
     }
+  }
+
+  void _showItemDialog(BuildContext context) {
+    final items = context.read<AdventureViewModel>().state.items;
+    showDialog(
+      context: context,
+      builder: (BuildContext ctx) {
+        return ItemDetailDialog(
+          item: items[position],
+          position: position,
+        );
+      },
+    );
   }
 }

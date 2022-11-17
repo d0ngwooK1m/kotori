@@ -24,7 +24,7 @@ class _WeekDiariesScreenState extends State<WeekDiariesScreen> {
             body: Column(
               children: [
                 _buildSelector(viewModel),
-                EmotionGraph(weekDiaries: weekDiaries),
+                const EmotionGraph(),
                 const SizedBox(height: 10),
                 _buildDiarySummaries(weekDiaries),
               ],

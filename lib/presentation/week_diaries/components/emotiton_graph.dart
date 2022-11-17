@@ -2,14 +2,16 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:kotori/domain/model/diary.dart';
+import 'package:kotori/presentation/week_diaries/week_diaries_view_model.dart';
+import 'package:provider/provider.dart';
 
 class EmotionGraph extends StatelessWidget {
-  final List<Diary?> weekDiaries;
 
-  const EmotionGraph({Key? key, required this.weekDiaries}) : super(key: key);
+  const EmotionGraph({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final viewModel = context.watch<WeekDiariesViewModel>();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
@@ -19,7 +21,7 @@ class EmotionGraph extends StatelessWidget {
         width: double.infinity,
         height: 250,
         child: CustomPaint(
-          painter: GraphPainter(weekDiaries, context),
+          painter: GraphPainter(viewModel.state.weekDiaries, context),
         ),
       ),
     );

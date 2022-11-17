@@ -183,6 +183,7 @@ class AdventureViewModel extends ChangeNotifier {
       await getEveryItemOrInventory();
     } else {
       prefs.setBool('first_time', false);
+      prefs.setInt('first_date_epoch', Time.now.millisecondsSinceEpoch);
       await getFirstTimeItems();
     }
   }

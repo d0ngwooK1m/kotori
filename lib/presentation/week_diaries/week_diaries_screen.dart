@@ -42,19 +42,31 @@ class _WeekDiariesScreenState extends State<WeekDiariesScreen> {
     final latestSunday =
         Time.getWeek(Time.now, 0).last.toString().split(' ').first;
     final state = viewModel.state;
+    final mondayEpoch = diaries.first?.date.millisecondsSinceEpoch ??
+        Time.now.millisecondsSinceEpoch;
+    final isFirstDateContained = state.firstDownloadedDateEpoch <= mondayEpoch;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        GestureDetector(
-          onTap: () async {
-            await viewModel.getWeekDiaries(week: state.week + 1);
-          },
-          child: const Icon(
-            Icons.arrow_left,
-            size: 36,
-          ),
-        ),
+        isFirstDateContained
+            ? const Padding(
+                padding: EdgeInsets.zero,
+                child: Icon(
+                  Icons.arrow_left,
+                  size: 36,
+                  color: Colors.grey,
+                ),
+              )
+            : GestureDetector(
+                onTap: () async {
+                  await viewModel.getWeekDiaries(week: state.week + 1);
+                },
+                child: const Icon(
+                  Icons.arrow_left,
+                  size: 36,
+                ),
+              ),
         Text(
           '$monday ~ $sunday',
           style: const TextStyle(fontSize: 18),

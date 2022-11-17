@@ -17,6 +17,10 @@ class EmotionGraph extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           border: Border.all(width: 5),
+          image: const DecorationImage(
+            fit: BoxFit.cover,
+            image: AssetImage('assets/images/back_ground_without_ground.png'),
+          )
         ),
         width: 400,
         height: 250,
@@ -44,7 +48,7 @@ class GraphPainter extends CustomPainter {
 
   GraphPainter(this.weekDiaries, this.context) {
     strokePaint = Paint()
-      ..color = graphColor
+      ..color = Colors.black
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3
       ..strokeCap = StrokeCap.round;
@@ -110,7 +114,7 @@ class GraphPainter extends CustomPainter {
 
       verticalTp.layout();
       verticalTp.paint(canvas,
-          Offset(-verticalTp.width * 2.5, size.height - (i * size.height / 5)));
+          Offset(-verticalTp.width * 2.5, size.height - (i * size.height / 5 * 0.7)));
     }
   }
 
@@ -122,7 +126,7 @@ class GraphPainter extends CustomPainter {
     for (var i = 0; i < 7; i++) {
       final emotion = diaries[i]?.emotion ?? -1;
       path.lineTo((i * size.width / 6),
-          (size.height - (emotion + 1) * (size.height / 5)));
+          (size.height - (emotion + 1) * (size.height / 5 * 0.7)));
     }
 
     final fillPath = Path.from(path)
@@ -130,14 +134,14 @@ class GraphPainter extends CustomPainter {
       ..close();
 
     final fillPaint = Paint()
-      ..color = Colors.greenAccent
+      ..color = Colors.green
       ..style = PaintingStyle.fill
       ..shader = ui.Gradient.linear(
         Offset(0, size.height),
         Offset.zero,
         [
-          Colors.greenAccent.withOpacity(0.5),
-          Colors.transparent,
+          Colors.green,
+          Colors.white,
         ],
       );
 

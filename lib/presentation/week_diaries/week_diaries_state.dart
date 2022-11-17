@@ -10,6 +10,7 @@ class WeekDiariesState with _$WeekDiariesState {
   factory WeekDiariesState({
     @Default([null, null, null, null, null, null, null,]) List<Diary?> weekDiaries,
     @Default(0) int week,
+    @Default(0) int firstDownloadedDateEpoch,
     String? message,
   }) = _WeekDiariesState;
 

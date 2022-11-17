@@ -16,12 +16,12 @@ class DailyDiaryScreen extends StatefulWidget {
 }
 
 class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
-  final colors = [
-    Colors.red,
-    Colors.deepOrangeAccent,
-    Colors.lime,
-    Colors.greenAccent,
-    Colors.green
+  final images = [
+    'assets/images/kotori_sad_face.png',
+    'assets/images/kotori_little_sad_face.png',
+    'assets/images/kotori_normal_face.png',
+    'assets/images/kotori_little_good_face.png',
+    'assets/images/kotori_good_face.png',
   ];
 
   int selectedColorIdx = -1;
@@ -70,47 +70,49 @@ class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<DailyDiaryViewModel>(
-      builder: (_, viewModel, __) {
-        final state = viewModel.state;
-        final adventureViewModel = context.read<AdventureViewModel>();
-        final weekDiariesViewModel = context.read<WeekDiariesViewModel>();
-        return WillPopScope(
-          onWillPop: () async {
-            if (!mounted) return false;
-            if (state.diary != null) {
-              if (!(state.diary!.isSaved) && selectedColorIdx != -1) {
-                Navigator.pop(context, KeyAndString.dailyDiaryTempSaved);
-              } else {
-                Navigator.pop(context);
-              }
+    return Consumer<DailyDiaryViewModel>(builder: (_, viewModel, __) {
+      final state = viewModel.state;
+      final adventureViewModel = context.read<AdventureViewModel>();
+      final weekDiariesViewModel = context.read<WeekDiariesViewModel>();
+      return WillPopScope(
+        onWillPop: () async {
+          if (!mounted) return false;
+          if (state.diary != null) {
+            if (!(state.diary!.isSaved) && selectedColorIdx != -1) {
+              Navigator.pop(context, KeyAndString.dailyDiaryTempSaved);
+            } else {
+              Navigator.pop(context);
             }
-            return true;
-          },
-          child: Scaffold(
-            body: SafeArea(
-              child: Center(
-                child: ListView(
-                  children: [
-                    _buildEmotion(diary: state.diary),
-                    _buildDesc(diary: state.diary),
-                  ],
-                ),
+          }
+          return true;
+        },
+        child: Scaffold(
+          resizeToAvoidBottomInset: false,
+          body: SafeArea(
+            child: Center(
+              child: ListView(
+                children: [
+                  _buildEmotion(diary: state.diary),
+                  _buildDesc(diary: state.diary),
+                ],
               ),
             ),
-            bottomNavigationBar: const SizedBox(height: kBottomNavigationBarHeight),
-            floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-            floatingActionButton: FloatingActionButton(
-              key: KeyAndString.dailyDiarySaveButton,
-              onPressed: () async {
-                await _saveDiary(viewModel, adventureViewModel, weekDiariesViewModel);
-              },
-              child: const Icon(Icons.save),
-            ),
           ),
-        );
-      }
-    );
+          bottomNavigationBar:
+              const SizedBox(height: kBottomNavigationBarHeight),
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerDocked,
+          floatingActionButton: FloatingActionButton(
+            key: KeyAndString.dailyDiarySaveButton,
+            onPressed: () async {
+              await _saveDiary(
+                  viewModel, adventureViewModel, weekDiariesViewModel);
+            },
+            child: const Icon(Icons.save),
+          ),
+        ),
+      );
+    });
   }
 
   Widget _buildEmotion({required Diary? diary}) {
@@ -131,7 +133,7 @@ class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
           children: List.generate(
             5,
             (index) => Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18),
+              padding: const EdgeInsets.symmetric(horizontal: 12),
               child: GestureDetector(
                 key: index == selectedColorIdx
                     ? KeyAndString.dailyDiarySelectedEmotionKey
@@ -142,14 +144,21 @@ class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
                   });
                 },
                 child: Container(
-                  height: 40,
-                  width: 40,
+                  padding: EdgeInsets.all(selectedColorIdx == index ? 0 : 5),
+                  height: 50,
+                  width: 50,
                   decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    // image: DecorationImage(
+                    //   fit: BoxFit.cover,
+                    //   image: AssetImage(images[index]),
+                    // ),
                     border: Border.all(
                       width: selectedColorIdx == index ? 5 : 0,
+                      color: selectedColorIdx == index ? Colors.red : Colors.transparent
                     ),
-                    color: colors[index],
                   ),
+                  child: Image.asset(images[index]),
                 ),
               ),
             ),
@@ -167,6 +176,7 @@ class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
         maxLines: 10,
         style: const TextStyle(
           fontSize: 24,
+          height: 1.5,
         ),
         decoration: InputDecoration(
           hintText: (diary == null || diary.desc == '')
@@ -184,14 +194,17 @@ class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
     );
   }
 
-  Future<void> _saveDiary(DailyDiaryViewModel diaryViewModel, AdventureViewModel adventureViewModel, WeekDiariesViewModel weekDiariesViewModel) async {
+  Future<void> _saveDiary(
+      DailyDiaryViewModel diaryViewModel,
+      AdventureViewModel adventureViewModel,
+      WeekDiariesViewModel weekDiariesViewModel) async {
     final state = diaryViewModel.state;
     final inputText = controller.text;
     final newDiary = Diary(
-        emotion: selectedColorIdx,
-        picture: '',
-        desc: inputText,
-        date: state.diary!.date,
+      emotion: selectedColorIdx,
+      picture: '',
+      desc: inputText,
+      date: state.diary!.date,
     );
     if (selectedColorIdx == -1) {
       ScaffoldMessenger.of(context).showSnackBar(

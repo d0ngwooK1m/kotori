@@ -13,27 +13,35 @@ class DiarySummary extends StatefulWidget {
 class _DiarySummaryState extends State<DiarySummary> {
   bool isFold = true;
 
-  final colors = [
-    Colors.red,
-    Colors.deepOrangeAccent,
-    Colors.lime,
-    Colors.greenAccent,
-    Colors.green
+  final images = [
+    'assets/images/kotori_sad_face.png',
+    'assets/images/kotori_little_sad_face.png',
+    'assets/images/kotori_normal_face.png',
+    'assets/images/kotori_little_good_face.png',
+    'assets/images/kotori_good_face.png',
   ];
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(20),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          border: Border.all(width: 3),
-        ),
-        child: Column(
-          children: [
-            _buildTitle(),
-            if (!isFold) _buildContent(),
-          ],
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            isFold = !isFold;
+          });
+        },
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            border: Border.all(width: 3),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              _buildTitle(),
+              if (!isFold) _buildContent(),
+            ],
+          ),
         ),
       ),
     );
@@ -44,12 +52,10 @@ class _DiarySummaryState extends State<DiarySummary> {
       padding: const EdgeInsets.all(20),
       child: Row(
         children: [
-          Container(
+          SizedBox(
             height: 40,
             width: 40,
-            decoration: BoxDecoration(
-              color: colors[widget.diary.emotion],
-            ),
+            child: Image.asset(images[widget.diary.emotion]),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -58,26 +64,25 @@ class _DiarySummaryState extends State<DiarySummary> {
               style: const TextStyle(fontSize: 18),
             ),
           ),
-          if (widget.diary.desc.isNotEmpty) IconButton(
-            onPressed: () {
-              setState(() {
-                isFold = !isFold;
-              });
-            },
-            icon: Icon(isFold ? Icons.arrow_downward : Icons.arrow_upward),
-          ),
+          if (widget.diary.desc.isNotEmpty)
+            Icon(isFold ? Icons.arrow_drop_down : Icons.arrow_drop_up),
         ],
       ),
     );
   }
 
   Widget _buildContent() {
-    return Column(
-      children: [
-        const SizedBox(height: 16),
-        Text(widget.diary.desc, style: const TextStyle(fontSize: 18),),
-        const SizedBox(height: 20),
-      ],
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+      child: Row(
+        children: [
+          Text(
+            widget.diary.desc,
+            style: const TextStyle(fontSize: 20, height: 1.5),
+          ),
+          Expanded(child: Container()),
+        ],
+      ),
     );
   }
 }

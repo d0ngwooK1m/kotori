@@ -25,7 +25,7 @@ class DragTargetToDeleteInventory extends StatelessWidget {
           ) {
         return (state.deleteItem != null && !state.deleteItem!.isInventory)
             ? DraggableToDeleteItem(
-          size: 90,
+          size: 60,
           type: type,
         )
             : _buildEmptyInventory();
@@ -37,13 +37,16 @@ class DragTargetToDeleteInventory extends StatelessWidget {
   }
 
   Widget _buildEmptyInventory() {
-    return Container(
-      width: 90,
-      height: 90,
-      decoration: BoxDecoration(
-        border: Border.all(
-          width: 5,
-          color: Colors.red,
+    return Opacity(
+      opacity: 0.1,
+      child: Container(
+        width: 60,
+        height: 60,
+        decoration: BoxDecoration(
+          border: Border.all(
+            width: 5,
+            color: Colors.black,
+          ),
         ),
       ),
     );

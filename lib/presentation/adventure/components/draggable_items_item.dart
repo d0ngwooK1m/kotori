@@ -27,13 +27,10 @@ class DraggableItemsItem extends StatelessWidget {
         KeyAndString.position: position,
         KeyAndString.type: type,
       },
-      feedback: Material(
-        child: Container(
-          width: size,
-          height: size,
-          color: Colors.transparent,
-          child: Image.asset(state.items[position].picture),
-        ),
+      feedback: SizedBox(
+        width: size,
+        height: size,
+        child: Image.asset(state.items[position].picture),
       ),
       childWhenDragging: Container(
         width: size,
@@ -41,14 +38,19 @@ class DraggableItemsItem extends StatelessWidget {
         decoration: BoxDecoration(
           border: Border.all(
             width: 5,
-            color: Colors.red,
+            color: Colors.black,
           ),
         ),
       ),
       child: Container(
         width: size,
         height: size,
-        color: Colors.transparent,
+        decoration: BoxDecoration(
+          border: Border.all(
+            width: 5,
+            color: Colors.black,
+          ),
+        ),
         child: Image.asset(state.items[position].picture),
       ),
     );

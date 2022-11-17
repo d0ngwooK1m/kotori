@@ -200,15 +200,18 @@ class AdventureViewModel extends ChangeNotifier {
 
   Future<void> checkIsOkayToMakeOrUseItem() async {
     bool isItemAlreadyExist = false;
+    final newItem = state.newItem ?? DefaultItem.inventory;
+    final toDeleteItem = state.deleteItem ?? DefaultItem.inventory;
+
     for (var element in state.items) {
       if (!element.isInventory && element.date == Time.now) {
         isItemAlreadyExist = true;
       }
     }
-    if ((!state.newItem!.isInventory &&
-            state.newItem!.date == Time.now) ||
-        (!state.deleteItem!.isInventory &&
-            state.deleteItem!.date == Time.now)) {
+    if ((!newItem.isInventory &&
+            newItem.date == Time.now) ||
+        (!toDeleteItem.isInventory &&
+            toDeleteItem.date == Time.now)) {
       isItemAlreadyExist = true;
     }
     if (!isItemAlreadyExist) {

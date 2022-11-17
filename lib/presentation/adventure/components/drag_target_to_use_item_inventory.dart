@@ -21,9 +21,11 @@ class DragTargetToUseItemInventory extends StatelessWidget {
     final viewModel = context.read<AdventureViewModel>();
     return DragTarget(
       key: KeyAndString.toUseItemKey,
-      builder: (BuildContext context,
-          List<dynamic> accepted,
-          List<dynamic> rejected,) {
+      builder: (
+        BuildContext context,
+        List<dynamic> accepted,
+        List<dynamic> rejected,
+      ) {
         return _buildEmptyInventory();
       },
       onAccept: (data) {
@@ -34,12 +36,12 @@ class DragTargetToUseItemInventory extends StatelessWidget {
 
   Widget _buildEmptyInventory() {
     return Container(
-      width: 90,
-      height: 90,
+      width: 140,
+      height: 130,
       decoration: BoxDecoration(
         border: Border.all(
           width: 5,
-          color: Colors.red,
+          color: Colors.black,
         ),
       ),
     );
@@ -56,6 +58,7 @@ class DragTargetToUseItemInventory extends StatelessWidget {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           behavior: SnackBarBehavior.floating,
           duration: Duration(milliseconds: 1500),
+          margin: EdgeInsets.only(bottom: 260),
           content: Text(KeyAndString.mainPageToUseItemUsedText)));
     }
   }

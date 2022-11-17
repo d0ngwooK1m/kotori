@@ -5,7 +5,7 @@ import 'package:kotori/presentation/adventure/components/drag_target_items_inven
 import 'package:kotori/presentation/adventure/components/drag_target_new_inventory.dart';
 import 'package:kotori/presentation/adventure/components/drag_target_to_delete_inventory.dart';
 import 'package:kotori/presentation/adventure/components/drag_target_to_use_item_inventory.dart';
-
+import 'package:kotori/util/default_item.dart';
 import 'package:kotori/util/key_and_string.dart';
 import 'package:kotori/util/modal_route_observer.dart';
 import 'package:provider/provider.dart';
@@ -55,18 +55,18 @@ class _AdventureScreenState extends State<AdventureScreen> with RouteAware {
     final viewModel = context.watch<AdventureViewModel>();
     return Scaffold(
       body: SafeArea(
-              child: SizedBox(
-                width: double.infinity,
-                child: Column(
-                  children: [
-                    const SizedBox(height: 100),
-                    _buildInventory(),
-                    const SizedBox(height: 100),
-                    _buildAdventureArea(viewModel),
-                  ],
-                ),
-              ),
-            ),
+        child: SizedBox(
+          width: double.infinity,
+          child: Column(
+            children: [
+              const SizedBox(height: 100),
+              _buildInventory(),
+              const SizedBox(height: 100),
+              _buildAdventureArea(viewModel),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -87,12 +87,9 @@ class _AdventureScreenState extends State<AdventureScreen> with RouteAware {
       );
     }
 
-    return Container(
+    return SizedBox(
       width: 300,
       height: 300,
-      decoration: BoxDecoration(
-        border: Border.all(width: 5),
-      ),
       child: Stack(
         children: slots,
       ),
@@ -101,33 +98,58 @@ class _AdventureScreenState extends State<AdventureScreen> with RouteAware {
 
   Widget _buildAdventureArea(AdventureViewModel viewModel) {
     final state = viewModel.state;
-    return Expanded(
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border.all(
-            width: 5,
-          ),
+    return Container(
+      width: 400,
+      height: 280,
+      decoration: BoxDecoration(
+        image: const DecorationImage(
+          fit: BoxFit.cover,
+          image: AssetImage('assets/images/back_ground_with_ground.png'),
         ),
-        child: Stack(
-          children: !state.isOkayToUse
-              ? _buildNormalInventories()
-              : _buildToUseInventory(context),
+        border: Border.all(
+          width: 5,
         ),
+      ),
+      child: Stack(
+        children: !state.isOkayToUse
+            ? _buildNormalInventories()
+            : _buildToUseInventory(),
       ),
     );
   }
 
   List<Widget> _buildNormalInventories() {
+    final state = context.watch<AdventureViewModel>().state;
+    final newItem = state.newItem ?? DefaultItem.inventory;
     return [
       Container(
-        alignment: const FractionalOffset(0.8, 0.8),
+        alignment: const FractionalOffset(0.9, 0),
+        child: Image.asset(newItem.isInventory
+            ? 'assets/images/kotori_move.png'
+            : 'assets/images/kotori_stop.png'),
+      ),
+      Container(
+        alignment: const FractionalOffset(0.845, 0.16),
+        child: Container(
+          decoration: BoxDecoration(border: Border.all(width: 1)),
+          child: Container(
+              width: 100,
+              height: 60,
+              decoration: BoxDecoration(
+                  border: Border.all(width: 5, color: Colors.red)),
+              child: Center(
+                  child: Text(newItem.isInventory ? '좋은일은\n언제나\n있을거야' : '!'))),
+        ),
+      ),
+      Container(
+        alignment: const FractionalOffset(0.95, 0.85),
         child: const DragTargetNewInventory(
           key: KeyAndString.newItemOrInventory,
           type: ItemAndInventoryTypes.newItem,
         ),
       ),
       Container(
-        alignment: const FractionalOffset(0.2, 0.8),
+        alignment: const FractionalOffset(0.05, 0.85),
         child: const DragTargetToDeleteInventory(
           key: KeyAndString.toDeleteItemOrInventory,
           type: ItemAndInventoryTypes.toDeleteItem,
@@ -136,13 +158,30 @@ class _AdventureScreenState extends State<AdventureScreen> with RouteAware {
     ];
   }
 
-  List<Widget> _buildToUseInventory(BuildContext context) {
+  List<Widget> _buildToUseInventory() {
     return [
       Container(
-        alignment: const FractionalOffset(0.5, 0.8),
+        alignment: const FractionalOffset(0.9, 0),
+        child: Image.asset('assets/images/kotori_sleep.png'),
+      ),
+      Container(
+        decoration: BoxDecoration(border: Border.all(width: 5)),
+        alignment: const FractionalOffset(0.5, 0.9),
         child: DragTargetToUseItemInventory(
           context: context,
           type: ItemAndInventoryTypes.toUseItem,
+        ),
+      ),
+      Container(
+        alignment: const FractionalOffset(0.845, 0.16),
+        child: Container(
+          decoration: BoxDecoration(border: Border.all(width: 1)),
+          child: Container(
+              width: 100,
+              height: 60,
+              decoration: BoxDecoration(
+                  border: Border.all(width: 5, color: Colors.red)),
+              child: const Center(child: Text('zzz...'))),
         ),
       ),
     ];

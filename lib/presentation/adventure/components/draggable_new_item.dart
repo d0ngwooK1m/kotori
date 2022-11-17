@@ -25,13 +25,10 @@ class DraggableNewItem extends StatelessWidget {
         KeyAndString.position : position,
         KeyAndString.type : type,
       },
-      feedback: Material(
-        child: Container(
-          width: size,
-          height: size,
-          color: Colors.transparent,
-          child: Image.asset(viewModel.state.newItem?.picture ?? 'assets/images/question_mark.png'),
-        ),
+      feedback: SizedBox(
+        width: size,
+        height: size,
+        child: Image.asset(viewModel.state.newItem?.picture ?? 'assets/images/question_mark.png'),
       ),
       childWhenDragging: Container(
         width: size,
@@ -39,15 +36,20 @@ class DraggableNewItem extends StatelessWidget {
         decoration: BoxDecoration(
           border: Border.all(
             width: 5,
-            color: Colors.red,
+            color: Colors.black,
           ),
         ),
       ),
       child: Container(
         width: size,
         height: size,
-        color: Colors.transparent,
-        child: Image.asset(viewModel.state.newItem?.picture ?? 'assets/images/question_mark.png'),
+        decoration: BoxDecoration(
+          border: Border.all(
+            width: 5,
+            color: Colors.black,
+          ),
+        ),
+        child: Image.asset(viewModel.state.newItem?.picture ?? ''),
       ),
     );
   }

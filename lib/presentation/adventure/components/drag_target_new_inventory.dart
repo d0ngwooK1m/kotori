@@ -16,31 +16,22 @@ class DragTargetNewInventory extends StatelessWidget {
   Widget build(BuildContext context) {
     final viewModel = context.watch<AdventureViewModel>();
     final state = viewModel.state;
-    return DragTarget(
-      builder: (
-          BuildContext context,
-          List<dynamic> accepted,
-          List<dynamic> rejected,
-          ) {
-        return (state.newItem != null && !state.newItem!.isInventory)
-            ? DraggableNewItem(
-          size: 90,
-          type: type,
-        )
-            : _buildEmptyInventory();
-      },
-      onAccept: (data) {},
-    );
+    return (state.newItem != null && !state.newItem!.isInventory)
+        ? DraggableNewItem(
+            size: 60,
+            type: type,
+          )
+        : _buildEmptyInventory();
   }
 
   Widget _buildEmptyInventory() {
     return Container(
-      width: 90,
-      height: 90,
+      width: 60,
+      height: 60,
       decoration: BoxDecoration(
         border: Border.all(
           width: 5,
-          color: Colors.red,
+          color: Colors.transparent,
         ),
       ),
     );

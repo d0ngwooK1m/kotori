@@ -18,7 +18,7 @@ class EmotionGraph extends StatelessWidget {
         decoration: BoxDecoration(
           border: Border.all(width: 5),
         ),
-        width: double.infinity,
+        width: 400,
         height: 250,
         child: CustomPaint(
           painter: GraphPainter(viewModel.state.weekDiaries, context),

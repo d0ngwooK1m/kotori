@@ -54,16 +54,33 @@ class _AdventureScreenState extends State<AdventureScreen> with RouteAware {
   Widget build(BuildContext context) {
     final viewModel = context.watch<AdventureViewModel>();
     return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        leading: IconButton(
+          icon: const Icon(Icons.question_mark),
+          onPressed: () {},
+        ),
+      ),
       body: SafeArea(
         child: SizedBox(
           width: double.infinity,
-          child: Column(
-            children: [
-              const SizedBox(height: 100),
-              _buildInventory(),
-              const SizedBox(height: 100),
-              _buildAdventureArea(viewModel),
-            ],
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '코토리의 배낭 안:',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.secondary,
+                    fontSize: 24,
+                  ),
+                ),
+                _buildInventory(),
+                const SizedBox(height: 50),
+                _buildAdventureArea(viewModel),
+              ],
+            ),
           ),
         ),
       ),
@@ -130,16 +147,14 @@ class _AdventureScreenState extends State<AdventureScreen> with RouteAware {
       ),
       Container(
         alignment: const FractionalOffset(0.845, 0.16),
-        child: Container(
-          decoration: BoxDecoration(border: Border.all(width: 1)),
-          child: Container(
-              width: 100,
-              height: 60,
-              decoration: BoxDecoration(
-                  border: Border.all(width: 5, color: Colors.red)),
-              child: Center(
-                  child: Text(newItem.isInventory ? '좋은일은\n언제나\n있을거야' : '!'))),
-        ),
+        child: SizedBox(
+            width: 100,
+            height: 60,
+            child: Center(
+                child: Text(
+              newItem.isInventory ? '좋은일은\n언제나\n있을거야' : '!',
+              style: const TextStyle(color: Colors.black),
+            ))),
       ),
       Container(
         alignment: const FractionalOffset(0.95, 0.85),
@@ -174,15 +189,8 @@ class _AdventureScreenState extends State<AdventureScreen> with RouteAware {
       ),
       Container(
         alignment: const FractionalOffset(0.845, 0.16),
-        child: Container(
-          decoration: BoxDecoration(border: Border.all(width: 1)),
-          child: Container(
-              width: 100,
-              height: 60,
-              decoration: BoxDecoration(
-                  border: Border.all(width: 5, color: Colors.red)),
-              child: const Center(child: Text('zzz...'))),
-        ),
+        child: const SizedBox(
+            width: 100, height: 60, child: Center(child: Text('zzz...'))),
       ),
     ];
   }

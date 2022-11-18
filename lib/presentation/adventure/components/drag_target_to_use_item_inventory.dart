@@ -41,7 +41,6 @@ class DragTargetToUseItemInventory extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border.all(
           width: 5,
-          color: Colors.black,
         ),
       ),
     );
@@ -57,9 +56,9 @@ class DragTargetToUseItemInventory extends StatelessWidget {
           data[KeyAndString.position], data[KeyAndString.item]);
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           behavior: SnackBarBehavior.floating,
-          duration: Duration(milliseconds: 1500),
+          duration: Duration(milliseconds: 1000),
           margin: EdgeInsets.only(bottom: 260),
-          content: Text(KeyAndString.mainPageToUseItemUsedText)));
+          content: Text(KeyAndString.mainPageToUseItemUsedText, style: TextStyle(fontFamily: 'Galmuri'),)));
     }
   }
 }

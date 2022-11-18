@@ -38,7 +38,7 @@ class DraggableItemsItem extends StatelessWidget {
         decoration: BoxDecoration(
           border: Border.all(
             width: 5,
-            color: Colors.black,
+            color: Theme.of(context).colorScheme.secondary,
           ),
         ),
       ),
@@ -48,7 +48,7 @@ class DraggableItemsItem extends StatelessWidget {
         decoration: BoxDecoration(
           border: Border.all(
             width: 5,
-            color: Colors.black,
+            color: Theme.of(context).colorScheme.secondary,
           ),
         ),
         child: Image.asset(state.items[position].picture),

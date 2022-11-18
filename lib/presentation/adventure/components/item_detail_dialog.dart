@@ -20,8 +20,7 @@ class ItemDetailDialog extends StatefulWidget {
 class _ItemDetailDialogState extends State<ItemDetailDialog> with RouteAware {
   final _valueMap = {
     'assets/images/question_mark.png': '코토리가 아직 확인해\n보지 않은 아이템이다.',
-    'assets/images/korean_mountain_ash_fruit.png':
-        '꽃은 배를, 열매는 팥을\n닮은 팥배나무 열매이다.',
+    'assets/images/korean_mountain_ash_fruit.png': '코토리의 비타민\n팥배나무 열매이다.',
     'assets/images/maple_seed.png': '장난감 겸 간식인\n단풍나무 씨이다.',
     'assets/images/meal_worm_chip.png': '뱁새들이 좋아하는\n밀웜 칩이다.',
     'assets/images/grass_whistle.png': '코토리가 잘 부는\n풀피리이다.',
@@ -29,15 +28,15 @@ class _ItemDetailDialogState extends State<ItemDetailDialog> with RouteAware {
   };
 
   final recommends = [
-    '추천 컨텐츠1 *',
-    '추천 컨텐츠2 *',
-    '추천 컨텐츠3 *',
-    '추천 컨텐츠4 *',
-    '추천 컨텐츠5 **',
-    '추천 컨텐츠6 **',
-    '추천 컨텐츠7 **',
-    '추천 컨텐츠8 ***',
-    '추천 컨텐츠9 ***',
+    '1시간 산책하고 동물 사진 (n)장 남기기',
+    '집 깨끗이 청소하고 샤워하기',
+    '(내가 좋아하는 책)에 (금액)넣어놓고 꺼내서 제일 맛있는 음식 사먹기, 배부를 때 한숨 푹 자기',
+    '노래방 가서 (추억이 담긴 노래) 불러보기',
+    '코인 빨래방에서 빨래 하면서 차 한잔 마시기',
+    '어릴때 재밌게 봤던 (만화) 다시 보고 일기에 소감 적기',
+    '새벽 또는 아침에 산책하며 하루를 시작하는 사람들 보고 기운을 얻기',
+    '(웃긴영상) 저장해두고 다시보기',
+    '제일 좋아하는 코디로 사고 싶던 옷 하나 오프라인 쇼핑하기',
   ];
 
   final random = Random();
@@ -71,19 +70,16 @@ class _ItemDetailDialogState extends State<ItemDetailDialog> with RouteAware {
   Widget build(BuildContext context) {
     final viewModel = context.read<AdventureViewModel>();
     return AlertDialog(
-      content: SizedBox(
-        width: 300,
-        height: 400,
-        child: ListView(
-          children: [
-            _buildClose(),
-            const SizedBox(height: 16),
-            _buildSelectPicAndInfo(),
-            const SizedBox(height: 16),
-            _buildDesc(),
-            _buildButton(viewModel),
-          ],
-        ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildClose(),
+          const SizedBox(height: 16),
+          _buildSelectPicAndInfo(),
+          const SizedBox(height: 16),
+          _buildDesc(),
+          _buildButton(viewModel),
+        ],
       ),
     );
   }
@@ -111,14 +107,14 @@ class _ItemDetailDialogState extends State<ItemDetailDialog> with RouteAware {
             ),
           ),
         ),
-        Flexible(
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              border: Border.all(width: 2),
-            ),
-            child: Text(_valueMap[_selectedImgString] ?? ''),
+        Container(
+          width: 190,
+          height: 70,
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            border: Border.all(width: 2),
           ),
+          child: Text(_valueMap[_selectedImgString] ?? ''),
         ),
       ],
     );
@@ -132,6 +128,7 @@ class _ItemDetailDialogState extends State<ItemDetailDialog> with RouteAware {
         maxLines: 9,
         style: const TextStyle(
           fontSize: 18,
+          fontFamily: 'KyoboHandwriting2019',
         ),
         decoration: InputDecoration(
           hintText:
@@ -139,11 +136,7 @@ class _ItemDetailDialogState extends State<ItemDetailDialog> with RouteAware {
           focusedBorder: InputBorder.none,
           border: InputBorder.none,
         ),
-        onChanged: (text) {
-          controller.text = text;
-          controller.selection = TextSelection.fromPosition(
-              TextPosition(offset: controller.text.length));
-        },
+        onChanged: (text) {},
       ),
     );
   }

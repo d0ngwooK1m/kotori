@@ -87,7 +87,6 @@ class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
           return true;
         },
         child: Scaffold(
-          resizeToAvoidBottomInset: false,
           body: SafeArea(
             child: Center(
               child: ListView(
@@ -124,7 +123,7 @@ class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
         const SizedBox(height: 20),
         Text(
           (diary == null ? '' : date) + KeyAndString.dailyDiaryScreenTitle,
-          style: const TextStyle(fontSize: 36),
+          style: const TextStyle(fontSize: 36, fontFamily: 'KyoboHandwriting2019'),
         ),
         const SizedBox(height: 20),
         Row(
@@ -170,13 +169,14 @@ class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
 
   Widget _buildDesc({required Diary? diary}) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+      padding: const EdgeInsets.fromLTRB(40, 20, 40, 0),
       child: TextField(
         controller: controller,
         maxLines: 10,
         style: const TextStyle(
           fontSize: 24,
           height: 1.5,
+          fontFamily: 'KyoboHandwriting2019',
         ),
         decoration: InputDecoration(
           hintText: (diary == null || diary.desc == '')
@@ -185,11 +185,7 @@ class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
           focusedBorder: InputBorder.none,
           border: InputBorder.none,
         ),
-        onChanged: (text) {
-          controller.text = text;
-          controller.selection = TextSelection.fromPosition(
-              TextPosition(offset: controller.text.length));
-        },
+        onChanged: (text) {},
       ),
     );
   }
@@ -209,9 +205,9 @@ class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
     if (selectedColorIdx == -1) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          duration: Duration(milliseconds: 1500),
+          duration: Duration(milliseconds: 1000),
           behavior: SnackBarBehavior.floating,
-          content: Text(KeyAndString.dailySaveFailed),
+          content: Text(KeyAndString.dailySaveFailed, style: TextStyle(fontFamily: 'Galmuri'),),
         ),
       );
       return;

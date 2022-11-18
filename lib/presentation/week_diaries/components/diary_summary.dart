@@ -33,7 +33,10 @@ class _DiarySummaryState extends State<DiarySummary> {
         },
         child: DecoratedBox(
           decoration: BoxDecoration(
-            border: Border.all(width: 3),
+            border: Border.all(
+              width: 3,
+              color: Theme.of(context).colorScheme.secondary,
+            ),
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -61,7 +64,8 @@ class _DiarySummaryState extends State<DiarySummary> {
           Expanded(
             child: Text(
               widget.diary.date.toString().split(' ').first,
-              style: const TextStyle(fontSize: 18),
+              style: const TextStyle(
+                  fontSize: 18, fontFamily: 'KyoboHandwriting2019'),
             ),
           ),
           if (widget.diary.desc.isNotEmpty)
@@ -73,12 +77,13 @@ class _DiarySummaryState extends State<DiarySummary> {
 
   Widget _buildContent() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+      padding: const EdgeInsets.fromLTRB(30, 0, 30, 20),
       child: Row(
         children: [
           Text(
             widget.diary.desc,
-            style: const TextStyle(fontSize: 20, height: 1.5),
+            style: const TextStyle(
+                fontSize: 20, height: 1.5, fontFamily: 'KyoboHandwriting2019'),
           ),
           Expanded(child: Container()),
         ],

@@ -40,7 +40,7 @@ class GraphPainter extends CustomPainter {
   final int lowerValue = 0;
   final double spacing = 50;
 
-  final Color textColor = Colors.black;
+  late Color textColor;
   final Color graphColor = Colors.green;
   late Paint strokePaint;
   late TextPainter horizontalTp;
@@ -52,6 +52,8 @@ class GraphPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3
       ..strokeCap = StrokeCap.round;
+
+    textColor = Theme.of(context).colorScheme.secondary;
   }
 
   @override
@@ -99,11 +101,12 @@ class GraphPainter extends CustomPainter {
 
   void _paintVerticalTp(Canvas canvas, Size size) {
     for (var i = 0; i < 6; i++) {
+      if (i <= 0) continue;
       final textSpan = TextSpan(
-        text: i.toString(),
-        style: const TextStyle(
+        text: (i - 3).toString(),
+        style: TextStyle(
           fontSize: 12,
-          color: Colors.black,
+          color: textColor,
         ),
       );
 
@@ -114,7 +117,7 @@ class GraphPainter extends CustomPainter {
 
       verticalTp.layout();
       verticalTp.paint(canvas,
-          Offset(-verticalTp.width * 2.5, size.height - (i * size.height / 5 * 0.7)));
+          Offset(i < 3 ? -verticalTp.width * 1.9 : -verticalTp.width * 2.5, size.height - (i * size.height / 5 * 0.7)));
     }
   }
 

@@ -11,6 +11,7 @@ import 'package:kotori/presentation/daily_diary/daily_diary_screen.dart';
 import 'package:kotori/presentation/daily_diary/daily_diary_view_model.dart';
 import 'package:kotori/presentation/week_diaries/week_diaries_screen.dart';
 import 'package:kotori/presentation/week_diaries/week_diaries_view_model.dart';
+import 'package:kotori/util/color_schemes.g.dart';
 import 'package:kotori/util/default_item.dart';
 import 'package:kotori/util/key_and_string.dart';
 import 'package:kotori/util/modal_route_observer.dart';
@@ -42,8 +43,16 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Kotori',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        fontFamily: 'Galmuri',
+        useMaterial3: true,
+        colorScheme: lightColorScheme,
       ),
+      darkTheme: ThemeData(
+        fontFamily: 'Galmuri',
+        useMaterial3: true,
+        colorScheme: darkColorScheme,
+      ),
+      themeMode: ThemeMode.system,
       navigatorObservers: [
         ModalRouteObserver.adventureObserver,
         ModalRouteObserver.dailyDiaryObserver
@@ -108,9 +117,9 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
         ),
         bottomNavigationBar: BottomNavigationBar(
           items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.map), label: 'adventure'),
+            BottomNavigationBarItem(icon: Icon(Icons.map), label: '모험'),
             BottomNavigationBarItem(
-                icon: Icon(Icons.auto_graph), label: 'graph'),
+                icon: Icon(Icons.auto_graph), label: '지도'),
           ],
           currentIndex: index,
           onTap: (int page) async {
@@ -133,8 +142,8 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
         floatingActionButton: FloatingActionButton(
           key: KeyAndString.fabKey,
           backgroundColor: state.isOkayToDelete || state.isOkayToUse
-              ? Colors.red
-              : Colors.blue,
+              ? Theme.of(context).colorScheme.error
+              : Theme.of(context).colorScheme.primaryContainer,
           onPressed: () {
             if (state.isOkayToDelete || state.isOkayToUse) {
               _showDialog(context, viewModel);
@@ -164,10 +173,10 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
       ScaffoldMessenger.of(context)
         ..removeCurrentSnackBar()
         ..showSnackBar(SnackBar(
-            duration: const Duration(milliseconds: 1500),
+            duration: const Duration(milliseconds: 1000),
             margin: EdgeInsets.only(bottom: index == 0 ? 260 : 0),
             behavior: SnackBarBehavior.floating,
-            content: Text('$result')));
+            content: Text('$result', style: const TextStyle(fontFamily: 'Galmuri'),)));
     }
   }
 

@@ -35,7 +35,7 @@ class DragTargetItemsInventory extends StatelessWidget {
                   type: type,
                 ),
               )
-            : _buildEmptyInventory();
+            : _buildEmptyInventory(context);
       },
       onAccept: (data) {
         setOnAccept(data as Map<String, dynamic>, context);
@@ -43,14 +43,14 @@ class DragTargetItemsInventory extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyInventory() {
+  Widget _buildEmptyInventory(BuildContext context) {
     return Container(
       width: 90,
       height: 90,
       decoration: BoxDecoration(
         border: Border.all(
           width: 5,
-          color: Colors.black,
+          color: Theme.of(context).colorScheme.secondary,
         ),
       ),
     );

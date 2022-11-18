@@ -23,6 +23,7 @@ class _WeekDiariesScreenState extends State<WeekDiariesScreen> {
           child: Scaffold(
             body: Column(
               children: [
+                const SizedBox(height: 30),
                 _buildSelector(viewModel),
                 const EmotionGraph(),
                 const SizedBox(height: 10),
@@ -44,7 +45,7 @@ class _WeekDiariesScreenState extends State<WeekDiariesScreen> {
     final state = viewModel.state;
     final mondayEpoch = diaries.first?.date.millisecondsSinceEpoch ??
         Time.now.millisecondsSinceEpoch;
-    final isFirstDateContained = state.firstDownloadedDateEpoch <= mondayEpoch;
+    final isFirstDateContained = state.firstDownloadedDateEpoch >= mondayEpoch;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,

@@ -18,6 +18,9 @@ class AdventureScreen extends StatefulWidget {
 }
 
 class _AdventureScreenState extends State<AdventureScreen> with RouteAware {
+  final _scrollKey = GlobalKey();
+  final ScrollController _scroller = ScrollController();
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -28,6 +31,7 @@ class _AdventureScreenState extends State<AdventureScreen> with RouteAware {
   @override
   void dispose() {
     ModalRouteObserver.adventureObserver.unsubscribe(this);
+    _scroller.dispose();
     super.dispose();
   }
 
@@ -54,6 +58,7 @@ class _AdventureScreenState extends State<AdventureScreen> with RouteAware {
   Widget build(BuildContext context) {
     final viewModel = context.watch<AdventureViewModel>();
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
@@ -65,21 +70,25 @@ class _AdventureScreenState extends State<AdventureScreen> with RouteAware {
       body: SafeArea(
         child: SizedBox(
           width: double.infinity,
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  '코토리의 배낭 안:',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.secondary,
-                    fontSize: 24,
+          child: _createListener(
+            SingleChildScrollView(
+              key: _scrollKey,
+              controller: _scroller,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '코토리의 배낭 안:',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.secondary,
+                      fontSize: 24,
+                    ),
                   ),
-                ),
-                _buildInventory(),
-                const SizedBox(height: 50),
-                _buildAdventureArea(viewModel),
-              ],
+                  _buildInventory(),
+                  const SizedBox(height: 50),
+                  _buildAdventureArea(viewModel),
+                ],
+              ),
             ),
           ),
         ),
@@ -190,8 +199,38 @@ class _AdventureScreenState extends State<AdventureScreen> with RouteAware {
       Container(
         alignment: const FractionalOffset(0.845, 0.16),
         child: const SizedBox(
-            width: 100, height: 60, child: Center(child: Text('zzz...'))),
+            width: 100,
+            height: 60,
+            child: Center(
+                child: Text(
+              'zzz...',
+              style: TextStyle(color: Colors.black),
+            ))),
       ),
     ];
+  }
+
+  Widget _createListener(Widget child) {
+    return Listener(
+      child: child,
+      onPointerMove: (PointerMoveEvent event) {
+        RenderBox render =
+            _scrollKey.currentContext?.findRenderObject() as RenderBox;
+        Offset position = render.localToGlobal(Offset.zero);
+        double topY = position.dy;
+        double bottomY = topY + render.size.height;
+
+        // const detectRange = 100;
+        const moveDistance = 3;
+        if (event.position.dy < topY) {
+          var to = _scroller.offset - moveDistance;
+          to = to < 0 ? 0 : to;
+          _scroller.jumpTo(to);
+        }
+        if (event.position.dy > bottomY) {
+          _scroller.jumpTo(_scroller.offset + moveDistance);
+        }
+      },
+    );
   }
 }

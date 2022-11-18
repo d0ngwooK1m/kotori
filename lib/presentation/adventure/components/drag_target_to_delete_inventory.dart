@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kotori/domain/util/item_and_inventory_types.dart';
 import 'package:kotori/presentation/adventure/adventure_view_model.dart';
 import 'package:kotori/presentation/adventure/components/draggable_to_delete_item.dart';
+import 'package:kotori/presentation/adventure/components/item_detail_dialog.dart';
 import 'package:kotori/util/key_and_string.dart';
 import 'package:provider/provider.dart';
 
@@ -19,15 +20,20 @@ class DragTargetToDeleteInventory extends StatelessWidget {
     final state = viewModel.state;
     return DragTarget(
       builder: (
-          BuildContext context,
-          List<dynamic> accepted,
-          List<dynamic> rejected,
-          ) {
+        BuildContext context,
+        List<dynamic> accepted,
+        List<dynamic> rejected,
+      ) {
         return (state.deleteItem != null && !state.deleteItem!.isInventory)
-            ? DraggableToDeleteItem(
-          size: 60,
-          type: type,
-        )
+            ? GestureDetector(
+                onTap: () {
+                  _showItemDialog(context);
+                },
+                child: DraggableToDeleteItem(
+                  size: 60,
+                  type: type,
+                ),
+              )
             : _buildEmptyInventory();
       },
       onAccept: (data) {
@@ -63,11 +69,24 @@ class DragTargetToDeleteInventory extends StatelessWidget {
           item: data[KeyAndString.item],
           prevPosition: data[KeyAndString.position]);
       viewModel.checkIsOkayToDelete();
-    }else if (itemRole == ItemAndInventoryTypes.newItem &&
+    } else if (itemRole == ItemAndInventoryTypes.newItem &&
         inventoryRole == ItemAndInventoryTypes.toDeleteItem) {
       // new to delete
       viewModel.newItemToDeleteItem(viewModel.state.newItem!);
       viewModel.checkIsOkayToDelete();
     }
+  }
+
+  void _showItemDialog(BuildContext context) {
+    final toDeleteItem = context.read<AdventureViewModel>().state.deleteItem;
+    showDialog(
+      context: context,
+      builder: (BuildContext ctx) {
+        return ItemDetailDialog(
+          item: toDeleteItem!,
+          position: null,
+        );
+      },
+    );
   }
 }

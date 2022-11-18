@@ -21,14 +21,16 @@ class _WeekDiariesScreenState extends State<WeekDiariesScreen> {
         final weekDiaries = viewModel.state.weekDiaries;
         return SafeArea(
           child: Scaffold(
-            body: Column(
-              children: [
-                const SizedBox(height: 30),
-                _buildSelector(viewModel),
-                const EmotionGraph(),
-                const SizedBox(height: 10),
-                _buildDiarySummaries(weekDiaries),
-              ],
+            body: SingleChildScrollView(
+              child: Column(
+                children: [
+                  const SizedBox(height: 30),
+                  _buildSelector(viewModel),
+                  const EmotionGraph(),
+                  const SizedBox(height: 10),
+                  _buildDiarySummaries(weekDiaries),
+                ],
+              ),
             ),
           ),
         );
@@ -101,10 +103,8 @@ class _WeekDiariesScreenState extends State<WeekDiariesScreen> {
         result.add(DiarySummary(diary: diary!));
       }
     }
-    return Expanded(
-      child: ListView(
-        children: result,
-      ),
+    return Column(
+      children: result,
     );
   }
 }

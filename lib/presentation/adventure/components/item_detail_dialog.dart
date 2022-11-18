@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 
 class ItemDetailDialog extends StatefulWidget {
   final Item item;
-  final int position;
+  final int? position;
 
   const ItemDetailDialog({Key? key, required this.item, required this.position})
       : super(key: key);
@@ -70,16 +70,18 @@ class _ItemDetailDialogState extends State<ItemDetailDialog> with RouteAware {
   Widget build(BuildContext context) {
     final viewModel = context.read<AdventureViewModel>();
     return AlertDialog(
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildClose(),
-          const SizedBox(height: 16),
-          _buildSelectPicAndInfo(),
-          const SizedBox(height: 16),
-          _buildDesc(),
-          _buildButton(viewModel),
-        ],
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildClose(),
+            const SizedBox(height: 16),
+            _buildSelectPicAndInfo(),
+            const SizedBox(height: 16),
+            _buildDesc(),
+            if (widget.position != null) _buildButton(viewModel),
+          ],
+        ),
       ),
     );
   }
@@ -107,14 +109,14 @@ class _ItemDetailDialogState extends State<ItemDetailDialog> with RouteAware {
             ),
           ),
         ),
-        Container(
-          width: 190,
-          height: 70,
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            border: Border.all(width: 2),
+        Flexible(
+          child: Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              border: Border.all(width: 2),
+            ),
+            child: Text(_valueMap[_selectedImgString] ?? ''),
           ),
-          child: Text(_valueMap[_selectedImgString] ?? ''),
         ),
       ],
     );
@@ -123,21 +125,30 @@ class _ItemDetailDialogState extends State<ItemDetailDialog> with RouteAware {
   Widget _buildDesc() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: TextField(
-        controller: controller,
-        maxLines: 9,
-        style: const TextStyle(
-          fontSize: 18,
-          fontFamily: 'KyoboHandwriting2019',
-        ),
-        decoration: InputDecoration(
-          hintText:
-              (widget.item.desc == '') ? '내가 힘들 때\n무슨 일을 하고 싶은지 적어보세요' : '',
-          focusedBorder: InputBorder.none,
-          border: InputBorder.none,
-        ),
-        onChanged: (text) {},
-      ),
+      child: widget.position != null
+          ? TextField(
+              controller: controller,
+              maxLines: 5,
+              style: const TextStyle(
+                fontSize: 18,
+                fontFamily: 'KyoboHandwriting2019',
+              ),
+              decoration: InputDecoration(
+                hintText: (widget.item.desc == '')
+                    ? '내가 힘들 때\n무슨 일을 하고 싶은지 적어보세요'
+                    : '',
+                focusedBorder: InputBorder.none,
+                border: InputBorder.none,
+              ),
+              onChanged: (text) {},
+            )
+          : Text(
+              widget.item.desc,
+              style: const TextStyle(
+                fontSize: 18,
+                fontFamily: 'KyoboHandwriting2019',
+              ),
+            ),
     );
   }
 
@@ -161,7 +172,7 @@ class _ItemDetailDialogState extends State<ItemDetailDialog> with RouteAware {
                 picture: _selectedImgString,
                 date: widget.item.date,
               ),
-              position: widget.position,
+              position: widget.position!,
             );
             Navigator.of(context).pop();
           },

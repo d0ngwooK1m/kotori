@@ -174,7 +174,6 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
         ..removeCurrentSnackBar()
         ..showSnackBar(SnackBar(
             duration: const Duration(milliseconds: 1000),
-            margin: EdgeInsets.only(bottom: index == 0 ? 260 : 0),
             behavior: SnackBarBehavior.floating,
             content: Text('$result', style: const TextStyle(fontFamily: 'Galmuri'),)));
     }

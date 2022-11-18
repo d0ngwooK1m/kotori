@@ -126,9 +126,8 @@ class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
           style: const TextStyle(fontSize: 36, fontFamily: 'KyoboHandwriting2019'),
         ),
         const SizedBox(height: 20),
-        Row(
+        Wrap(
           key: KeyAndString.dailyDiaryEmotionsKey,
-          mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(
             5,
             (index) => Padding(

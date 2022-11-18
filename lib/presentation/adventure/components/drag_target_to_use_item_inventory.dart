@@ -41,6 +41,7 @@ class DragTargetToUseItemInventory extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border.all(
           width: 5,
+          color: Colors.black.withOpacity(0.2),
         ),
       ),
     );

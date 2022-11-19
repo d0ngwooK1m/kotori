@@ -18,6 +18,8 @@ import 'package:kotori/util/modal_route_observer.dart';
 import 'package:kotori/util/time.dart';
 import 'package:provider/provider.dart';
 
+import 'presentation/error/error_screen.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
@@ -57,6 +59,12 @@ class MyApp extends StatelessWidget {
         ModalRouteObserver.adventureObserver,
         ModalRouteObserver.dailyDiaryObserver
       ],
+      builder: (context, widget) {
+        ErrorWidget.builder = (FlutterErrorDetails errorDetails) {
+          return ErrorScreen(errorMessage: errorDetails.toString());
+        };
+        return widget ?? const ErrorScreen(errorMessage: 'main widget build failed');
+      },
       home: const MainPage(),
     );
   }
@@ -108,55 +116,61 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    final weekDiariesViewModel = context.read<WeekDiariesViewModel>();
+    final weekDiaryMessage = context.watch<WeekDiariesViewModel>().state.message;
+    final dailyDiaryMessage = context.watch<DailyDiaryViewModel>().state.message;
     return Consumer<AdventureViewModel>(builder: (_, viewModel, __) {
       final state = viewModel.state;
-      final weekDiariesViewModel = context.read<WeekDiariesViewModel>();
-      return Scaffold(
-        body: SafeArea(
-          child: widgets.elementAt(index),
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.map), label: '모험'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.auto_graph), label: '지도'),
-          ],
-          currentIndex: index,
-          onTap: (int page) async {
-            if (page == 1) {
-              await viewModel.saveEveryItemOrInventory(
-                items: state.items,
-                newItem: state.newItem!,
-                toDeleteItem: state.deleteItem!,
-              );
-              await weekDiariesViewModel.getFirstDateEpoch();
-              await weekDiariesViewModel.getWeekDiaries();
-            } else {
-              await viewModel.getEveryItemOrInventory();
-            }
-            setState(() {
-                index = page;
-              });
-          },
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        floatingActionButton: FloatingActionButton(
-          key: KeyAndString.fabKey,
-          backgroundColor: state.isOkayToDelete || state.isOkayToUse
-              ? Theme.of(context).colorScheme.error
-              : Theme.of(context).colorScheme.primaryContainer,
-          onPressed: () {
-            if (state.isOkayToDelete || state.isOkayToUse) {
-              _showDialog(context, viewModel);
-            } else {
-              _navigateAndDisplaySelection(context);
-            }
-          },
-          child: state.isOkayToDelete || state.isOkayToUse
-              ? const Icon(Icons.forward)
-              : const Icon(Icons.edit),
-        ),
-      );
+      return dailyDiaryMessage != null ||
+              weekDiaryMessage != null
+          ? ErrorScreen(errorMessage: dailyDiaryMessage ?? weekDiaryMessage!)
+          : Scaffold(
+              body: SafeArea(
+                child: widgets.elementAt(index),
+              ),
+              bottomNavigationBar: BottomNavigationBar(
+                items: const [
+                  BottomNavigationBarItem(icon: Icon(Icons.map), label: '모험'),
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.auto_graph), label: '지도'),
+                ],
+                currentIndex: index,
+                onTap: (int page) async {
+                  if (page == 1) {
+                    await viewModel.saveEveryItemOrInventory(
+                      items: state.items,
+                      newItem: state.newItem!,
+                      toDeleteItem: state.deleteItem!,
+                    );
+                    await weekDiariesViewModel.getFirstDateEpoch();
+                    await weekDiariesViewModel.getWeekDiaries();
+                  } else {
+                    await viewModel.getEveryItemOrInventory();
+                  }
+                  setState(() {
+                    index = page;
+                  });
+                },
+              ),
+              floatingActionButtonLocation:
+                  FloatingActionButtonLocation.centerDocked,
+              floatingActionButton: FloatingActionButton(
+                key: KeyAndString.fabKey,
+                backgroundColor: state.isOkayToDelete || state.isOkayToUse
+                    ? Theme.of(context).colorScheme.error
+                    : Theme.of(context).colorScheme.primaryContainer,
+                onPressed: () {
+                  if (state.isOkayToDelete || state.isOkayToUse) {
+                    _showDialog(context, viewModel);
+                  } else {
+                    _navigateAndDisplaySelection(context);
+                  }
+                },
+                child: state.isOkayToDelete || state.isOkayToUse
+                    ? const Icon(Icons.forward)
+                    : const Icon(Icons.edit),
+              ),
+            );
     });
   }
 
@@ -176,7 +190,10 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
         ..showSnackBar(SnackBar(
             duration: const Duration(milliseconds: 1000),
             behavior: SnackBarBehavior.floating,
-            content: Text('$result', style: const TextStyle(fontFamily: 'Galmuri'),)));
+            content: Text(
+              '$result',
+              style: const TextStyle(fontFamily: 'Galmuri'),
+            )));
     }
   }
 

@@ -67,7 +67,7 @@ class _InstructionScreenState extends State<InstructionScreen> {
               ),
         const SizedBox(width: 16),
         Text(
-          '${selectedIdx + 1} / 8',
+          '${selectedIdx + 1} / 9',
           style: const TextStyle(fontSize: 18),
         ),
         const SizedBox(width: 16),

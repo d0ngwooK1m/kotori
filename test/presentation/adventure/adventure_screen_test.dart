@@ -90,7 +90,7 @@ void main() {
     expect(find.byType(DragTargetToDeleteInventory), findsOneWidget);
   });
 
-  testWidgets('아이템 간 이동 및 삭제 되는지 확인', (WidgetTester tester) async {
+  testWidgets('아이템 간 이동 되는지 확인', (WidgetTester tester) async {
     final dateEpochValue =
         DefaultItem.item.toPastDateItem(days: 1).date.millisecondsSinceEpoch.toString();
     await _pumpTestWidget(tester);
@@ -109,7 +109,8 @@ void main() {
     await gesture.up();
     await tester.pump();
 
-    expect(find.descendant(of: find.byKey(KeyAndString.toDeleteItemOrInventory), matching: find.byKey(Key(dateEpochValue))), findsOneWidget);
+    expect(find.byType(DraggableItemsItem), findsNWidgets(2));
+    // expect(find.descendant(of: find.byKey(KeyAndString.toDeleteItemOrInventory), matching: find.byKey(Key(dateEpochValue))), findsOneWidget);
     expect(find.byKey(Key(dateEpochValue)), findsOneWidget);
   });
 

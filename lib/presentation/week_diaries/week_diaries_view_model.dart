@@ -10,9 +10,7 @@ class WeekDiariesViewModel extends ChangeNotifier {
 
   WeekDiariesState get state => _state;
 
-  WeekDiariesViewModel(this.useCase) {
-    getFirstDateEpoch();
-  }
+  WeekDiariesViewModel(this.useCase);
 
   Future<void> getFirstDateEpoch() async {
     final prefs = await SharedPreferences.getInstance();

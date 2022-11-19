@@ -129,6 +129,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
                 newItem: state.newItem!,
                 toDeleteItem: state.deleteItem!,
               );
+              await weekDiariesViewModel.getFirstDateEpoch();
               await weekDiariesViewModel.getWeekDiaries();
             } else {
               await viewModel.getEveryItemOrInventory();

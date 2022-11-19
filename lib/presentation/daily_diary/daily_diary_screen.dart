@@ -70,10 +70,10 @@ class _DailyDiaryScreenState extends State<DailyDiaryScreen> with RouteAware {
 
   @override
   Widget build(BuildContext context) {
+    final adventureViewModel = context.read<AdventureViewModel>();
+    final weekDiariesViewModel = context.read<WeekDiariesViewModel>();
     return Consumer<DailyDiaryViewModel>(builder: (_, viewModel, __) {
       final state = viewModel.state;
-      final adventureViewModel = context.read<AdventureViewModel>();
-      final weekDiariesViewModel = context.read<WeekDiariesViewModel>();
       return WillPopScope(
         onWillPop: () async {
           if (!mounted) return false;

@@ -32,7 +32,7 @@ class AdventureViewModel extends ChangeNotifier {
     );
     newItem.when(
       success: (data) {
-        _state = state.copyWith(isLoading: false, newItem: data);
+        _state = state.copyWith(isLoading: false, newItem: data, message: null);
       },
       error: (e) {
         _state = state.copyWith(isLoading: false, message: e.toString());
@@ -40,7 +40,7 @@ class AdventureViewModel extends ChangeNotifier {
     );
     deleteItem.when(
       success: (data) {
-        _state = state.copyWith(isLoading: false, deleteItem: data);
+        _state = state.copyWith(isLoading: false, deleteItem: data, message: null);
       },
       error: (e) {
         _state = state.copyWith(isLoading: false, message: e.toString());
@@ -220,11 +220,11 @@ class AdventureViewModel extends ChangeNotifier {
       result.when(
         success: (data) async {
           if (data == true) {
-            _state = state.copyWith(newItem: DefaultItem.item, isOkayToUse: false);
+            _state = state.copyWith(newItem: DefaultItem.item, isOkayToUse: false, message: null);
           } else if (data == false) {
-            _state = state.copyWith(isOkayToUse: true);
+            _state = state.copyWith(isOkayToUse: true, message: null);
           } else {
-            _state = state.copyWith(isOkayToUse: false);
+            _state = state.copyWith(isOkayToUse: false, message: null);
           }
         },
         error: (e) {

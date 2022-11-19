@@ -10,6 +10,8 @@ import 'package:kotori/util/key_and_string.dart';
 import 'package:kotori/util/modal_route_observer.dart';
 import 'package:provider/provider.dart';
 
+import '../instruction/instruction_screen.dart';
+
 class AdventureScreen extends StatefulWidget {
   const AdventureScreen({Key? key}) : super(key: key);
 
@@ -64,7 +66,11 @@ class _AdventureScreenState extends State<AdventureScreen> with RouteAware {
         backgroundColor: Colors.transparent,
         leading: IconButton(
           icon: const Icon(Icons.question_mark),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+              return const InstructionScreen();
+            }),);
+          },
         ),
       ),
       body: SafeArea(
@@ -80,7 +86,10 @@ class _AdventureScreenState extends State<AdventureScreen> with RouteAware {
                   Text(
                     '코토리의 배낭 안:',
                     style: TextStyle(
-                      color: Theme.of(context).colorScheme.secondary,
+                      color: Theme
+                          .of(context)
+                          .colorScheme
+                          .secondary,
                       fontSize: 24,
                     ),
                   ),
@@ -145,7 +154,9 @@ class _AdventureScreenState extends State<AdventureScreen> with RouteAware {
   }
 
   List<Widget> _buildNormalInventories() {
-    final state = context.watch<AdventureViewModel>().state;
+    final state = context
+        .watch<AdventureViewModel>()
+        .state;
     final newItem = state.newItem ?? DefaultItem.inventory;
     return [
       Container(
@@ -161,9 +172,9 @@ class _AdventureScreenState extends State<AdventureScreen> with RouteAware {
             height: 60,
             child: Center(
                 child: Text(
-              newItem.isInventory ? '좋은일은\n언제나\n있을거야' : '!',
-              style: const TextStyle(color: Colors.black),
-            ))),
+                  newItem.isInventory ? '좋은일은\n언제나\n있을거야' : '!',
+                  style: const TextStyle(color: Colors.black),
+                ))),
       ),
       Container(
         alignment: const FractionalOffset(0.95, 0.85),
@@ -189,7 +200,7 @@ class _AdventureScreenState extends State<AdventureScreen> with RouteAware {
         child: Image.asset('assets/images/kotori_sleep.png'),
       ),
       Container(
-        decoration: BoxDecoration(border: Border.all(width: 5)),
+        decoration: BoxDecoration(border: Border.all(width: 5, color: Colors.black.withOpacity(0.1))),
         alignment: const FractionalOffset(0.5, 0.9),
         child: DragTargetToUseItemInventory(
           context: context,
@@ -203,9 +214,9 @@ class _AdventureScreenState extends State<AdventureScreen> with RouteAware {
             height: 60,
             child: Center(
                 child: Text(
-              'zzz...',
-              style: TextStyle(color: Colors.black),
-            ))),
+                  'zzz...',
+                  style: TextStyle(color: Colors.black),
+                ))),
       ),
     ];
   }
@@ -215,7 +226,7 @@ class _AdventureScreenState extends State<AdventureScreen> with RouteAware {
       child: child,
       onPointerMove: (PointerMoveEvent event) {
         RenderBox render =
-            _scrollKey.currentContext?.findRenderObject() as RenderBox;
+        _scrollKey.currentContext?.findRenderObject() as RenderBox;
         Offset position = render.localToGlobal(Offset.zero);
         double topY = position.dy;
         double bottomY = topY + render.size.height;

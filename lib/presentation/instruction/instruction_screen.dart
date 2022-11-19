@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kotori/presentation/instruction/component/instruction_page.dart';
 
 class InstructionScreen extends StatefulWidget {
   const InstructionScreen({Key? key}) : super(key: key);
@@ -8,14 +9,6 @@ class InstructionScreen extends StatefulWidget {
 }
 
 class _InstructionScreenState extends State<InstructionScreen> {
-  final List<Widget> pages = [];
-
-  @override
-  void initState() {
-    pages.add(_buildPageOne());
-    super.initState();
-  }
-
 
   int selectedIdx = 0;
 
@@ -25,15 +18,24 @@ class _InstructionScreenState extends State<InstructionScreen> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
+        centerTitle: true,
+        title: const Text(
+          '설명서',
+          style: TextStyle(fontSize: 20),
+        ),
         leading: IconButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
           icon: const Icon(Icons.arrow_back_rounded),
         ),
       ),
       body: Column(
         children: [
-          Text('설명서'),
+          const SizedBox(height: 16),
           _buildPager(),
+          const SizedBox(height: 32),
+          InstructionPage(index: selectedIdx),
         ],
       ),
     );
@@ -41,6 +43,7 @@ class _InstructionScreenState extends State<InstructionScreen> {
 
   Widget _buildPager() {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         selectedIdx == 0
             ? const Padding(
@@ -52,17 +55,23 @@ class _InstructionScreenState extends State<InstructionScreen> {
                 ),
               )
             : GestureDetector(
-                onTap: () async {},
+                onTap: () async {
+                  setState(() {
+                    selectedIdx -= 1;
+                  });
+                },
                 child: const Icon(
                   Icons.arrow_left,
                   size: 36,
                 ),
               ),
+        const SizedBox(width: 16),
         Text(
-          '${selectedIdx + 1} / n',
+          '${selectedIdx + 1} / 8',
           style: const TextStyle(fontSize: 18),
         ),
-        selectedIdx == pages.length - 1
+        const SizedBox(width: 16),
+        selectedIdx == 8
             ? const Padding(
                 padding: EdgeInsets.zero,
                 child: Icon(
@@ -72,23 +81,17 @@ class _InstructionScreenState extends State<InstructionScreen> {
                 ),
               )
             : GestureDetector(
-                onTap: () async {},
+                onTap: () async {
+                  setState(() {
+                    selectedIdx += 1;
+                  });
+                },
                 child: const Icon(
                   Icons.arrow_right,
                   size: 36,
                 ),
               ),
       ],
-    );
-  }
-
-  Widget _buildPageOne() {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          Text('코토리는 여러분의 기분의 높낮이로 이루어진 산을 여행하는 조그만 새입니다.'),
-        ],
-      ),
     );
   }
 }

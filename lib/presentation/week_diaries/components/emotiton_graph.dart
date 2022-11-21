@@ -133,6 +133,7 @@ class GraphPainter extends CustomPainter {
     }
 
     final fillPath = Path.from(path)
+      ..lineTo(size.width, size.height)
       ..lineTo(0, size.height)
       ..close();
 
